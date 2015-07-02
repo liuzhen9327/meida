@@ -10,7 +10,20 @@ import com.jfinal.core.Controller;
  */
 public class UserController extends Controller{
 
+	
 	public void login() {
-		renderJsp("../login.jsp");
+		String username = getPara("email");
+		String password = getPara("password");
+		
+	}
+	
+	public void emailExists() {
+		
+	}
+	
+	public void register() {
+		String username = getPara("email");
+		String password = getPara("password");
+		
 	}
 }

@@ -25,4 +25,5 @@ CREATE TABLE `tb_address` (
 	 */
 	public static final Address dao = new Address();
 	
+	public static final String TABLE_NAME = "tb_address";
 }

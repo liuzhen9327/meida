@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <title>新增地址信息</title>
-  <%@include file="../commons/links.jsp" %>
+  <%@include file="../../../commons/links.jsp" %>
 </head>
 
 <body>
@@ -11,11 +11,11 @@
 
 <section>
   
-	<%@include file="../commons/leftPanel.jsp" %>  
+	<%@include file="../../../commons/leftPanel.jsp" %>  
 
 	<div class="mainpanel">
 	
-	<%@include file="../commons/headerBar.jsp" %>
+	<%@include file="../../../commons/headerBar.jsp" %>
 	
 	<div class="pageheader">
 		<h2><i class="fa fa-pencil"></i>添加我的地址信息<span>Meida</span></h2>
@@ -76,8 +76,8 @@
 <!-- mainpanel -->
 </section>
 
-<%@include file="../commons/scripts.jsp" %>
-<%@include file="../commons/validate.jsp" %>
+<%@include file="../../../commons/scripts.jsp" %>
+<%@include file="../../../commons/validate.jsp" %>
 <script>
 jQuery(document).ready(function(){
     "use strict";

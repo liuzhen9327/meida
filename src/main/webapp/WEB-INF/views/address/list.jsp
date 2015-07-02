@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<%@include file="../commons/links.jsp" %>
+	<%@include file="../../../commons/links.jsp" %>
 	<title>地址列表</title>
 </head>
 
@@ -10,11 +10,11 @@
 
 <section>
   
-  <%@include file="../commons/leftPanel.jsp" %>
+  <%@include file="../../../commons/leftPanel.jsp" %>
   
   <div class="mainpanel">
     
-    <%@include file="../commons/headerBar.jsp" %>
+    <%@include file="../../../commons/headerBar.jsp" %>
     <div class="pageheader">
       <h2><i class="fa fa-table"></i> 地址列表 <span>Meida</span></h2>
   
@@ -97,7 +97,7 @@
 </section>
 
 </body>
-<%@include file="../commons/scripts.jsp" %>
+<%@include file="../../../commons/scripts.jsp" %>
 
 <script>
   jQuery(document).ready(function() {

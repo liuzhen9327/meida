@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<%@include file="commons/links.jsp" %>
 <title>登录</title>
+<%@include file="commons/links.jsp" %>
 </head>
 <body class="signin">
 <section>
@@ -27,19 +27,19 @@
 				</ul>
 				<div class="mb20">
 				</div>
-				<strong>Not a member? <a href="signup.html">Sign Up</a></strong>
+				<strong>Not a member? <a href="register.jsp">Sign Up</a></strong>
 			</div>
 			<!-- signin0-info -->
 		</div>
 		<!-- col-sm-7 -->
 		<div class="col-md-5">
-			<form id="loginForm" method="post" action="index.html">
+			<form id="loginForm" method="post" action="<%=request.getContextPath()%>/user/validLogin">
 				<h4 class="nomargin">Sign In</h4>
 				<p class="mt5 mb20">
 					Login to access your account.
 				</p>
-				<input type="text" class="form-control uname" name="uname" placeholder="Username"/>
-				<input type="password" class="form-control pword" name="pword" placeholder="Password"/>
+				<input type="text" class="form-control" name="email" placeholder="Email"/>
+				<input type="password" class="form-control" name="password" placeholder="Password"/>
 				<a href=""><small>Forgot Your Password?</small></a>
 				<button class="btn btn-success btn-block">Sign In</button>
 			</form>
@@ -59,40 +59,25 @@
 <%@include file="commons/validate.jsp" %>
 <script>
     jQuery(document).ready(function(){
-        // Please do not use the code below
-        // This is for demo purposes only
-        var c = jQuery.cookie('change-skin');
-        if (c && c == 'greyjoy') {
-            jQuery('.btn-success').addClass('btn-orange').removeClass('btn-success');
-        } else if(c && c == 'dodgerblue') {
-            jQuery('.btn-success').addClass('btn-primary').removeClass('btn-success');
-        } else if (c && c == 'katniss') {
-            jQuery('.btn-success').addClass('btn-primary').removeClass('btn-success');
-        }
-        
-		jQuery("#loginForm").validate({
+		jQuery("form#loginForm").validate({
 			rules: {
-	            uname: {
-	                required: true
+	            email: {
+	                required: true,
+	                email: true
 	            },
-	            pword: {
+	            password: {
 	            	required: true
 	            }
 	        },
 	        messages: {
-	        	uname: {
-	                required: "请填写用户名"
+	        	email: {
+	                required: "请填写邮箱",
+	                email:'邮箱格式不正确'
 	            },
-	            pword: {
+	            password: {
 	            	required: "请填写密码"
 	            }
-	        },
-			highlight: function(element) {
-			  jQuery(element).closest('.form-group').removeClass('has-success').addClass('has-error');
-			},
-			success: function(element) {
-			  jQuery(element).closest('.form-group').removeClass('has-error');
-			}
+	        }
 		});
     });
 </script>

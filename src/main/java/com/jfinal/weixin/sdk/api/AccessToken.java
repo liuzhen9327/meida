@@ -26,10 +26,10 @@ public class AccessToken {
 		
 		try {
 			JSONObject map = JSONObject.parseObject(jsonStr);
-			access_token = (String)map.get("access_token");
-			expires_in = (Integer)map.get("expires_in");
-			errcode = (Integer)map.get("errcode");
-			errmsg = (String)map.get("errmsg");
+			access_token = map.getString("access_token");
+			expires_in = map.getInteger("expires_in");
+			errcode = map.getInteger("errcode");
+			errmsg = map.getString("errmsg");
 			
 			if (expires_in != null)
 				expiredTime = System.currentTimeMillis() + ((expires_in -5) * 1000);

@@ -1,13 +1,20 @@
+/**
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ */
+
 package com.jfinal.weixin.sdk.jfinal;
 
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.ext.interceptor.NotAction;
-import com.jfinal.kit.HttpKit;
 import com.jfinal.log.Logger;
 import com.jfinal.weixin.sdk.api.ApiConfig;
 import com.jfinal.weixin.sdk.api.ApiConfigKit;
-import com.jfinal.weixin.sdk.msg.InMsgParaser;
+import com.jfinal.kit.HttpKit;
+import com.jfinal.weixin.sdk.kit.MsgEncryptKit;
+import com.jfinal.weixin.sdk.msg.InMsgParser;
 import com.jfinal.weixin.sdk.msg.OutMsgXmlBuilder;
 import com.jfinal.weixin.sdk.msg.in.InImageMsg;
 import com.jfinal.weixin.sdk.msg.in.InLinkMsg;
@@ -20,6 +27,7 @@ import com.jfinal.weixin.sdk.msg.in.event.InFollowEvent;
 import com.jfinal.weixin.sdk.msg.in.event.InLocationEvent;
 import com.jfinal.weixin.sdk.msg.in.event.InMenuEvent;
 import com.jfinal.weixin.sdk.msg.in.event.InQrCodeEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InTemplateMsgEvent;
 import com.jfinal.weixin.sdk.msg.in.speech_recognition.InSpeechRecognitionResults;
 import com.jfinal.weixin.sdk.msg.out.OutMsg;
 import com.jfinal.weixin.sdk.msg.out.OutTextMsg;
@@ -39,11 +47,11 @@ public abstract class MsgController extends Controller {
 	 * weixin 公众号服务器调用唯一入口，即在开发者中心输入的 URL 必须要指向此 action
 	 */
 	@Before(MsgInterceptor.class)
-	public void listener() {
+	public void index() {
 		// 开发模式输出微信服务发送过来的  xml 消息
 		if (ApiConfigKit.isDevMode()) {
-			log.debug("接收消息:");
-			log.debug(getInMsgXml());
+			System.out.println("接收消息:");
+			System.out.println(getInMsgXml());
 		}
 		
 		// 解析消息并根据消息类型分发到相应的处理方法
@@ -70,6 +78,8 @@ public abstract class MsgController extends Controller {
 			processInMenuEvent((InMenuEvent)msg);
 		else if (msg instanceof InSpeechRecognitionResults)
 			processInSpeechRecognitionResults((InSpeechRecognitionResults)msg);
+		else if (msg instanceof InTemplateMsgEvent)
+			processInTemplateMsgEvent((InTemplateMsgEvent)msg);
 		else
 			log.error("未能识别的消息类型。 消息 xml 内容为：\n" + getInMsgXml());
 	}
@@ -81,15 +91,15 @@ public abstract class MsgController extends Controller {
 		String outMsgXml = OutMsgXmlBuilder.build(outMsg);
 		// 开发模式向控制台输出即将发送的 OutMsg 消息的 xml 内容
 		if (ApiConfigKit.isDevMode()) {
-			log.debug("发送消息:");
-			log.debug(outMsgXml);
-			log.debug("--------------------------------------------------------------------------------\n");
+			System.out.println("发送消息:");
+			System.out.println(outMsgXml);
+			System.out.println("--------------------------------------------------------------------------------\n");
 		}
 		
 		// 是否需要加密消息
-//		if (ApiConfigKit.getApiConfig().isEncryptMessage()) {
-//			outMsgXml = MsgEncryptKit.encrypt(outMsgXml, getPara("timestamp"), getPara("nonce"));
-//		}
+		if (ApiConfigKit.getApiConfig().isEncryptMessage()) {
+			outMsgXml = MsgEncryptKit.encrypt(outMsgXml, getPara("timestamp"), getPara("nonce"));
+		}
 		
 		renderText(outMsgXml, "text/xml");
 	}
@@ -106,9 +116,9 @@ public abstract class MsgController extends Controller {
 			inMsgXml = HttpKit.readIncommingRequestData(getRequest());
 			
 			// 是否需要解密消息
-//			if (ApiConfigKit.getApiConfig().isEncryptMessage()) {
-//				inMsgXml = MsgEncryptKit.decrypt(inMsgXml, getPara("timestamp"), getPara("nonce"), getPara("msg_signature"));
-//			}
+			if (ApiConfigKit.getApiConfig().isEncryptMessage()) {
+				inMsgXml = MsgEncryptKit.decrypt(inMsgXml, getPara("timestamp"), getPara("nonce"), getPara("msg_signature"));
+			}
 		}
 		return inMsgXml;
 	}
@@ -116,7 +126,7 @@ public abstract class MsgController extends Controller {
 	@Before(NotAction.class)
 	public InMsg getInMsg() {
 		if (inMsg == null)
-			inMsg = InMsgParaser.parse(getInMsgXml()); 
+			inMsg = InMsgParser.parse(getInMsgXml()); 
 		return inMsg;
 	}
 	
@@ -152,6 +162,9 @@ public abstract class MsgController extends Controller {
 	
 	// 处理接收到的语音识别结果
 	protected abstract void processInSpeechRecognitionResults(InSpeechRecognitionResults inSpeechRecognitionResults);
+	
+	// 处理接收到的模板消息是否送达成功通知事件
+	protected abstract void processInTemplateMsgEvent(InTemplateMsgEvent inTemplateMsgEvent);
 }
 
 

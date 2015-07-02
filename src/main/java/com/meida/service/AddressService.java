@@ -32,11 +32,11 @@ public class AddressService {
 		CacheKit.remove(CACHE_NAME, ownerId);
 	}
 
-	public List<Address> list(Long ownerId) {
+	public List<Address> list(final Long ownerId) {
 		return CacheKit.get(CACHE_NAME, ownerId,
 				new IDataLoader() {
 					public Object load() {
-						return Address.dao.find("select * from blog");
+						return Address.dao.find("select * from " + Address.TABLE_NAME + " where ownerId=?", ownerId);
 					}
 				});
 	}

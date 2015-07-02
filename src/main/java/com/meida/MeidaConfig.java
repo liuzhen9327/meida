@@ -46,10 +46,10 @@ public class MeidaConfig extends JFinalConfig {
 		me.setViewType(ViewType.JSP);
 		me.setBaseViewPath("/WEB-INF/views/");
 
-		me.setError401View("commons/401.html");
-		me.setError403View("commons/403.html");
-		me.setError404View("commons/404.html");
-		me.setError500View("commons/500.html");
+		me.setError401View("/401.html");
+		me.setError403View("/403.html");
+		me.setError404View("/404.html");
+		me.setError500View("/500.html");
 	}
 
 	public void configRoute(Routes me) {

@@ -1,6 +1,7 @@
 package com.meida.model;
 
 import com.jfinal.plugin.activerecord.Model;
+import com.jfinal.plugin.ehcache.CacheKit;
 
 /**
  * 
@@ -24,4 +25,19 @@ CREATE TABLE `tb_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	 */
 	public static final User dao = new User();
+	
+	public static final String 
+			TABLE_NAME = "tb_user",
+			CACHE_NAME = "user",
+			CACHE_KEY_START = "user_";
+	
+	/**
+	 * 获取缓存
+	 * @param ids
+	 * @return
+	 */
+	public User cacheGet(String ids){
+		User user = CacheKit.get(CACHE_NAME, CACHE_KEY_START + ids);
+		return user;
+	}
 }

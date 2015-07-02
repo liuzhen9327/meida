@@ -1,10 +1,5 @@
 package com.jfinal.weixin.demo;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
 import com.jfinal.kit.PropKit;
 import com.jfinal.weixin.sdk.api.ApiConfig;
 import com.jfinal.weixin.sdk.api.ApiResult;
@@ -54,14 +49,14 @@ public class WechatApiController extends ApiController {
 	}
 	
 	public void createMenu(){
-		File file = new File("/Users/admin/Desktop/Issue.txt");
-		try {
-			String result = MenuApi.createMenu(FileUtils.readFileToString(file)).toString();
-			renderText(result);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		File file = new File("/Users/admin/Desktop/Issue.txt");
+//		try {
+//			String result = MenuApi.createMenu(FileUtils.readFileToString(file)).toString();
+//			renderText(result);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	/**

@@ -19,6 +19,7 @@ import com.jfinal.weixin.sdk.msg.in.event.InFollowEvent;
 import com.jfinal.weixin.sdk.msg.in.event.InLocationEvent;
 import com.jfinal.weixin.sdk.msg.in.event.InMenuEvent;
 import com.jfinal.weixin.sdk.msg.in.event.InQrCodeEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InTemplateMsgEvent;
 import com.jfinal.weixin.sdk.msg.in.speech_recognition.InSpeechRecognitionResults;
 import com.jfinal.weixin.sdk.msg.out.OutImageMsg;
 import com.jfinal.weixin.sdk.msg.out.OutMusicMsg;
@@ -204,6 +205,13 @@ public class WechatMsgController extends MsgController {
 	 */
 	protected void processInSpeechRecognitionResults(InSpeechRecognitionResults inSpeechRecognitionResults) {
 		renderOutTextMsg("语音识别结果： " + inSpeechRecognitionResults.getRecognition());
+	}
+
+	@Override
+	protected void processInTemplateMsgEvent(
+			InTemplateMsgEvent inTemplateMsgEvent) {
+		String status = inTemplateMsgEvent.getStatus();
+		renderOutTextMsg("模板消息是否接收成功：" + status);
 	}
 }
 

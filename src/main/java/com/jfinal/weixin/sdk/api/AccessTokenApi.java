@@ -6,8 +6,8 @@
 
 package com.jfinal.weixin.sdk.api;
 
-import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.jfinal.kit.HttpKit;
 import com.jfinal.weixin.sdk.kit.ParaMap;
@@ -21,24 +21,29 @@ public class AccessTokenApi {
 	// "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
 	private static String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential";
 	
-	private static AccessToken accessToken;
+	// 利用 appId 与 accessToken 建立关联，支持多账户
+	private static Map<String, AccessToken> map = new ConcurrentHashMap<String, AccessToken>();	// private static AccessToken accessToken;
 	
+	/**
+	 * 从缓存中获取 access token，如果未取到或者 access token 不可用则先更新再获取
+	 */
 	public static AccessToken getAccessToken() {
-		if (accessToken != null && accessToken.isAvailable())
-			return accessToken;
+		String appId = ApiConfigKit.getApiConfig().getAppId();
+		AccessToken result = map.get(appId);
+		if (result != null && result.isAvailable())
+			return result;
 		
 		refreshAccessToken();
-		return accessToken;
+		return map.get(appId);
 	}
 	
-	public static void refreshAccessToken() {
-		accessToken = requestAccessToken();
-	}
-	
-	private static synchronized AccessToken requestAccessToken() {
-		AccessToken result = null;
+	/**
+	 * 强制更新 access token 值
+	 */
+	public static synchronized void refreshAccessToken() {
 		ApiConfig ac = ApiConfigKit.getApiConfig();
-		for (int i=0; i<3; i++) {
+		AccessToken result = null;
+		for (int i=0; i<3; i++) {	// 最多三次请求
 			String appId = ac.getAppId();
 			String appSecret = ac.getAppSecret();
 			Map<String, String> queryParas = ParaMap.create("appid", appId).put("secret", appSecret).getData();
@@ -48,10 +53,12 @@ public class AccessTokenApi {
 			if (result.isAvailable())
 				break;
 		}
-		return result;
+		
+		// 三次请求如果仍然返回了不可用的 access token 仍然 put 进去，便于上层通过 AccessToken 中的属性判断底层的情况
+		map.put(ac.getAppId(), result);
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args)  {
 		ApiConfig ac = new ApiConfig();
 		ac.setAppId("wx9803d1188fa5fbda");
 		ac.setAppSecret("db859c968763c582794e7c3d003c3d87");

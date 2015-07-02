@@ -26,7 +26,7 @@
     </defaultCache>
     
     <!-- 存放用户登录信息，过期时间 3600秒，用ehache替换session功能 -->
-    <cache name="session"
+    <cache name="user"
            maxElementsInMemory="10000"
            maxElementsOnDisk="100000"
            eternal="false"
