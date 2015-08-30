@@ -154,24 +154,20 @@ public class InMsgParser {
 		
 		// 关注/取消关注事件（包括二维码扫描关注，二维码扫描关注事件与扫描带参数二维码事件是两回事）
 		if (("subscribe".equals(event) || "unsubscribe".equals(event)) && StrKit.isBlank(eventKey)) {
-			InFollowEvent e = new InFollowEvent(toUserName, fromUserName, createTime, msgType);
-			e.setEvent(event);
-			return e;
+			return new InFollowEvent(toUserName, fromUserName, createTime, msgType, event);
 		}
 		
 		// 扫描带参数二维码事件之一		1: 用户未关注时，进行关注后的事件推送
 		String ticket = XmlKit.getElementText(root, "Ticket");
 		if ("subscribe".equals(event) && StrKit.notBlank(eventKey) && eventKey.startsWith("qrscene_")) {
-			InQrCodeEvent e = new InQrCodeEvent(toUserName, fromUserName, createTime, msgType);
-			e.setEvent(event);
+			InQrCodeEvent e = new InQrCodeEvent(toUserName, fromUserName, createTime, msgType, event);
 			e.setEventKey(eventKey);
 			e.setTicket(ticket);
 			return e;
 		}
 		// 扫描带参数二维码事件之二		2: 用户已关注时的事件推送
 		if ("SCAN".equals(event)) {
-			InQrCodeEvent e = new InQrCodeEvent(toUserName, fromUserName, createTime, msgType);
-			e.setEvent(event);
+			InQrCodeEvent e = new InQrCodeEvent(toUserName, fromUserName, createTime, msgType, event);
 			e.setEventKey(eventKey);
 			e.setTicket(ticket);
 			return e;
@@ -179,8 +175,7 @@ public class InMsgParser {
 		
 		// 上报地理位置事件
 		if ("LOCATION".equals(event)) {
-			InLocationEvent e = new InLocationEvent(toUserName, fromUserName, createTime, msgType);
-			e.setEvent(event);
+			InLocationEvent e = new InLocationEvent(toUserName, fromUserName, createTime, msgType, event);
 			e.setLatitude(XmlKit.getElementText(root, "Latitude"));
 			e.setLongitude(XmlKit.getElementText(root, "Longitude"));
 			e.setPrecision(XmlKit.getElementText(root, "Precision"));

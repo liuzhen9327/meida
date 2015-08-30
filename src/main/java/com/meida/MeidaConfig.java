@@ -11,7 +11,6 @@ import com.jfinal.config.Routes;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.activerecord.cache.EhCache;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
-import com.jfinal.plugin.ehcache.EhCachePlugin;
 import com.jfinal.render.ViewType;
 import com.jfinal.weixin.demo.WechatApiController;
 import com.jfinal.weixin.sdk.api.ApiConfigKit;
@@ -34,7 +33,7 @@ public class MeidaConfig extends JFinalConfig {
 			return loadPropertyFile(dev);
 		}
 	}
-
+	
 	public void configConstant(Constants me) {
 		// 如果生产环境配置文件存在，则优先加载该配置，否则加载开发环境配置文件
 		loadProp("config_pro.properties", "config.properties");
@@ -53,7 +52,7 @@ public class MeidaConfig extends JFinalConfig {
 	}
 
 	public void configRoute(Routes me) {
-		me.add("/ajax/wechat", WechatMsgController.class);
+		me.add("/wechat", WechatMsgController.class);
 		me.add("/api", WechatApiController.class, "/api");
 		
 		me.add("/address", AddressController.class);
@@ -65,8 +64,8 @@ public class MeidaConfig extends JFinalConfig {
 				getProperty("user"), getProperty("password").trim());
 		me.add(c3p0Plugin);
 
-		EhCachePlugin ecp = new EhCachePlugin();
-		me.add(ecp);
+//		EhCachePlugin ecp = new EhCachePlugin();
+//		me.add(ecp);
 		
 		ActiveRecordPlugin arpMysql = new ActiveRecordPlugin("mysql", c3p0Plugin);
 		me.add(arpMysql);

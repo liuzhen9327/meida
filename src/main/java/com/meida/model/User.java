@@ -16,7 +16,7 @@ public class User extends Model<User>{
 	 * DROP TABLE IF EXISTS `tb_user`;
 CREATE TABLE `tb_user` (
   `id` bigint(20) NOT NULL,
-  `username` varchar(20) NOT NULL,
+  `email` varchar(20) NOT NULL,
   `password` varchar(20) NOT NULL,
   `openId` varchar(50) ,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -25,6 +25,8 @@ CREATE TABLE `tb_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	 */
 	public static final User dao = new User();
+	
+	public static final String byEmail = "select * from " + User.TABLE_NAME + " where email=?";
 	
 	public static final String 
 			TABLE_NAME = "tb_user",
@@ -36,8 +38,8 @@ CREATE TABLE `tb_user` (
 	 * @param ids
 	 * @return
 	 */
-	public User cacheGet(String ids){
-		User user = CacheKit.get(CACHE_NAME, CACHE_KEY_START + ids);
-		return user;
-	}
+//	public User cacheGet(String ids){
+//		User user = CacheKit.get(CACHE_NAME, CACHE_KEY_START + ids);
+//		return user;
+//	}
 }

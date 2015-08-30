@@ -1,3 +1,5 @@
+create DATABASE meida;
+use meida;
 
 DROP TABLE IF EXISTS `tb_address`;
 CREATE TABLE `tb_address` (
@@ -15,8 +17,9 @@ DROP TABLE IF EXISTS `tb_user`;
 CREATE TABLE `tb_user` (
   `id` bigint(20) NOT NULL,
   `email` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL,
-  `openId` varchar(50) ,
+  `password` varchar(128) NOT NULL,
+  `status` int DEFAULT 0,
+  `openId` varchar(50),
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updateTime` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`)

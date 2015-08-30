@@ -9,14 +9,14 @@ package com.jfinal.weixin.sdk.api;
 import com.jfinal.kit.HttpKit;
 
 /**
- * 生成带参数的二维码 API
- * https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=TOKEN
+ * 将一条长链接转成短链接 API
+ * https://api.weixin.qq.com/cgi-bin/shorturl?access_token=ACCESS_TOKEN
  */
-public class QrcodeApi
+public class ShorturlApi
 {
-	private static String apiUrl = "https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=";
+	private static String apiUrl = "https://api.weixin.qq.com/cgi-bin/shorturl?access_token=";
 
-	public static ApiResult create(String jsonStr) {
+	public static ApiResult getShorturl(String jsonStr) {
 		String jsonResult = HttpKit.post(apiUrl + AccessTokenApi.getAccessToken().getAccessToken(), jsonStr);
 		return new ApiResult(jsonResult);
 	}
