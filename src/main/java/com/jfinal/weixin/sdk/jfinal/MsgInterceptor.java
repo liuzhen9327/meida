@@ -11,7 +11,6 @@ import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 import com.jfinal.log.Logger;
-import com.jfinal.weixin.sdk.api.ApiConfigKit;
 import com.jfinal.weixin.sdk.kit.SignatureCheckKit;
 
 /**
@@ -31,9 +30,9 @@ public class MsgInterceptor implements Interceptor {
 		if (controller instanceof MsgController == false)
 			throw new RuntimeException("控制器需要继承 MsgController");
 		
-		try {
+//		try {
 			// 将 ApiConfig 对象与当前线程绑定，以便在后续操作中方便获取该对象： ApiConfigKit.getApiConfig();
-			ApiConfigKit.setThreadLocalApiConfig(((MsgController)controller).getApiConfig());
+//			ApiConfigKit.setThreadLocalApiConfig(((MsgController)controller).getApiConfig());
 			
 			// 如果是服务器配置请求，则配置服务器并返回
 			if (isConfigServerRequest(controller)) {
@@ -48,10 +47,10 @@ public class MsgInterceptor implements Interceptor {
 			else {
 				controller.renderText("签名验证失败，请确定是微信服务器在发送消息过来");
 			}
-		}
-		finally {
-			ApiConfigKit.removeThreadLocalApiConfig();
-		}
+//		}
+//		finally {
+//			ApiConfigKit.removeThreadLocalApiConfig();
+//		}
 	}
 	
 	/**

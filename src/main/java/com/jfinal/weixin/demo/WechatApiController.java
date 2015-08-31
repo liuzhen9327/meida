@@ -1,32 +1,47 @@
 package com.jfinal.weixin.demo;
 
-import com.jfinal.kit.PropKit;
-import com.jfinal.weixin.sdk.api.*;
-import com.jfinal.weixin.sdk.jfinal.ApiController;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class WechatApiController extends ApiController {
+import org.apache.commons.lang.StringUtils;
+
+import com.alibaba.fastjson.JSONObject;
+import com.jfinal.core.Controller;
+import com.jfinal.kit.PropKit;
+import com.jfinal.weixin.sdk.api.ApiResult;
+import com.jfinal.weixin.sdk.api.CallbackIpApi;
+import com.jfinal.weixin.sdk.api.CustomServiceApi;
+import com.jfinal.weixin.sdk.api.MenuApi;
+import com.jfinal.weixin.sdk.api.QrcodeApi;
+import com.jfinal.weixin.sdk.api.ShorturlApi;
+import com.jfinal.weixin.sdk.api.TemplateMsgApi;
+import com.jfinal.weixin.sdk.api.UserApi;
+
+public class WechatApiController extends Controller {
 	
 	/**
 	 * 如果要支持多公众账号，只需要在此返回各个公众号对应的  ApiConfig 对象即可
 	 * 可以通过在请求 url 中挂参数来动态从数据库中获取 ApiConfig 属性值
 	 */
-	public ApiConfig getApiConfig() {
-		ApiConfig ac = new ApiConfig();
-		
-		// 配置微信 API 相关常量
-		ac.setToken(PropKit.get("token"));
-		ac.setAppId(PropKit.get("appId"));
-		ac.setAppSecret(PropKit.get("appSecret"));
-		
-		/**
-		 *  是否对消息进行加密，对应于微信平台的消息加解密方式：
-		 *  1：true进行加密且必须配置 encodingAesKey
-		 *  2：false采用明文模式，同时也支持混合模式
-		 */
-		ac.setEncryptMessage(PropKit.getBoolean("encryptMessage", false));
-		ac.setEncodingAesKey(PropKit.get("encodingAesKey", "setting it in config file"));
-		return ac;
-	}
+//	public ApiConfig getApiConfig() {
+//		ApiConfig ac = new ApiConfig();
+//		
+//		// 配置微信 API 相关常量
+//		ac.setToken(PropKit.get("token"));
+//		ac.setAppId(PropKit.get("appId"));
+//		ac.setAppSecret(PropKit.get("appSecret"));
+//		
+//		/**
+//		 *  是否对消息进行加密，对应于微信平台的消息加解密方式：
+//		 *  1：true进行加密且必须配置 encodingAesKey
+//		 *  2：false采用明文模式，同时也支持混合模式
+//		 */
+//		ac.setEncryptMessage(PropKit.getBoolean("encryptMessage", false));
+//		ac.setEncodingAesKey(PropKit.get("encodingAesKey", "setting it in config file"));
+//		return ac;
+//	}
 
 	/**
 	 * 获取公众号菜单
@@ -44,27 +59,66 @@ public class WechatApiController extends ApiController {
 	 */
 	public void createMenu()
 	{
-		String prefix = PropKit.get("url.prefix");
-		String str = "{\n" +
-				"    \"button\": [\n" +
-				"        {\n" +
-				"            \"name\": \"进入美达\",\n" +
-				"            \"url\": \""+prefix + "/"+"\",\n" +
-				"            \"type\": \"view\"\n" +
-				"        },\n" +
-				"        {\n" +
-				"            \"name\": \"安全保障\",\n" +
-				"            \"key\": \"112\",\n" +
-				"\t    \"type\": \"click\"\n" +
-				"        },\n" +
-				"        {\n" +
-				"\t    \"name\": \"使用帮助\",\n" +
-				"\t    \"url\": \"http://m.bajie8.com/footer/cjwt\",\n" +
-				"\t    \"type\": \"view\"\n" +
-				"        }\n" +
-				"    ]\n" +
-				"}";
-		ApiResult apiResult = MenuApi.createMenu(str);
+//		String str = "{\n" +
+//				"    \"button\": [\n" +
+//				"        {\n" +
+//				"            \"name\": \"进入美达\",\n" +
+//				"            \"url\": \""+prefix + "/"+"\",\n" +
+//				"            \"type\": \"view\"\n" +
+//				"        },\n" +
+//				"        {\n" +
+//				"            \"name\": \"安全保障\",\n" +
+//				"            \"key\": \"112\",\n" +
+//				"\t    \"type\": \"click\"\n" +
+//				"        },\n" +
+//				"        {\n" +
+//				"\t    \"name\": \"使用帮助\",\n" +
+//				"\t    \"url\": \"http://m.bajie8.com/footer/cjwt\",\n" +
+//				"\t    \"type\": \"view\"\n" +
+//				"        }\n" +
+//				"    ]\n" +
+//				"}";
+		String  urlPrefix = PropKit.get("url.prefix"),
+				baseRedirect = PropKit.get("url.redirect.base"),
+				appId = PropKit.get("appId"),
+				registerUrl = PropKit.get("url.register"),
+				loginUrl = PropKit.get("url.login");
+		List<Map<String, Object>> buttonList = new ArrayList<Map<String, Object>>();
+		
+		Map<String, Object> button1 = new HashMap<String, Object>();
+		button1.put("name", "测试按钮1");
+		button1.put("type", "click");
+		button1.put("key", "V1001_TODAY_MUSIC");
+		buttonList.add(button1);
+		Map<String, Object> button2 = new HashMap<String, Object>();
+		button2.put("name", "测试按钮2");
+		button2.put("type", "click");
+		button2.put("key", "V1002_TODAY_MUSIC");
+		buttonList.add(button2);
+		Map<String, Object> button3 = new HashMap<String, Object>();
+		button3.put("name", "美达");
+		List<Map<String, Object>> subButtonList3 = new ArrayList<Map<String, Object>>();
+		
+		Map<String, Object> subButton4 = new HashMap<String, Object>();
+		subButton4.put("type", "view");
+		subButton4.put("name", "注册");
+		subButton4.put("url", StringUtils.replaceEach(baseRedirect, new String[] { "${appId}", "${redirectURI}" },
+				new String[] { appId, StringUtils.replace(registerUrl, "${prefix}", urlPrefix) }));
+		Map<String, Object> subButton5 = new HashMap<String, Object>();
+		subButton5.put("type", "view");
+		subButton5.put("name", "登录");
+		subButton5.put("url", StringUtils.replaceEach(baseRedirect, new String[] { "${appId}", "${redirectURI}" },
+				new String[] { appId, StringUtils.replace(loginUrl, "${prefix}", urlPrefix) }));
+		subButtonList3.add(subButton4);
+		subButtonList3.add(subButton5);
+		button3.put("sub_button", subButtonList3);
+		buttonList.add(button3);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("button", buttonList);
+		String reqContent = jsonObj.toJSONString();
+		
+		System.out.println(reqContent);
+		ApiResult apiResult = MenuApi.createMenu(reqContent);
 		if (apiResult.isSucceed())
 			renderText(apiResult.getJson());
 		else

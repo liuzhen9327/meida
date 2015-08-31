@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -26,6 +27,7 @@ public class XmlKit {
 	}
 
 	public static String getElementText(Element element, String tagName) {
-		return element.getElementsByTagName(tagName).item(0).getTextContent();
+		Node node = element.getElementsByTagName(tagName).item(0);
+		return node == null ? "" : node.getTextContent();
 	}
 }

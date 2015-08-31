@@ -15,6 +15,7 @@ import com.jfinal.render.ViewType;
 import com.jfinal.weixin.demo.WechatApiController;
 import com.jfinal.weixin.sdk.api.ApiConfigKit;
 import com.meida.controller.AddressController;
+import com.meida.controller.RedirectController;
 import com.meida.controller.UserController;
 import com.meida.controller.WechatMsgController;
 import com.meida.model.Address;
@@ -38,7 +39,7 @@ public class MeidaConfig extends JFinalConfig {
 		// 如果生产环境配置文件存在，则优先加载该配置，否则加载开发环境配置文件
 		loadProp("config_pro.properties", "config.properties");
 		me.setDevMode(getPropertyToBoolean("devMode", true));
-
+		Constant.init();
 		// ApiConfigKit 设为开发模式可以在开发阶段输出请求交互的 xml 与 json 数据
 		ApiConfigKit.setDevMode(me.getDevMode());
 
@@ -54,6 +55,8 @@ public class MeidaConfig extends JFinalConfig {
 	public void configRoute(Routes me) {
 		me.add("/wechat", WechatMsgController.class);
 		me.add("/api", WechatApiController.class, "/api");
+		
+		me.add("/redirect", RedirectController.class);
 		
 		me.add("/address", AddressController.class);
 		me.add("/user", UserController.class);

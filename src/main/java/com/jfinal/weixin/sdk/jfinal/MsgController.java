@@ -9,15 +9,27 @@ package com.jfinal.weixin.sdk.jfinal;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.ext.interceptor.NotAction;
-import com.jfinal.log.Logger;
-import com.jfinal.weixin.sdk.api.ApiConfig;
-import com.jfinal.weixin.sdk.api.ApiConfigKit;
 import com.jfinal.kit.HttpKit;
+import com.jfinal.log.Logger;
+import com.jfinal.weixin.sdk.api.ApiConfigKit;
 import com.jfinal.weixin.sdk.kit.MsgEncryptKit;
 import com.jfinal.weixin.sdk.msg.InMsgParser;
 import com.jfinal.weixin.sdk.msg.OutMsgXmlBuilder;
-import com.jfinal.weixin.sdk.msg.in.*;
-import com.jfinal.weixin.sdk.msg.in.event.*;
+import com.jfinal.weixin.sdk.msg.in.InImageMsg;
+import com.jfinal.weixin.sdk.msg.in.InLinkMsg;
+import com.jfinal.weixin.sdk.msg.in.InLocationMsg;
+import com.jfinal.weixin.sdk.msg.in.InMsg;
+import com.jfinal.weixin.sdk.msg.in.InShortVideoMsg;
+import com.jfinal.weixin.sdk.msg.in.InTextMsg;
+import com.jfinal.weixin.sdk.msg.in.InVideoMsg;
+import com.jfinal.weixin.sdk.msg.in.InVoiceMsg;
+import com.jfinal.weixin.sdk.msg.in.event.InCustomEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InFollowEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InLocationEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InMassEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InMenuEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InQrCodeEvent;
+import com.jfinal.weixin.sdk.msg.in.event.InTemplateMsgEvent;
 import com.jfinal.weixin.sdk.msg.in.speech_recognition.InSpeechRecognitionResults;
 import com.jfinal.weixin.sdk.msg.out.OutMsg;
 import com.jfinal.weixin.sdk.msg.out.OutTextMsg;
@@ -31,7 +43,7 @@ public abstract class MsgController extends Controller {
 	private String inMsgXml = null;		// 本次请求 xml数据
 	private InMsg inMsg = null;			// 本次请求 xml 解析后的 InMsg 对象
 	
-	public abstract ApiConfig getApiConfig();
+//	public abstract ApiConfig getApiConfig();
 	
 	/**
 	 * weixin 公众号服务器调用唯一入口，即在开发者中心输入的 URL 必须要指向此 action

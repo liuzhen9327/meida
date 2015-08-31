@@ -1,7 +1,6 @@
 package com.meida.model;
 
 import com.jfinal.plugin.activerecord.Model;
-import com.jfinal.plugin.ehcache.CacheKit;
 
 /**
  * 
@@ -26,7 +25,8 @@ CREATE TABLE `tb_user` (
 	 */
 	public static final User dao = new User();
 	
-	public static final String byEmail = "select * from " + User.TABLE_NAME + " where email=?";
+	public static final String  byEmail = "select * from " + User.TABLE_NAME + " where email=?",
+								byId = "select * from " + User.TABLE_NAME + " where id=?";
 	
 	public static final String 
 			TABLE_NAME = "tb_user",

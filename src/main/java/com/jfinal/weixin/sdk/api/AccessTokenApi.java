@@ -62,7 +62,7 @@ public class AccessTokenApi {
 		ApiConfig ac = new ApiConfig();
 		ac.setAppId("wx9803d1188fa5fbda");
 		ac.setAppSecret("db859c968763c582794e7c3d003c3d87");
-		ApiConfigKit.setThreadLocalApiConfig(ac);
+//		ApiConfigKit.setThreadLocalApiConfig(ac);
 		
 		AccessToken at = getAccessToken();
 		if (at.isAvailable())

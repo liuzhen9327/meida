@@ -12,10 +12,6 @@ import com.meida.service.UserService;
  */
 public class UserController extends Controller{
 
-	public void tologin() {
-		renderJsp("/login.jsp");
-	}
-	
 	public void login() {
 		String username = getPara("email");
 		String password = getPara("password");
@@ -25,13 +21,6 @@ public class UserController extends Controller{
 	public void emailExists() {
 		String email = getPara("email");
 		
-	}
-	
-	public void toRegister() {
-		String code = getPara("code");
-		String openId = OpenIdApi.getOpenId(code);
-		setAttr("openId", openId);
-		renderJsp("/register.jsp");
 	}
 	
 	public void register() {

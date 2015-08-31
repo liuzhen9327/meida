@@ -54,6 +54,7 @@ public class AccessToken {
 	}
 	
 	public String getAccessToken() {
+		System.out.println("access_token: "+ access_token);
 		return access_token;
 	}
 	

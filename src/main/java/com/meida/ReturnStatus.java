@@ -8,9 +8,19 @@ package com.meida;
 public class ReturnStatus {
 
 	/*login begin*/
-	public static final int ACCOUNT_NOT_EXISTS = 0;
-	public static final int PASSWORD_ERROR = 1;
-	public static final int LOGIN_SUCCESS = 2;
+	public static final int ACCOUNT_NOT_EXISTS = -1,
+							PASSWORD_ERROR = 0,
+							LOGIN_SUCCESS = 1;
 	/*login end*/
 	
+	/*register begin*/
+	public static final int EMAIL_EXISTS = -1,
+							WAITING_ACTIVE = 0;
+	/*register end*/
+	
+	/*activeAccount begin*/
+	public static final int ACTIVE_ERROR = -1,
+							ACCOUNT_SUCCESSED = 0,
+							ACTIVE_SUCCESS = 1;
+	/*activeAccount end*/
 }
