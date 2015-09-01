@@ -26,7 +26,8 @@ CREATE TABLE `tb_user` (
 	public static final User dao = new User();
 	
 	public static final String  byEmail = "select * from " + User.TABLE_NAME + " where email=?",
-								byId = "select * from " + User.TABLE_NAME + " where id=?";
+								byId = "select * from " + User.TABLE_NAME + " where id=?",
+								byOpenId = "select * from " + User.TABLE_NAME + " where openId=?";
 	
 	public static final String 
 			TABLE_NAME = "tb_user",

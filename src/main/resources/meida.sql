@@ -12,6 +12,8 @@ CREATE TABLE `tb_user` (
   `updateTime` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE `tb_user` ADD UNIQUE (`email`);
+ALTER TABLE `tb_user` ADD UNIQUE (`openId`);
 
 DROP TABLE IF EXISTS `tb_address`;
 CREATE TABLE `tb_address` (

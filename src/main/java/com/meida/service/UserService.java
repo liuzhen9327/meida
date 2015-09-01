@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.mail.MessagingException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 
 import com.jfinal.kit.HashKit;
 import com.jfinal.plugin.ehcache.CacheKit;
@@ -22,8 +23,12 @@ import com.meida.utils.EmailUtils;
  */
 public class UserService {
 
-	private static String CACHE_NAME = "user";
-	
+	/**
+	 * 登录不需要openId，只有网页版需要login方法，微信端用openIdExists()
+	 * @param email
+	 * @param password
+	 * @return
+	 */
 	public static int login(String email, String password) {
 		User user = getUserByEmail(email);
 		if(user == null) return ReturnStatus.ACCOUNT_NOT_EXISTS;
@@ -32,22 +37,28 @@ public class UserService {
 			return ReturnStatus.PASSWORD_ERROR;
 		return ReturnStatus.LOGIN_SUCCESS;
 	}
-	public static void main(String[] args) {
-		System.out.println(new String(Base64.encodeBase64("1_350995931@qq.com".getBytes())));
-		System.out.println(new String(Base64.decodeBase64("MV8zNTA5OTU5MzFAcXEuY29t")));
-	}
+//	public static void main(String[] args) {
+//		System.out.println(new String(Base64.encodeBase64("1_350995931@qq.com".getBytes())));
+//		System.out.println(new String(Base64.decodeBase64("MV8zNTA5OTU5MzFAcXEuY29t")));
+//	}
+	
 	public static int register(String email, String password, String openId) {
 		if(emailExists(email)) return ReturnStatus.EMAIL_EXISTS;
-		User user = new User().set("status", 0)
-			.set("email", email).set("password", password)
+		if(StringUtils.isNotEmpty(openId)){
+			//TODO && openIdexists && status == 0 
+		}
+		User user = new User()
+			.set("email", email).set("status", 0)
 			.set("openId", openId).set("updateTime", new Date());
-		if(user.save())
+		if(user.save()) {
+			user.keep("id").set("password", HashKit.sha512(password + user.getLong("id"))).update();
 			try {
 				EmailUtils.sendMail(email, Constant.URL_PREFIX + "/user/activeAccount/" + new String(Base64.encodeBase64((user.get("id")+"_"+email).getBytes())));
 			} catch (MessagingException e) {
 				e.printStackTrace();
+				return ReturnStatus.SEND_EMAIL_ERROR;
 			}
-		//TODO
+		}
 		return ReturnStatus.WAITING_ACTIVE;
 	}
 	
@@ -55,32 +66,50 @@ public class UserService {
 		String decodeStr = new String(Base64.decodeBase64(base64Str));
 		String[] array = decodeStr.split("_");
 		if(array.length != 2) return ReturnStatus.ACTIVE_ERROR;
-		User selectUser = User.dao.findFirst(User.byId, array[0]);
-		//用户不存在
-		if(selectUser == null) return ReturnStatus.ACTIVE_ERROR;
+		User user = User.dao.findFirst(User.byId, array[0]);
+		//激活失败, 用户不存在
+		if(user == null) return ReturnStatus.ACTIVE_ERROR;
 		//已经被激活
-		if(selectUser.getInt("status") != 0) return ReturnStatus.ACCOUNT_SUCCESSED;
-		new User().set("status", 1).set("updateTime", new Date()).set("id", array[0]).update();
-		return ReturnStatus.ACTIVE_SUCCESS;
+		if(user.getInt("status") != 0) return ReturnStatus.ACCOUNT_SUCCESSED;
+		if(user.clear().set("status", 1).set("updateTime", new Date()).set("id", array[0]).update()){
+			//TODO login shuaxincache
+			return ReturnStatus.ACTIVE_SUCCESS;
+		}
+		return ReturnStatus.ACTIVE_ERROR;
 	}
 	
 	public static boolean emailExists(String email) {
-		User user = getUserByEmail(email);
-		return user != null;
+		return getUserByEmail(email) != null;
 	}
 	
-	public static User getUser(final String email, String password) {
-		return CacheKit.get(CACHE_NAME, email,
+	public static boolean openIdExists(String openId) {
+		return getUserByOpenId(openId) != null;
+	}
+	
+	public static User getUserByOpenId(final String openId) {
+		return CacheKit.get(User.CACHE_NAME, openId,
 				new IDataLoader() {
 					public Object load() {
-						return User.dao.find(User.byEmail, email);
+						return User.dao.findFirst(User.byOpenId, openId);
 					}
 				});
 	}
 	
-	private static User getUserByEmail(String email) {
-		Object cacheObject = CacheKit.get(CACHE_NAME, email);
-		if(cacheObject != null) return (User) cacheObject;
-		return User.dao.findFirst(User.byEmail, email);
+//	public static User getUser(final String email, String password) {
+//		return CacheKit.get(CACHE_NAME, email,
+//				new IDataLoader() {
+//					public Object load() {
+//						return User.dao.find(User.byEmail, email);
+//					}
+//				});
+//	}
+	
+	public static User getUserByEmail(final String email) {
+		return CacheKit.get(User.CACHE_NAME, email,
+				new IDataLoader() {
+					public Object load() {
+						return User.dao.findFirst(User.byEmail, email);
+					}
+				});
 	}
 }

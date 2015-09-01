@@ -1,7 +1,10 @@
 package com.meida.controller;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jfinal.core.Controller;
 import com.jfinal.weixin.sdk.api.OpenIdApi;
+import com.meida.ReturnStatus;
 import com.meida.service.UserService;
 
 /**
@@ -18,15 +21,22 @@ public class UserController extends Controller{
 		
 	}
 	
-	public void emailExists() {
-		String email = getPara("email");
-		
-	}
-	
 	public void register() {
 		String  email = getPara("email"),
 				password = getPara("password"),
 				openId = getPara("openId");
 		UserService.register(email, password, openId);
+	}
+	
+	public void activeAccount() {
+		String base64Str = getPara();
+		System.out.println("base64Str: "+base64Str);
+		if(StringUtils.isEmpty(base64Str)) renderError(500);
+		int returnStatus = UserService.activeAccount(base64Str);
+		if(returnStatus == ReturnStatus.ACTIVE_SUCCESS) {
+//			setSessionAttr(key, value)
+		}
+		System.out.println("returnStatus: " + returnStatus);
+//		forwardAction(actionUrl);
 	}
 }

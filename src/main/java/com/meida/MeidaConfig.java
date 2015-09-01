@@ -73,7 +73,7 @@ public class MeidaConfig extends JFinalConfig {
 		ActiveRecordPlugin arpMysql = new ActiveRecordPlugin("mysql", c3p0Plugin);
 		me.add(arpMysql);
 		arpMysql.setCache(new EhCache());
-		arpMysql.addMapping("tb_address", Address.class);
+		arpMysql.addMapping(Address.TABLE_NAME, Address.class);
 	}
 
 	public void configInterceptor(Interceptors me) {

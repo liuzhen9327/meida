@@ -15,7 +15,8 @@ public class ReturnStatus {
 	
 	/*register begin*/
 	public static final int EMAIL_EXISTS = -1,
-							WAITING_ACTIVE = 0;
+							SEND_EMAIL_ERROR = 0,
+							WAITING_ACTIVE = 1;
 	/*register end*/
 	
 	/*activeAccount begin*/
