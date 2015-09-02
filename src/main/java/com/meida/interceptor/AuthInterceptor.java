@@ -14,9 +14,8 @@ public class AuthInterceptor implements Interceptor{
 	@Override
 	public void intercept(Invocation inv) {
 		Controller controller = inv.getController();
-	    User loginUser = controller.getSessionAttr("loginUser");
-	    if (loginUser != null)
-	    	inv.invoke();
+	    User sessionUser = controller.getSessionAttr("user");
+	    if (sessionUser != null) inv.invoke();
 	    else {
 	    	String code = controller.getPara("code");
 	    	if(StringUtils.isEmpty(code)) {
@@ -28,13 +27,18 @@ public class AuthInterceptor implements Interceptor{
 	    	//if openid exists 
 	    	User user = UserService.getUserByOpenId(openId);
 	    	if(user == null) {
+	    		//去绑定邮箱
 	    		controller.redirect("/register.jsp");
 	    		return;
 	    	}
 	    	if(user.getInt("status") == 0) {
-	    		//TODO 去激活
+	    		//去激活
+	    		controller.redirect("/toActive.jsp");
+	    		return;
 	    	}
-//	    	
+	    	//如果已经绑定了账号 但是session中user是空
+	    	controller.setSessionAttr("user", user);
+	    	inv.invoke();
 	    }
 	      
 	}

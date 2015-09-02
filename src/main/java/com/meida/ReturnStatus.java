@@ -8,20 +8,20 @@ package com.meida;
 public class ReturnStatus {
 
 	/*login begin*/
-	public static final int ACCOUNT_NOT_EXISTS = -1,
-							PASSWORD_ERROR = 0,
-							LOGIN_SUCCESS = 1;
+	public static final int ACCOUNT_NOT_EXISTS = 0,
+							PASSWORD_ERROR = 1,
+							LOGIN_SUCCESS = 2;
 	/*login end*/
 	
 	/*register begin*/
-	public static final int EMAIL_EXISTS = -1,
-							SEND_EMAIL_ERROR = 0,
-							WAITING_ACTIVE = 1;
+	public static final int EMAIL_EXISTS = 3,
+							SEND_EMAIL_ERROR = 4,
+							WAITING_ACTIVE = 5;
 	/*register end*/
 	
 	/*activeAccount begin*/
-	public static final int ACTIVE_ERROR = -1,
-							ACCOUNT_SUCCESSED = 0,
-							ACTIVE_SUCCESS = 1;
+	public static final int ACTIVE_ERROR = 6,
+							ACCOUNT_SUCCESSED = 7,
+							ACTIVE_SUCCESS = 8;
 	/*activeAccount end*/
 }

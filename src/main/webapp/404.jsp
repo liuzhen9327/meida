@@ -4,10 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>去激活</title>
+<title>404</title>
 </head>
 <body>
-你已经绑定了邮箱：<%=request.getAttribute("email") %>，当前状态待激活，
-现在<a href="#">去激活</a>，你也可以重新<a href="<%=request.getContextPath()%>/register.jsp">绑定</a>邮箱
+404 
 </body>
 </html>

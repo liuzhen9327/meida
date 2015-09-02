@@ -44,21 +44,36 @@ public class UserService {
 	
 	public static int register(String email, String password, String openId) {
 		if(emailExists(email)) return ReturnStatus.EMAIL_EXISTS;
+		boolean flag = false,
+				isModify = false;
+		Long id = null;
 		if(StringUtils.isNotEmpty(openId)){
-			//TODO && openIdexists && status == 0 
+			// openIdexists && status == 0 
+			User user = getUserByOpenId(openId);
+			if(user.getInt("status") == 0) {
+				//绑定了邮箱但是没激活时，重新绑定
+				flag = true;
+				id = user.getLong("id");
+				isModify = user.keep("id").set("email", email).set("password", HashKit.sha512(password + user.getLong("id"))).update();
+			}
 		}
-		User user = new User()
+		if(!flag) {
+			User user = new User()
 			.set("email", email).set("status", 0)
 			.set("openId", openId).set("updateTime", new Date());
-		if(user.save()) {
-			user.keep("id").set("password", HashKit.sha512(password + user.getLong("id"))).update();
+			if(user.save()) {
+				isModify = true;
+				id = user.getLong("id");
+				user.keep("id").set("password", HashKit.sha512(password + user.getLong("id"))).update();
+			}
+		}
+		if(isModify)
 			try {
-				EmailUtils.sendMail(email, Constant.URL_PREFIX + "/user/activeAccount/" + new String(Base64.encodeBase64((user.get("id")+"_"+email).getBytes())));
+				EmailUtils.sendMail(email, Constant.URL_PREFIX + "/user/activeAccount/" + new String(Base64.encodeBase64((id+"_"+email).getBytes())));
 			} catch (MessagingException e) {
 				e.printStackTrace();
 				return ReturnStatus.SEND_EMAIL_ERROR;
 			}
-		}
 		return ReturnStatus.WAITING_ACTIVE;
 	}
 	
@@ -71,8 +86,12 @@ public class UserService {
 		if(user == null) return ReturnStatus.ACTIVE_ERROR;
 		//已经被激活
 		if(user.getInt("status") != 0) return ReturnStatus.ACCOUNT_SUCCESSED;
-		if(user.clear().set("status", 1).set("updateTime", new Date()).set("id", array[0]).update()){
-			//TODO login shuaxincache
+		if(user.set("status", 1).set("updateTime", new Date()).update()){
+			//refresh cache
+			if(StringUtils.isNotEmpty(user.getStr("email")))
+				CacheKit.put(User.CACHE_NAME, user.get("email"), user);
+			if(StringUtils.isNotEmpty(user.getStr("openId")))
+				CacheKit.put(User.CACHE_NAME, user.get("openId"), user);
 			return ReturnStatus.ACTIVE_SUCCESS;
 		}
 		return ReturnStatus.ACTIVE_ERROR;

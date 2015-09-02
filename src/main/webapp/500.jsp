@@ -1,13 +1,13 @@
+<%@page import="com.meida.utils.StringUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>去激活</title>
+<title>出错了</title>
 </head>
 <body>
-你已经绑定了邮箱：<%=request.getAttribute("email") %>，当前状态待激活，
-现在<a href="#">去激活</a>，你也可以重新<a href="<%=request.getContextPath()%>/register.jsp">绑定</a>邮箱
+<%=StringUtils.getStr(request.getAttribute("errMsg")) %>
 </body>
 </html>

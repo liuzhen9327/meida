@@ -23,11 +23,11 @@
 				</p>
 				<div class="mb10">
 					<label class="control-label">Email</label>
-					<input type="text" name="email" class="form-control"/>
+					<input type="text" name="email" class="form-control" value="<%=StringUtils.getStr(request.getAttribute("email"))%>"/>
 				</div>
 				<div class="mb10">
 					<label class="control-label">Password</label>
-					<input type="password" name="password" class="form-control"/>
+					<input type="password" name="password" class="form-control" value="<%=StringUtils.getStr(request.getAttribute("password"))%>"/>
 				</div>
 				<br/>
 				<button class="btn btn-success btn-block">Sign Up</button>
