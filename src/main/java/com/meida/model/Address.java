@@ -8,6 +8,7 @@ import com.jfinal.plugin.activerecord.Model;
  * @version 
  * May 29, 2015 8:42:20 PM
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class Address extends Model<Address>{
 	/**

@@ -12,6 +12,7 @@ import com.meida.model.Address;
  * @author liuzhen
  * @version May 26, 2015 3:34:12 PM
  */
+@Deprecated
 public class AddressService {
 
 	private static String CACHE_NAME = "addressList";
