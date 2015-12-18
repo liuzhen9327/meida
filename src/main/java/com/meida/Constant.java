@@ -13,6 +13,8 @@ public class Constant {
 						  EMAIL_PASSWORD= null,
 						  EMAIL_FORM    = null;
 	public static String URL_PREFIX = null;
+
+    public static String[] LETTERS = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	
 	public static void init() {
 		apiConfig = new ApiConfig();

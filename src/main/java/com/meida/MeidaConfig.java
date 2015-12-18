@@ -14,11 +14,9 @@ import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.jfinal.render.ViewType;
 import com.jfinal.weixin.demo.WechatApiController;
 import com.jfinal.weixin.sdk.api.ApiConfigKit;
-import com.meida.controller.AddressController;
-import com.meida.controller.RedirectController;
-import com.meida.controller.UserController;
-import com.meida.controller.WechatMsgController;
+import com.meida.controller.*;
 import com.meida.model.Address;
+import com.meida.model.Order;
 
 /**
  * 
@@ -57,10 +55,11 @@ public class MeidaConfig extends JFinalConfig {
 		me.add("/api", WechatApiController.class, "/api");
 		
 		me.add("/redirect", RedirectController.class);
-		
-		me.add("/address", AddressController.class);
+//		me.add("/address", AddressController.class);
 		me.add("/user", UserController.class);
-	}
+
+        me.add("/order", OrderController.class);
+    }
 
 	public void configPlugin(Plugins me) {
 		C3p0Plugin c3p0Plugin = new C3p0Plugin(getProperty("jdbcUrl"),
@@ -72,9 +71,10 @@ public class MeidaConfig extends JFinalConfig {
 		
 		ActiveRecordPlugin arpMysql = new ActiveRecordPlugin("mysql", c3p0Plugin);
 		me.add(arpMysql);
-		arpMysql.setCache(new EhCache());
-		arpMysql.addMapping(Address.TABLE_NAME, Address.class);
-	}
+//		arpMysql.setCache(new EhCache());
+//		arpMysql.addMapping(Address.TABLE_NAME, Address.class);
+        arpMysql.addMapping(Order.TABLE_NAME, Order.class);
+    }
 
 	public void configInterceptor(Interceptors me) {
 

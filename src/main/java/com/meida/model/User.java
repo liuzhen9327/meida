@@ -34,11 +34,11 @@ CREATE TABLE `tb_user` (
 			CACHE_NAME = "user",
 			CACHE_KEY_START = "user_";
 	
-	/**
-	 * 获取缓存
-	 * @param ids
-	 * @return
-	 */
+//	/**
+//	 * 获取缓存
+//	 * @param ids
+//	 * @return
+//	 */
 //	public User cacheGet(String ids){
 //		User user = CacheKit.get(CACHE_NAME, CACHE_KEY_START + ids);
 //		return user;
