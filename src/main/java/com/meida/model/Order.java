@@ -9,6 +9,9 @@ package com.meida.model;
  `status` INT NOT NULL COMMENT '0：预约待受理\r\n 1：发往中转仓 2：等待出仓中转 3：中转已完成 4：直达运输完成 -1：直达件',
  `acceptId` bigint(20) NOT NULL DEFAULT 0 COMMENT '受理方',
  `remark` varchar(200),
+ `waitInWarehouse` int DEFAULT 0 COMMENT '等待入库',
+ `waitExWarehouse` int DEFAULT 0 COMMENT '等待出库',
+ `exWarehouse` int DEFAULT 0 COMMENT '已出库',
  `deleteFlag` BIT DEFAULT 0,
  `isCommit` BIT DEFAULT 0,
  `ownerId` bigint(20) NOT NULL,
@@ -32,6 +35,9 @@ public class Order extends BaseModel<Order> {
                                acceptId = "acceptId",
                                remark = "remark",
                                isCommit = "isCommit",
-                               ownerId = "ownerId";
+                               ownerId = "ownerId",
+                               waitInWarehouse = "waitInWarehouse",
+                               waitExWarehouse = "waitExWarehouse",
+                               exWarehouse = "exWarehouse";
 
 }

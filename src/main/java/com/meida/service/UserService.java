@@ -23,6 +23,8 @@ import com.meida.utils.EmailUtils;
  */
 public class UserService {
 
+	private final static String getByEmail = "select * from " + User.TABLE_NAME + " where email=?",
+							    getByOpenId = "select * from " + User.TABLE_NAME + " where openId=?";
 	/**
 	 * 登录不需要openId，只有网页版需要login方法，微信端用openIdExists()
 	 * @param email
@@ -81,7 +83,7 @@ public class UserService {
 		String decodeStr = new String(Base64.decodeBase64(base64Str));
 		String[] array = decodeStr.split("_");
 		if(array.length != 2) return ReturnStatus.ACTIVE_ERROR;
-		User user = User.dao.findFirst(User.byId, array[0]);
+		User user = User.dao.findById(array[0]);
 		//激活失败, 用户不存在
 		if(user == null) return ReturnStatus.ACTIVE_ERROR;
 		//已经被激活
@@ -109,7 +111,7 @@ public class UserService {
 		return CacheKit.get(User.CACHE_NAME, openId,
 				new IDataLoader() {
 					public Object load() {
-						return User.dao.findFirst(User.byOpenId, openId);
+						return User.dao.findFirst(getByOpenId, openId);
 					}
 				});
 	}
@@ -118,7 +120,7 @@ public class UserService {
 //		return CacheKit.get(CACHE_NAME, email,
 //				new IDataLoader() {
 //					public Object load() {
-//						return User.dao.find(User.byEmail, email);
+//						return User.dao.find(User.getByEmail, email);
 //					}
 //				});
 //	}
@@ -127,7 +129,7 @@ public class UserService {
 		return CacheKit.get(User.CACHE_NAME, email,
 				new IDataLoader() {
 					public Object load() {
-						return User.dao.findFirst(User.byEmail, email);
+						return User.dao.findFirst(getByEmail, email);
 					}
 				});
 	}

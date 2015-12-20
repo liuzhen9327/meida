@@ -1,39 +1,49 @@
 package com.meida.model;
 
-import com.jfinal.plugin.activerecord.Model;
-
 /**
- * 
+ *
  * @author liuzhen
- * @version 
+ * @version
  * May 30, 2015 5:08:21 PM
+ * DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+`id` bigint(20) NOT NULL auto_increment,
+`name` VARCHAR (50) NOT null,
+`email` varchar(50) NOT NULL,
+`password` varchar(128) NOT NULL,
+`status` int DEFAULT 0,
+`openId` varchar(50),
+`company` VARCHAR (50),
+`companyAddress` VARCHAR (50),
+`deleteFlag` BIT DEFAULT 0,
+`createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+`creater` bigint(20) NOT NULL ,
+`updateTime` TIMESTAMP NOT NULL,
+`updater` bigint(20) NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE `user` ADD UNIQUE (`email`);
+ALTER TABLE `user` ADD UNIQUE (`openId`);
  */
 @SuppressWarnings("serial")
-public class User extends Model<User>{
+public class User extends BaseModel<User>{
 
-	/**
-	 * DROP TABLE IF EXISTS `tb_user`;
-CREATE TABLE `tb_user` (
-  `id` bigint(20) NOT NULL,
-  `email` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL,
-  `openId` varchar(50) ,
-  `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updateTime` TIMESTAMP NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-	 */
-	public static final User dao = new User();
-	
-	public static final String  byEmail = "select * from " + User.TABLE_NAME + " where email=?",
-								byId = "select * from " + User.TABLE_NAME + " where id=?",
-								byOpenId = "select * from " + User.TABLE_NAME + " where openId=?";
-	
-	public static final String 
-			TABLE_NAME = "tb_user",
-			CACHE_NAME = "user",
-			CACHE_KEY_START = "user_";
-	
+	public final static User dao = new User();
+
+
+
+	public final static String TABLE_NAME = "tb_user",
+                               CACHE_NAME = "user",
+			                   CACHE_KEY_START = "user_";
+
+    public final static String name = "name",
+                               email = "email",
+                               password = "password",
+                               status = "status",
+                               openId = "openId",
+                               company = "company",
+                               companyAddress = "companyAddress";
+
 //	/**
 //	 * 获取缓存
 //	 * @param ids

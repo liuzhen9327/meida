@@ -44,6 +44,10 @@ public enum OrderStatusEnum {
         return className;
     }
 
+    public int getValue() {
+        return value;
+    }
+
     public static void main(String[] args) {
         System.out.println(OrderStatusEnum.valueOf(1));
         System.out.println(OrderStatusEnum.valueOf(1).getName());
