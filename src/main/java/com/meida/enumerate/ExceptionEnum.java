@@ -11,7 +11,8 @@ public enum ExceptionEnum {
     EMAIL_EXISTS(4, "邮件已存在"),
     SEND_EMAIL_ERROR(5, "邮件发送失败"),
     WAITING_ACTIVE(6, "等待激活"),
-    ACTIVE_ERROR(7, "激活错误");
+    ACTIVE_ERROR(7, "激活错误"),
+    SAVE_ORDER_ERROR(8, "订单{}失败, 物流属性是:{}");
 
     private int code;
     private String message;

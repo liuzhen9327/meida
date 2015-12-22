@@ -1,8 +1,12 @@
 package com.meida.service;
 
+import com.jfinal.aop.Before;
+import com.jfinal.plugin.activerecord.tx.Tx;
 import com.meida.Constant;
+import com.meida.enumerate.ExceptionEnum;
 import com.meida.enumerate.OrderStatusEnum;
 import com.meida.enumerate.OrderTypeEnum;
+import com.meida.exception.BusinessException;
 import com.meida.model.Order;
 import com.meida.utils.DateUtils;
 import org.apache.commons.lang.math.RandomUtils;
@@ -34,17 +38,16 @@ public class OrderService {
         try {
             order.set(Order.number, generateOrderNumber())
                     .set(Order.type, OrderTypeEnum.proxy.getValue())
-                    .set(Order.status, OrderStatusEnum.reserve.getValue())
-                    .set(Order.acceptId, 0)
+                    .set(Order.status, null)
+                    .set(Order.acceptUser, 0)
+                    .set(Order.transitUser, 0)
                     .set(Order.waitInWarehouse, 0)
                     .set(Order.waitExWarehouse, 0)
                     .set(Order.exWarehouse, 0)
                     .set(Order.deleteFlag, false)
-                    .set(Order.isCommit, false)
                     .set(Order.ownerId, ownerId)
                     .set(Order.creater, ownerId)
                     .set(Order.updater, ownerId)
-                    .set(Order.updateTime, new Date())
                     .save();
         } catch (Exception e) {
             if (e instanceof SQLIntegrityConstraintViolationException) {
@@ -55,22 +58,48 @@ public class OrderService {
         return order;
     }
 
-    public static boolean save() {
-
-        return true;
+    public static boolean saveOrCommit(long id, OrderTypeEnum orderType,
+                long userId, String remark, boolean isCommit) {
+        Order order = new Order().set(Order.type, orderType.getValue());
+        switch (orderType) {
+            case proxy:
+                order.set(Order.acceptUser, userId);
+                break;
+            case transit:
+                order.set(Order.transitUser, userId);
+                break;
+            default:
+                throw new BusinessException(ExceptionEnum.SAVE_ORDER_ERROR,
+                        !isCommit? "保存" : "提交", orderType.getName());
+        }
+        if (isCommit) order.set(Order.status, OrderStatusEnum.reserve);
+        order.set(Order.updater, userId)
+             .set(Order.remark, remark)
+             .set(Order.id, id);
+        return order.update();
     }
 
-    public static boolean commit() {
+    public static void updateWarehouse(long orderId,
+               int waitInWarehouse, int waitExWarehouse, int exWarehouse) {
+        new Order().set(Order.waitInWarehouse, waitInWarehouse)
+                .set(Order.waitExWarehouse, waitExWarehouse)
+                .set(Order.exWarehouse, exWarehouse)
+                .set(Order.id, orderId)
+                .update();
+    }
 
-        return true;
+    public static Order get(long id) {
+        return Order.dao.findById(id);
     }
 
     /**
      * 取消订单
      * @param id
      */
-    public static void delete(Long id) {
-        new Order().set(Order.deleteFlag, true).set(Order.id, id).update();
+    public static void delete(long id, long userId) {
+        new Order().set(Order.deleteFlag, true)
+                .set(Order.updater, userId)
+                .set(Order.id, id).update();
     }
 
 }
