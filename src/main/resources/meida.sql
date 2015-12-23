@@ -48,6 +48,7 @@ CREATE TABLE `order` (
   `acceptUser` bigint(20) NOT NULL DEFAULT 0 COMMENT '受理方',
   `transitUser` bigint(20) NOT NULL DEFAULT 0 COMMENT '中转方',
   `remark` varchar(200),
+  `totalWarehouse` int DEFAULT 0 COMMENT '总件数',
   `waitInWarehouse` int DEFAULT 0 COMMENT '等待入库',
   `waitExWarehouse` int DEFAULT 0 COMMENT '等待出库',
   `exWarehouse` int DEFAULT 0 COMMENT '已出库',

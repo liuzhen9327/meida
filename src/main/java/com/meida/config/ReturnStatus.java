@@ -1,4 +1,4 @@
-package com.meida;
+package com.meida.config;
 /**
  * 
  * @author liuzhen

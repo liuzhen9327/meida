@@ -1,8 +1,6 @@
 package com.meida.service;
 
-import com.jfinal.aop.Before;
-import com.jfinal.plugin.activerecord.tx.Tx;
-import com.meida.Constant;
+import com.meida.config.Constant;
 import com.meida.enumerate.ExceptionEnum;
 import com.meida.enumerate.OrderStatusEnum;
 import com.meida.enumerate.OrderTypeEnum;
@@ -15,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Date;
 
 /**
  * Created by liuzhen on 2015/12/18.

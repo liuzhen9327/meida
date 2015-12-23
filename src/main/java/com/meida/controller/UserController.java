@@ -3,7 +3,7 @@ package com.meida.controller;
 import org.apache.commons.lang.StringUtils;
 
 import com.jfinal.core.Controller;
-import com.meida.ReturnStatus;
+import com.meida.config.ReturnStatus;
 import com.meida.service.UserService;
 
 /**

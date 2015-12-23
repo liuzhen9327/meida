@@ -10,8 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import com.jfinal.kit.HashKit;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.jfinal.plugin.ehcache.IDataLoader;
-import com.meida.Constant;
-import com.meida.ReturnStatus;
+import com.meida.config.Constant;
+import com.meida.config.ReturnStatus;
 import com.meida.model.User;
 import com.meida.utils.EmailUtils;
 

@@ -1,4 +1,4 @@
-package com.meida;
+package com.meida.config;
 
 import java.util.Properties;
 
@@ -9,13 +9,11 @@ import com.jfinal.config.JFinalConfig;
 import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.activerecord.cache.EhCache;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.jfinal.render.ViewType;
 import com.jfinal.weixin.demo.WechatApiController;
 import com.jfinal.weixin.sdk.api.ApiConfigKit;
 import com.meida.controller.*;
-import com.meida.model.Address;
 import com.meida.model.Order;
 
 /**

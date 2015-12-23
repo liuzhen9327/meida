@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.commons.lang.StringUtils;
 
 import com.jfinal.weixin.sdk.kit.IpKit;
-import com.meida.Constant;
+import com.meida.config.Constant;
 
 /**
  * 

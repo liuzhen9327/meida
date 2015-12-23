@@ -17,23 +17,7 @@ public class OriginalLogisticService {
     public static void save(long userId, long orderId, String remark,
             String receiver, String mobile, String address,
             String name, String number, BigDecimal weight) {
-        /**
-         * `id` bigint(20) NOT NULL auto_increment,
-         `name` varchar(50) NOT NULL COMMENT '物流名称',
-         `number` varchar(50) NOT NULL COMMENT '物流号',
-         `weight` decimal(6,2) NOT NULL,
-         `status` INT DEFAULT 0 COMMENT '处理状态 0待入库 1已入库 2已出仓',
-         `receiver` varchar(20) NOT NULL,
-         `mobile` varchar(20) NOT NULL,
-         `address` varchar(100) NOT NULL,
-         `remark` varchar(200),
-         `orderId` bigint(20) NOT NULL,
-         `deleteFlag` BIT DEFAULT 0,
-         `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-         `creater` bigint(20) NOT NULL ,
-         `updateTime` TIMESTAMP NOT NULL,
-         `updater` bigint(20) NOT NULL ,
-         */
+
         new OriginalLogistic().set(OriginalLogistic.name, name)
                 .set(OriginalLogistic.number, number)
                 .set(OriginalLogistic.weight, weight)
@@ -53,7 +37,31 @@ public class OriginalLogisticService {
         OrderService.updateWarehouse(orderId, waitInWarehouse++, waitExWarehouse, exWarehouse);
     }
 
+    @Before(Tx.class)
     public static void delete(long id, long userId) {
+        OriginalLogistic originalLogistic = OriginalLogistic.dao.findById(id);
+        long orderId = originalLogistic.getLong(OriginalLogistic.orderId);
+        Order order = OrderService.get(orderId);
+        int waitInWarehouse = order.getInt(Order.waitInWarehouse);
+        int waitExWarehouse = order.getInt(Order.waitExWarehouse);
+        int exWarehouse = order.getInt(Order.exWarehouse);
+        OriginalLogisticStatusEnum status = OriginalLogisticStatusEnum.valueOf(originalLogistic.getInt(OriginalLogistic.status));
+        switch (status) {
+            case waitInWarehouse:
+                waitInWarehouse --;
+                break;
+            case waitExWarehouse:
+                waitExWarehouse --;
+                break;
+            case exWarehouse:
+                exWarehouse --;
+                break;
+        }
+        OrderService.updateWarehouse(orderId, waitInWarehouse, waitExWarehouse, exWarehouse);
+        originalLogistic.deleteById(id);
+    }
 
+    public static OriginalLogistic edit(long id) {
+        return OriginalLogistic.dao.findById(id);
     }
 }

@@ -1,6 +1,6 @@
 package com.jfinal.weixin.sdk.api;
 
-import com.meida.Constant;
+import com.meida.config.Constant;
 
 /**
  * 将 ApiConfig 绑定到 ThreadLocal 的工具类，以方便在当前线程的各个地方获取 ApiConfig 对象：
