@@ -7,9 +7,9 @@ public enum OrderStatusEnum {
     //'0：预约待受理\r\n 1：发往中转仓 2：等待出仓中转 3：中转已完成 4：直达运输完成 -1：直达件',
 
     reserve(0, "预约待受理", "fa-plane"),
-    send2transit(1, "发往中转仓", "fa-pencil"),
-    waitTransit(2, "等待出仓中转", ""),
-    finishTransit(3, "中转已完成", ""),
+    accepted(1, "受理成功", "fa-check-circle"),
+    transit(2, "直发中转", "fa-retweet"),
+    through(3, "直达件", "fa-plane"),
     NULL(0, "", "");
 
     private int value;
@@ -26,11 +26,11 @@ public enum OrderStatusEnum {
             case 0:
                 return reserve;
             case 1:
-                return send2transit;
+                return accepted;
             case 2:
-                return waitTransit;
+                return transit;
             case 3:
-                return finishTransit;
+                return through;
             default:
                 return NULL;
         }

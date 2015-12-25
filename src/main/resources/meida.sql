@@ -46,6 +46,7 @@ CREATE TABLE `order` (
   `type` INT NOT NULL COMMENT '1代理 2中转 3直达',
   `status` INT DEFAULT NULL COMMENT '0：预约待受理\r\n 1：发往中转仓 2：等待出仓中转 3：中转已完成 4：直达运输完成 -1：直达件',
   `acceptUser` bigint(20) NOT NULL DEFAULT 0 COMMENT '受理方',
+  `acceptTime` bigint(13) DEFAULT NULL,
   `transitUser` bigint(20) NOT NULL DEFAULT 0 COMMENT '中转方',
   `remark` varchar(200),
   `totalWarehouse` int DEFAULT 0 COMMENT '总件数',
@@ -55,14 +56,15 @@ CREATE TABLE `order` (
   `deleteFlag` BIT DEFAULT 0,
   `ownerId` bigint(20) NOT NULL,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `creater` bigint(20) NOT NULL ,
+  `creater` bigint(20) NOT NULL,
   `updateTime` TIMESTAMP NOT NULL,
   `updater` bigint(20) NOT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE UNIQUE index order_number_index on `order`(`number`);
 CREATE index order_owner_index on `order`(ownerId);
-CREATE index order_accept_index on `order`(acceptId);
+CREATE index order_accept_index on `order`(acceptUser);
+CREATE index order_transit_index on `order`(transitUser);
 
 DROP TABLE IF EXISTS `originalLogistic`;
 CREATE TABLE `originalLogistic` (

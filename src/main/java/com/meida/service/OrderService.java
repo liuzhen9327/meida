@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Calendar;
 
 /**
  * Created by liuzhen on 2015/12/18.
@@ -38,6 +39,7 @@ public class OrderService {
                     .set(Order.status, null)
                     .set(Order.acceptUser, 0)
                     .set(Order.transitUser, 0)
+                    .set(Order.totalWarehouse, 0)
                     .set(Order.waitInWarehouse, 0)
                     .set(Order.waitExWarehouse, 0)
                     .set(Order.exWarehouse, 0)
@@ -69,16 +71,17 @@ public class OrderService {
                 throw new BusinessException(ExceptionEnum.SAVE_ORDER_ERROR,
                         !isCommit? "保存" : "提交", orderType.getName());
         }
-        if (isCommit) order.set(Order.status, OrderStatusEnum.reserve);
+        if (isCommit) order.set(Order.status, OrderStatusEnum.reserve.getValue());
         order.set(Order.updater, userId)
              .set(Order.remark, remark)
              .set(Order.id, id);
         return order.update();
     }
 
-    public static void updateWarehouse(long orderId,
+    public static void updateWarehouse(long orderId, int totalWarehouse,
                int waitInWarehouse, int waitExWarehouse, int exWarehouse) {
-        new Order().set(Order.waitInWarehouse, waitInWarehouse)
+        new Order().set(Order.totalWarehouse, totalWarehouse)
+                .set(Order.waitInWarehouse, waitInWarehouse)
                 .set(Order.waitExWarehouse, waitExWarehouse)
                 .set(Order.exWarehouse, exWarehouse)
                 .set(Order.id, orderId)
@@ -92,10 +95,25 @@ public class OrderService {
     /**
      * 取消订单
      * @param id
+     * @param userId 操作人
      */
     public static void delete(long id, long userId) {
         new Order().set(Order.deleteFlag, true)
                 .set(Order.updater, userId)
+                .set(Order.id, id).update();
+    }
+
+    /**
+     * 受理订单
+     * @param id
+     * @param transitUserId 受理时选择的中转方
+     * @param userId
+     */
+    public static void accept(long id, long transitUserId, long userId) {
+        new Order().set(Order.transitUser, transitUserId)
+                .set(Order.acceptTime, Calendar.getInstance().getTimeInMillis())
+                .set(Order.updater, userId)
+                .set(Order.status, OrderStatusEnum.accepted)
                 .set(Order.id, id).update();
     }
 

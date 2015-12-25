@@ -14,27 +14,34 @@ import java.math.BigDecimal;
 public class OriginalLogisticService {
 
     @Before(Tx.class)
-    public static void save(long userId, long orderId, String remark,
+    public static void save(Long id, long userId, long orderId, String remark,
             String receiver, String mobile, String address,
             String name, String number, BigDecimal weight) {
-
-        new OriginalLogistic().set(OriginalLogistic.name, name)
+        OriginalLogistic originalLogistic = new OriginalLogistic().set(OriginalLogistic.name, name)
                 .set(OriginalLogistic.number, number)
                 .set(OriginalLogistic.weight, weight)
-                .set(OriginalLogistic.status, OriginalLogisticStatusEnum.waitInWarehouse)
+
                 .set(OriginalLogistic.receiver, receiver)
                 .set(OriginalLogistic.mobile, mobile)
                 .set(OriginalLogistic.address, address)
                 .set(OriginalLogistic.remark, remark)
                 .set(OriginalLogistic.orderId, orderId)
-                .set(OriginalLogistic.creater, userId)
-                .set(OriginalLogistic.updater, userId)
-                .save();
-        Order order = OrderService.get(orderId);
-        int waitInWarehouse = order.getInt(Order.waitInWarehouse);
-        int waitExWarehouse = order.getInt(Order.waitExWarehouse);
-        int exWarehouse = order.getInt(Order.exWarehouse);
-        OrderService.updateWarehouse(orderId, waitInWarehouse++, waitExWarehouse, exWarehouse);
+                .set(OriginalLogistic.updater, userId);
+        if (id == null) {
+            originalLogistic.set(OriginalLogistic.creater, userId)
+                    .set(OriginalLogistic.status, OriginalLogisticStatusEnum.waitInWarehouse)
+                    .save();
+            Order order = OrderService.get(orderId);
+            int totalWarehouse = order.getInt(Order.totalWarehouse);
+            int waitInWarehouse = order.getInt(Order.waitInWarehouse);
+            int waitExWarehouse = order.getInt(Order.waitExWarehouse);
+            int exWarehouse = order.getInt(Order.exWarehouse);
+            OrderService.updateWarehouse(orderId, totalWarehouse++, waitInWarehouse++, waitExWarehouse, exWarehouse);
+        } else {
+            originalLogistic.set(OriginalLogistic.id, id);
+            originalLogistic.update();
+        }
+
     }
 
     @Before(Tx.class)
@@ -42,6 +49,7 @@ public class OriginalLogisticService {
         OriginalLogistic originalLogistic = OriginalLogistic.dao.findById(id);
         long orderId = originalLogistic.getLong(OriginalLogistic.orderId);
         Order order = OrderService.get(orderId);
+        int totalWarehouse = order.getInt(Order.totalWarehouse);
         int waitInWarehouse = order.getInt(Order.waitInWarehouse);
         int waitExWarehouse = order.getInt(Order.waitExWarehouse);
         int exWarehouse = order.getInt(Order.exWarehouse);
@@ -57,7 +65,7 @@ public class OriginalLogisticService {
                 exWarehouse --;
                 break;
         }
-        OrderService.updateWarehouse(orderId, waitInWarehouse, waitExWarehouse, exWarehouse);
+        OrderService.updateWarehouse(orderId, totalWarehouse--, waitInWarehouse, waitExWarehouse, exWarehouse);
         originalLogistic.deleteById(id);
     }
 
