@@ -111,7 +111,7 @@ public class OrderService {
      */
     public static void accept(long id, long transitUserId, long userId) {
         new Order().set(Order.transitUser, transitUserId)
-                .set(Order.acceptTime, Calendar.getInstance().getTimeInMillis())
+                .set(Order.acceptTime, DateUtils.getTimeInMillis())
                 .set(Order.updater, userId)
                 .set(Order.status, OrderStatusEnum.accepted)
                 .set(Order.id, id).update();

@@ -58,7 +58,7 @@ public class OriginalLogisticService {
             case waitInWarehouse:
                 waitInWarehouse --;
                 break;
-            case waitExWarehouse:
+            case alreadyInWarehouse:
                 waitExWarehouse --;
                 break;
             case exWarehouse:
@@ -71,5 +71,9 @@ public class OriginalLogisticService {
 
     public static OriginalLogistic edit(long id) {
         return OriginalLogistic.dao.findById(id);
+    }
+
+    public static OriginalLogistic findByNumber(String number) {
+        return OriginalLogistic.dao.findFirst(OriginalLogistic.sql_findByNumber, number);
     }
 }
