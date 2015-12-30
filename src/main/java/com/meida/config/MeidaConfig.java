@@ -17,72 +17,72 @@ import com.meida.controller.*;
 import com.meida.model.Order;
 
 /**
- * 
  * @author liuzhen
  * @version Apr 9, 2015 11:22:00 AM
  */
 public class MeidaConfig extends JFinalConfig {
 
-	public Properties loadProp(String pro, String dev) {
-		try {
-			return loadPropertyFile(pro);
-		} catch (Exception e) {
-			return loadPropertyFile(dev);
-		}
-	}
-	
-	public void configConstant(Constants me) {
-		// 如果生产环境配置文件存在，则优先加载该配置，否则加载开发环境配置文件
-		loadProp("config_pro.properties", "config.properties");
-		me.setDevMode(getPropertyToBoolean("devMode", true));
-		Constant.init();
-		// ApiConfigKit 设为开发模式可以在开发阶段输出请求交互的 xml 与 json 数据
-		ApiConfigKit.setDevMode(me.getDevMode());
+    public Properties loadProp(String pro, String dev) {
+        try {
+            return loadPropertyFile(pro);
+        } catch (Exception e) {
+            return loadPropertyFile(dev);
+        }
+    }
 
-		me.setViewType(ViewType.JSP);
-		me.setBaseViewPath("/WEB-INF/views/");
+    public void configConstant(Constants me) {
+        // 如果生产环境配置文件存在，则优先加载该配置，否则加载开发环境配置文件
+        loadProp("config_pro.properties", "config.properties");
+        me.setDevMode(getPropertyToBoolean("devMode", true));
+        Constant.init();
+        // ApiConfigKit 设为开发模式可以在开发阶段输出请求交互的 xml 与 json 数据
+        ApiConfigKit.setDevMode(me.getDevMode());
 
-		me.setError401View("/401.html");
-		me.setError403View("/403.html");
-		me.setError404View("/404.jsp");
-		me.setError500View("/500.jsp");
-	}
+        me.setViewType(ViewType.JSP);
+        me.setBaseViewPath("/WEB-INF/views/");
 
-	public void configRoute(Routes me) {
-		me.add("/wechat", WechatMsgController.class);
-		me.add("/api", WechatApiController.class, "/api");
-		
-		me.add("/redirect", RedirectController.class);
+        me.setError401View("/401.html");
+        me.setError403View("/403.html");
+        me.setError404View("/404.jsp");
+        me.setError500View("/500.jsp");
+    }
+
+    public void configRoute(Routes me) {
+        me.add("/wechat", WechatMsgController.class);
+        me.add("/api", WechatApiController.class, "/api");
+
+        me.add("/redirect", RedirectController.class);
+        me.add("/", IndexController.class);
 //		me.add("/address", AddressController.class);
-		me.add("/user", UserController.class);
+        me.add("/user", UserController.class);
 
         me.add("/order", OrderController.class);
     }
 
-	public void configPlugin(Plugins me) {
-		C3p0Plugin c3p0Plugin = new C3p0Plugin(getProperty("jdbcUrl"),
-				getProperty("user"), getProperty("password").trim());
-		me.add(c3p0Plugin);
+    public void configPlugin(Plugins me) {
+        C3p0Plugin c3p0Plugin = new C3p0Plugin(getProperty("jdbcUrl"),
+                getProperty("user"), getProperty("password").trim());
+        me.add(c3p0Plugin);
 
 //		EhCachePlugin ecp = new EhCachePlugin();
 //		me.add(ecp);
-		
-		ActiveRecordPlugin arpMysql = new ActiveRecordPlugin("mysql", c3p0Plugin);
-		me.add(arpMysql);
+
+        ActiveRecordPlugin arpMysql = new ActiveRecordPlugin("mysql", c3p0Plugin);
+        me.add(arpMysql);
 //		arpMysql.setCache(new EhCache());
 //		arpMysql.addMapping(Address.TABLE_NAME, Address.class);
         arpMysql.addMapping(Order.TABLE_NAME, Order.class);
     }
 
-	public void configInterceptor(Interceptors me) {
+    public void configInterceptor(Interceptors me) {
 
-	}
+    }
 
-	public void configHandler(Handlers me) {
+    public void configHandler(Handlers me) {
 
-	}
+    }
 
-	// public static void main(String[] args) {
-	// JFinal.start("webapp", 8080, "/", 5);
-	// }
+    // public static void main(String[] args) {
+    // JFinal.start("webapp", 8080, "/", 5);
+    // }
 }

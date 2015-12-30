@@ -45,4 +45,11 @@ public class Order extends BaseModel<Order> {
                                waitExWarehouse = "waitExWarehouse",
                                exWarehouse = "exWarehouse";
 
+    public final static String sql_findAll = "select * from " + TABLE_NAME;
+
+    public static String sql_findByOwner;
+
+    static {
+        sql_findByOwner = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? and ").append(Order.deleteFlag).append("=? and ").append(Order.status).append("=?").toString();
+    }
 }

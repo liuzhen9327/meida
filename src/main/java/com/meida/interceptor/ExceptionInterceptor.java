@@ -5,6 +5,7 @@ import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 import com.jfinal.core.JFinal;
 import com.meida.exception.BusinessException;
+import com.meida.model.User;
 import com.meida.vo.JSONResult;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -41,13 +42,18 @@ public class ExceptionInterceptor implements Interceptor {
             if (isAjax) {
                 controller.renderJson(JSONResult.error(errCode, errMsg));
             } else {
-                String redirctUrl = request.getHeader("referer");
-                if (StringUtils.isBlank(redirctUrl)) {
-                    redirctUrl = request.getRequestURI();
+                if (inv.getActionKey().contains("login")) {
+                    controller.setAttr("errMsg", errMsg);
+                    controller.getRequest().setAttribute(User.email, controller.getPara(User.email));
+                    controller.getRequest().setAttribute(User.password, controller.getPara(User.password));
+                    controller.renderJsp("/login.jsp");
+                    return;
                 }
+                String redirctUrl = request.getHeader("referer");
+                if (StringUtils.isBlank(redirctUrl)) redirctUrl = request.getRequestURI();
                 controller.setAttr("errMsg", errMsg);
                 controller.setAttr("redirctUrl", redirctUrl);
-                controller.render("../public/failed.ftl");
+                controller.renderJsp("/500.jsp");
             }
         }
     }

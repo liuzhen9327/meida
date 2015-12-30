@@ -7,6 +7,7 @@ import com.meida.model.Order;
 import com.meida.model.OriginalLogistic;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created by admin on 15/12/20.
@@ -75,5 +76,13 @@ public class OriginalLogisticService {
 
     public static OriginalLogistic findByNumber(String number) {
         return OriginalLogistic.dao.findFirst(OriginalLogistic.sql_findByNumber, number);
+    }
+
+    public static void exWarehouse(long id, long userId) {
+        new OriginalLogistic().set(OriginalLogistic.status, OriginalLogisticStatusEnum.exWarehouse)
+                .set(OriginalLogistic.updater, userId)
+                .set(OriginalLogistic.updateTime, new Date())
+                .set(OriginalLogistic.id, id)
+                .update();
     }
 }

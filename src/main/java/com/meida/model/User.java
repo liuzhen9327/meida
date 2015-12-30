@@ -30,8 +30,6 @@ public class User extends BaseModel<User>{
 
 	public final static User dao = new User();
 
-
-
 	public final static String TABLE_NAME = "tb_user",
                                CACHE_NAME = "user",
 			                   CACHE_KEY_START = "user_";
@@ -44,6 +42,9 @@ public class User extends BaseModel<User>{
                                company = "company",
                                companyAddress = "companyAddress";
 
+	public final static String sql_findAll = "select * from " + User.TABLE_NAME,
+							   sql_findByEmail = sql_findAll + " where email=?",
+							   sql_findByOpenId = sql_findAll + " where openId=?";
 //	/**
 //	 * 获取缓存
 //	 * @param ids

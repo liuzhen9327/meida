@@ -13,6 +13,9 @@ public class JSONResult {
     private String errMsg = StringUtils.EMPTY;
     private Object data;
 
+    public static String succ() {
+        return succ(null);
+    }
     public static String succ(Object data) {
         JSONResult result = new JSONResult();
         result.setSucc(true);

@@ -1,3 +1,5 @@
+<%@ page import="com.meida.utils.StringUtils" %>
+<%@ page import="com.meida.model.User" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,13 +35,13 @@
 		</div>
 		<!-- col-sm-7 -->
 		<div class="col-md-5">
-			<form id="loginForm" method="post" action="<%=request.getContextPath()%>/user/validLogin">
+			<form id="loginForm" method="post" action="<%=request.getContextPath()%>/user/login">
 				<h4 class="nomargin">Sign In</h4>
 				<p class="mt5 mb20">
 					Login to access your account.
 				</p>
-				<input type="text" class="form-control" name="email" placeholder="Email"/>
-				<input type="password" class="form-control" name="password" placeholder="Password"/>
+				<input type="text" class="form-control" name="email" placeholder="Email" value="<%=StringUtils.getStr(request.getAttribute(User.email))%>"/>
+				<input type="password" class="form-control" name="password" placeholder="Password" value="<%=StringUtils.getStr(request.getAttribute(User.password))%>"/>
 				<a href=""><small>Forgot Your Password?</small></a>
 				<button class="btn btn-success btn-block">Sign In</button>
 			</form>

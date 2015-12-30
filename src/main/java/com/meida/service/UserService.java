@@ -1,19 +1,19 @@
 package com.meida.service;
 
-import java.util.Date;
-
-import javax.mail.MessagingException;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-
 import com.jfinal.kit.HashKit;
 import com.jfinal.plugin.ehcache.CacheKit;
-import com.jfinal.plugin.ehcache.IDataLoader;
 import com.meida.config.Constant;
-import com.meida.config.ReturnStatus;
+import com.meida.enumerate.ExceptionEnum;
+import com.meida.exception.BusinessException;
 import com.meida.model.User;
 import com.meida.utils.EmailUtils;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * 
@@ -23,29 +23,43 @@ import com.meida.utils.EmailUtils;
  */
 public class UserService {
 
-	private final static String getByEmail = "select * from " + User.TABLE_NAME + " where email=?",
-							    getByOpenId = "select * from " + User.TABLE_NAME + " where openId=?";
+	private static Logger log = LoggerFactory.getLogger(UserService.class);
 	/**
 	 * 登录不需要openId，只有网页版需要login方法，微信端用openIdExists()
 	 * @param email
 	 * @param password
-	 * @return
+	 * @return authId
 	 */
-	public static int login(String email, String password) {
+	public static String login(String email, String password) {
 		User user = getUserByEmail(email);
-		if(user == null) return ReturnStatus.ACCOUNT_NOT_EXISTS;
-		Long id = user.getLong("id");
+		if(user == null) throw new BusinessException(ExceptionEnum.ACCOUNT_NOT_EXISTS);
+		if (user.getInt(User.status) == 0) throw new BusinessException(ExceptionEnum.WAITING_ACTIVE);
+		long id = user.getLong("id");
 		if(!HashKit.sha512(password + id).equals(user.getStr("password")))
-			return ReturnStatus.PASSWORD_ERROR;
-		return ReturnStatus.LOGIN_SUCCESS;
+			throw new BusinessException(ExceptionEnum.PASSWORD_ERROR);
+		return saveUser2Cache(user);
+	}
+
+	/**
+	 * @param user
+	 * @return authId
+     */
+	public static String saveUser2Cache(User user) {
+		String authId = UUID.randomUUID().toString().replace("-", "");
+		CacheKit.put(User.CACHE_NAME, authId, user);
+		return authId;
+	}
+
+	public static User getUserByCache(String authId) {
+		return CacheKit.get(User.CACHE_NAME, authId);
 	}
 //	public static void main(String[] args) {
 //		System.out.println(new String(Base64.encodeBase64("1_350995931@qq.com".getBytes())));
 //		System.out.println(new String(Base64.decodeBase64("MV8zNTA5OTU5MzFAcXEuY29t")));
 //	}
 	
-	public static int register(String email, String password, String openId) {
-		if(emailExists(email)) return ReturnStatus.EMAIL_EXISTS;
+	public static void register(String email, String password, String openId) {
+		if(emailExists(email)) throw new BusinessException(ExceptionEnum.EMAIL_EXISTS);
 		boolean flag = false,
 				isModify = false;
 		Long id = null;
@@ -59,9 +73,9 @@ public class UserService {
 				isModify = user.keep("id").set("email", email).set("password", HashKit.sha512(password + user.getLong("id"))).update();
 			}
 		}
+		User user = new User();
 		if(!flag) {
-			User user = new User()
-			.set("email", email).set("status", 0)
+			user.set("email", email).set("status", 0)
 			.set("openId", openId).set("updateTime", new Date());
 			if(user.save()) {
 				isModify = true;
@@ -70,33 +84,21 @@ public class UserService {
 			}
 		}
 		if(isModify)
-			try {
-				EmailUtils.sendMail(email, Constant.URL_PREFIX + "/user/activeAccount/" + new String(Base64.encodeBase64((id+"_"+email).getBytes())));
-			} catch (MessagingException e) {
-				e.printStackTrace();
-				return ReturnStatus.SEND_EMAIL_ERROR;
-			}
-		return ReturnStatus.WAITING_ACTIVE;
+			EmailUtils.sendMail(email, Constant.URL_PREFIX + "/user/activeAccount/" + new String(Base64.encodeBase64((id+"_"+user.getStr(User.password)).getBytes())));
 	}
 	
-	public static int activeAccount(String base64Str) {
+	public static String activeAccount(String base64Str) {
 		String decodeStr = new String(Base64.decodeBase64(base64Str));
 		String[] array = decodeStr.split("_");
-		if(array.length != 2) return ReturnStatus.ACTIVE_ERROR;
+		if(array.length != 2) throw new BusinessException(ExceptionEnum.ACTIVE_ERROR, "参数错误");
 		User user = User.dao.findById(array[0]);
 		//激活失败, 用户不存在
-		if(user == null) return ReturnStatus.ACTIVE_ERROR;
+		if(user == null) throw new BusinessException(ExceptionEnum.ACTIVE_ERROR, "用户不存在");
+		if(!array[1].equals(user.getStr(User.password))) throw new BusinessException(ExceptionEnum.ACTIVE_ERROR, "参数错误");
 		//已经被激活
-		if(user.getInt("status") != 0) return ReturnStatus.ACCOUNT_SUCCESSED;
-		if(user.set("status", 1).set("updateTime", new Date()).update()){
-			//refresh cache
-			if(StringUtils.isNotEmpty(user.getStr("email")))
-				CacheKit.put(User.CACHE_NAME, user.get("email"), user);
-			if(StringUtils.isNotEmpty(user.getStr("openId")))
-				CacheKit.put(User.CACHE_NAME, user.get("openId"), user);
-			return ReturnStatus.ACTIVE_SUCCESS;
-		}
-		return ReturnStatus.ACTIVE_ERROR;
+		if(user.getInt("status") != 0) throw new BusinessException(ExceptionEnum.ACTIVE_ERROR, "用户已经被激活");
+		user.set("status", 1).set("updateTime", new Date()).update();
+		return saveUser2Cache(user);
 	}
 	
 	public static boolean emailExists(String email) {
@@ -108,12 +110,7 @@ public class UserService {
 	}
 	
 	public static User getUserByOpenId(final String openId) {
-		return CacheKit.get(User.CACHE_NAME, openId,
-				new IDataLoader() {
-					public Object load() {
-						return User.dao.findFirst(getByOpenId, openId);
-					}
-				});
+		return User.dao.findFirst(User.sql_findByOpenId, openId);
 	}
 	
 //	public static User getUser(final String email, String password) {
@@ -126,11 +123,6 @@ public class UserService {
 //	}
 	
 	public static User getUserByEmail(final String email) {
-		return CacheKit.get(User.CACHE_NAME, email,
-				new IDataLoader() {
-					public Object load() {
-						return User.dao.findFirst(getByEmail, email);
-					}
-				});
+		return User.dao.findFirst(User.sql_findByEmail, email);
 	}
 }

@@ -12,7 +12,6 @@ import com.meida.interceptor.AuthInterceptor;
 public class IndexController extends Controller{
 
 	public void index() {
-		
-		renderJsp("index.jsp");
+		renderJsp("/index.jsp");
 	}
 }

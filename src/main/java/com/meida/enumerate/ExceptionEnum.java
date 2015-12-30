@@ -10,8 +10,8 @@ public enum ExceptionEnum {
     LOGIN_SUCCESS ("登录成功"),
     EMAIL_EXISTS ("邮件已存在"),
     SEND_EMAIL_ERROR ("邮件发送失败"),
-    WAITING_ACTIVE ("等待激活"),
-    ACTIVE_ERROR ("激活错误"),
+    WAITING_ACTIVE ("用户还未激活,不能登录!"),
+    ACTIVE_ERROR ("激活失败, {0}"),
     SAVE_ORDER_ERROR ("订单{0}失败, 物流属性是:{1}");
 
     private String message;

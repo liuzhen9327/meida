@@ -1,5 +1,7 @@
 package com.meida.interceptor;
 
+import com.meida.config.Constant;
+import com.meida.utils.ServletUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.jfinal.aop.Interceptor;
@@ -14,32 +16,40 @@ public class AuthInterceptor implements Interceptor{
 	@Override
 	public void intercept(Invocation inv) {
 		Controller controller = inv.getController();
-	    User sessionUser = controller.getSessionAttr("user");
-	    if (sessionUser != null) inv.invoke();
-	    else {
+
+		String authId = ServletUtils.getCookie(controller.getRequest(), Constant.COOKIE_AUTH_KEY);
+		if (StringUtils.isBlank(authId)) {
+			controller.redirect("/login.jsp");
+			return;
+		}
+
+		User user = UserService.getUserByCache(authId);
+	    if (user != null) {
+			inv.invoke();
+		} else {
 	    	String code = controller.getPara("code");
-	    	if(StringUtils.isEmpty(code)) {
+	    	if(StringUtils.isBlank(code)) {
 	    		//网页端
 	    		controller.redirect("/login.jsp");
 	    		return;
 	    	}
 	    	String openId = OpenIdApi.getOpenId(code);
-	    	//if openid exists 
-	    	User user = UserService.getUserByOpenId(openId);
-	    	if(user == null) {
-	    		//去绑定邮箱
-	    		controller.redirect("/register.jsp");
-	    		return;
-	    	}
-	    	if(user.getInt("status") == 0) {
-	    		//去激活
-	    		controller.redirect("/toActive.jsp");
-	    		return;
-	    	}
-	    	//如果已经绑定了账号 但是session中user是空
-	    	controller.setSessionAttr("user", user);
-	    	inv.invoke();
-	    }
-	      
+			//TODO validate openId
+	    	//if openid exists
+//	    	User user = UserService.getUserByOpenId(openId);
+//	    	if(user == null) {
+//	    		//去绑定邮箱
+//	    		controller.redirect("/register.jsp");
+//	    		return;
+//	    	}
+//	    	if(user.getInt("status") == 0) {
+//	    		//去激活
+//	    		controller.redirect("/toActive.jsp");
+//	    		return;
+//	    	}
+//	    	//如果已经绑定了账号 但是session中user是空
+//	    	controller.setSessionAttr("user", user);
+//	    	inv.invoke();
+		}
 	}
 }

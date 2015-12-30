@@ -18,6 +18,10 @@ public class Constant {
 
 	public static int mysqlBatchSize = 1000;
 
+	//user config
+	public final static String COOKIE_PATH = "/",
+							   COOKIE_AUTH_KEY = "authId";
+
 	public static void init() {
 		apiConfig = new ApiConfig();
 		apiConfig.setToken(PropKit.get("token"));

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by liuzhen on 2015/12/18.
@@ -32,7 +33,10 @@ public class OrderService {
     }
 
     public static Order newOrder(long ownerId) {
-        Order order = new Order();
+        //找出没有取消的 且 是这个人创建的, 且状态是空的订单
+        Order order = Order.dao.findFirst(Order.sql_findByOwner, ownerId, false, OrderStatusEnum.reserve.getValue());
+        if (order != null) return order;
+        order = new Order();
         try {
             order.set(Order.number, generateOrderNumber())
                     .set(Order.type, OrderTypeEnum.proxy.getValue())
