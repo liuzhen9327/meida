@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>将下拉框的选中值自动加入到文本框</title>
+<SCRIPT LANGUAGE="JavaScript">
+<!-- Begin       
+var messages = new Array(6); 
+messages[0] = "";
+messages[1] = "今天，是一个值得纪念的日子！";
+messages[2] = "你是不是早已把我忘记?";       
+messages[3] = "漆黑的夜晚，太阳很刺眼！";
+messages[4] = "我今天去了源码爱好者网站 ";
+messages[5] = "网址是：www.poluoluo.com";
+function messageReveal() {
+var messageindex = document.messageForm.messagePick.selectedIndex
+document.messageForm.messageField.value = messages[messageindex];
+}
+// End -->
+</SCRIPT>
+</head>
+<body>
+<form name="messageForm">
+<select name="messagePick" OnChange="messageReveal()">
+<option value="0">请选择
+<option>今天很特殊吗？
+<option>你还爱我吗？
+<option>晚上天气好吗？
+<option>你去哪里了呀？
+<option>网址多少呀？
+</select>
+<br><p>
+<textarea name="messageField" rows=6 cols=50 wrap=virtual></textarea>
+</form>
+</body>
+</html>

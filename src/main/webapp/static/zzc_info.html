@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="shortcut icon" href="images/favicon.png" type="image/png">
+<title>中转仓订单处理</title>
+<link href="css/style.default.css" rel="stylesheet">
+<link href="css/jquery.datatables.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script src="js/html5shiv.js"></script>
+  <script src="js/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+<!-- Preloader -->
+<div id="preloader">
+  <div id="status"><i class="fa fa-spinner fa-spin"></i></div>
+</div>
+<section>
+  <div class="leftpanel">
+    <div class="logopanel">
+      <h1><span>Meida</span></h1>
+    </div>
+    <!-- logopanel -->
+    
+    <div class="leftpanelinner"> 
+      
+      <!-- This is only visible to small devices -->
+      <div class="visible-xs hidden-sm hidden-md hidden-lg">
+        <div class="media userlogged"> <img alt="" src="images/photos/loggeduser.png" class="media-object">
+          <div class="media-body">
+            <h4>John Doe</h4>
+            <span>"Life is so..."</span> </div>
+        </div>
+        <h5 class="sidebartitle actitle">账户中心</h5>
+        <ul class="nav nav-pills nav-stacked nav-bracket mb30">
+          <li><a href="profile.html"><i class="fa fa-user"></i> <span>我的信息</span></a></li>
+          <li><a href=""><i class="fa fa-cog"></i> <span>账户设置</span></a></li>
+          <li><a href="signin.html"><i class="fa fa-sign-out"></i> <span>退出</span></a></li>
+        </ul>
+      </div>
+      <h5 class="sidebartitle">快捷导航</h5>
+      <ul class="nav nav-pills nav-stacked nav-bracket">
+        <li ><a href="index.html"><i class="fa fa-home"></i> <span>控制总台</span></a></li>
+       
+        <li class="nav-parent"><a href=""><i class="fa fa-paper-plane"></i> <span>物流处理中心</span></a>
+        	<ul class="children" >
+                <li><a href="new_form.html"><i class="fa fa-caret-right"></i> 新建物流单</a></li>
+                <li><a href="tables.html"><i class="fa fa-caret-right"></i> 物流列表明细</a></li>
+            </ul>
+        </li>
+         
+         <li class="nav-parent "><a href=""><i class="fa  fa-cubes"></i> <span>中转仓处理中心</span></a>
+        	<ul class="children">
+                <li><a href="zz_sm.html"><i class="fa fa-caret-right"></i> 入库扫描</a></li>
+                <li><a href="zz_tables.html"><i class="fa fa-caret-right"></i> 中转仓储明细</a></li>
+              
+            </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- leftpanelinner --> 
+  </div>
+  <!-- leftpanel -->
+  
+  <div class="mainpanel">
+    <div class="headerbar"> <a class="menutoggle"><i class="fa fa-bars"></i></a>
+      <form class="searchform" action="index.html" method="post">
+        <input type="text" class="form-control" name="keyword" placeholder="Search here..." />
+      </form>
+      <div class="header-right">
+        <ul class="headermenu">
+          <li>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"> <img src="images/photos/loggeduser.png" alt="" /> John Doe <span class="caret"></span> </button>
+              <ul class="dropdown-menu dropdown-menu-usermenu pull-right">
+                <li><a href="profile.html"><i class="glyphicon glyphicon-user"></i> 个人中心</a></li>
+                <li><a href="#"><i class="glyphicon glyphicon-cog"></i> 账号设置</a></li>
+                <li><a href="#"><i class="glyphicon glyphicon-question-sign"></i> 帮助</a></li>
+                <li><a href="signin.html"><i class="glyphicon glyphicon-log-out"></i> 退出</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <!-- header-right --> 
+      
+    </div>
+    <!-- headerbar -->
+    
+    <div class="pageheader">
+        <h2><i class="fa fa-pencil"></i>中转件预约详情 <span>Meida</span></h2>
+      
+  
+  </div>
+<div class="contentpanel">
+      
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          
+          <h4 class="panel-title">订单编号：MD00012878979</h4>
+         <p>中转件预约时间：2015/8/29/18:0 9 <br>
+         
+          客户预留信息<br>
+          重要备注 <code>韩国联系方式 金振宇 217389789</code></p>
+          <i class="fa   fa-code-fork"></i> 代受理
+                    <a href="#"><strong>VIPMEIDAKOREA</strong></a>
+        </div>
+        <div class="panel-body panel-body-nopadding">
+          
+          <form class="form-horizontal form-bordered">
+         
+            <div class="form-group">
+              <label class="col-sm-3 control-label">收件人</label>
+               <div class="col-sm-2">
+                <input type="text" placeholder="" value="胡浩" class="form-control" required>
+              </div>
+               <label class="col-sm-2 control-label">联系号码</label>
+              <div class="col-sm-2">
+                <input type="text" placeholder="" value="18538586377" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">收件地址</label>
+              <div class="col-sm-6">
+                <input type="text" placeholder=""  value="广州省深圳市平山区给偶加" class="form-control" required/>
+              </div>
+            </div>
+           <div class="form-group">
+              <label class="col-sm-3 control-label">邮件信息</label>
+              <div class="col-sm-2">
+                <input type="text" placeholder="物流公司" value="EMS" class="form-control" readonly="readonly">
+              </div>
+              <div class="col-sm-2">
+                <input type="text" placeholder="物流单号" value="em87987899879kr" class="form-control" readonly="readonly">
+              </div>
+              <div class="col-sm-2">
+                <input type="text" placeholder="邮件重量（KG）" value="25KG" class="form-control" readonly="readonly">
+              </div>
+            </div>
+             <div class="form-group">
+              <label class="col-sm-3 control-label">转运物流信息</label>
+              <div class="col-sm-2">
+                <input type="text" placeholder="物流公司" value="EMS" class="form-control" required>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" placeholder="物流单号" value="em87987899879kr" class="form-control" required>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" placeholder="邮件重量（KG）" value="25KG" class="form-control" required>
+              </div>
+            </div>
+             
+      
+            <div class="form-group">
+              <label class="col-sm-3 control-label">客户备注</label>
+              <div class="col-sm-7">
+                <textarea class="form-control" rows="5" readonly="readonly">马油*10 九朵云*20 克莱斯*35</textarea>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="col-sm-3 control-label">特殊备注</label>
+              <div class="col-sm-7">
+                <textarea id="autoResizeTA" class="form-control" rows="5"></textarea>
+              </div>
+            </div>
+            
+           
+            
+                   <div class="panel-footer">
+			 <div class="row">
+				<div class="col-sm-6 col-sm-offset-3">
+				  <button class="btn btn-primary">确认出仓</button>&nbsp;
+				  <button class="btn btn-default">取消</button>
+				</div>
+			 </div>
+		  </div><!-- panel-footer -->
+            
+            
+          </form>
+          
+        </div><!-- panel-body -->
+        
+ 
+        
+      </div><!-- panel -->
+      
+      <!-- panel -->
+      
+
+   
+      
+      
+    </div>
+  <!-- contentpanel -->
+  
+  </div>
+  <!-- mainpanel --> 
+  
+</section><script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/jquery-migrate-1.2.1.min.js"></script>
+<script src="js/jquery-ui-1.10.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/modernizr.min.js"></script>
+<script src="js/jquery.sparkline.min.js"></script>
+<script src="js/toggles.min.js"></script>
+<script src="js/retina.min.js"></script>
+<script src="js/jquery.cookies.js"></script>
+
+
+<script src="js/jquery.autogrow-textarea.js"></script>
+<script src="js/bootstrap-timepicker.min.js"></script>
+<script src="js/jquery.maskedinput.min.js"></script>
+<script src="js/jquery.tagsinput.min.js"></script>
+<script src="js/jquery.mousewheel.js"></script>
+<script src="js/select2.min.js"></script>
+<script src="js/dropzone.min.js"></script>
+<script src="js/colorpicker.js"></script>
+
+
+<script src="js/custom.js"></script>
+
+<script>
+jQuery(document).ready(function(){
+    
+    "use strict";
+  
+  // Tags Input
+  jQuery('#tags').tagsInput({width:'auto'});
+  
+  // Select2
+  jQuery(".select2").select2({
+    width: '100%'
+  });
+   
+  // Textarea Autogrow
+  jQuery('#autoResizeTA').autogrow();
+  
+  // Color Picker
+  if(jQuery('#colorpicker').length > 0) {
+	 jQuery('#colorSelector').ColorPicker({
+			onShow: function (colpkr) {
+				jQuery(colpkr).fadeIn(500);
+				return false;
+			},
+			onHide: function (colpkr) {
+				jQuery(colpkr).fadeOut(500);
+				return false;
+			},
+			onChange: function (hsb, hex, rgb) {
+				jQuery('#colorSelector span').css('backgroundColor', '#' + hex);
+				jQuery('#colorpicker').val('#'+hex);
+			}
+	 });
+  }
+  
+  // Color Picker Flat Mode
+	jQuery('#colorpickerholder').ColorPicker({
+		flat: true,
+		onChange: function (hsb, hex, rgb) {
+			jQuery('#colorpicker3').val('#'+hex);
+		}
+	});
+   
+  // Date Picker
+  jQuery('#datepicker').datepicker();
+  
+  jQuery('#datepicker-inline').datepicker();
+  
+  jQuery('#datepicker-multiple').datepicker({
+    numberOfMonths: 3,
+    showButtonPanel: true
+  });
+  
+  // Spinner
+  var spinner = jQuery('#spinner').spinner();
+  spinner.spinner('value', 0);
+  
+  // Input Masks
+  jQuery("#date").mask("99/99/9999");
+  jQuery("#phone").mask("(999) 999-9999");
+  jQuery("#ssn").mask("999-99-9999");
+  
+  // Time Picker
+  jQuery('#timepicker').timepicker({defaultTIme: false});
+  jQuery('#timepicker2').timepicker({showMeridian: false});
+  jQuery('#timepicker3').timepicker({minuteStep: 15});
+
+  
+});
+</script>
+
+</body>
+</html>
