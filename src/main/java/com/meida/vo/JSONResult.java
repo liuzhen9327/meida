@@ -1,6 +1,7 @@
 package com.meida.vo;
 
 import com.alibaba.fastjson.JSON;
+import com.jfinal.kit.JsonKit;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -20,7 +21,7 @@ public class JSONResult {
         JSONResult result = new JSONResult();
         result.setSucc(true);
         if(data != null){
-            result.setData(data);
+            result.setData(JsonKit.toJson(data));
         }
         return JSON.toJSONString(result);
     }

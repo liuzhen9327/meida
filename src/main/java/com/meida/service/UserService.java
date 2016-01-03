@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,8 +35,8 @@ public class UserService {
 		User user = getUserByEmail(email);
 		if(user == null) throw new BusinessException(ExceptionEnum.ACCOUNT_NOT_EXISTS);
 		if (user.getInt(User.status) == 0) throw new BusinessException(ExceptionEnum.WAITING_ACTIVE);
-		long id = user.getLong("id");
-		if(!HashKit.sha512(password + id).equals(user.getStr("password")))
+		Long id = user.getLong(User.id);
+		if(!encryptPassword(password, id).equals(user.getStr(User.password)))
 			throw new BusinessException(ExceptionEnum.PASSWORD_ERROR);
 		return saveUser2Cache(user);
 	}
@@ -50,6 +51,10 @@ public class UserService {
 		return authId;
 	}
 
+	public static void refreshUserByCache(String authId, User user) {
+		CacheKit.put(User.CACHE_NAME, authId, user);
+	}
+
 	public static User getUserByCache(String authId) {
 		return CacheKit.get(User.CACHE_NAME, authId);
 	}
@@ -58,7 +63,7 @@ public class UserService {
 //		System.out.println(new String(Base64.decodeBase64("MV8zNTA5OTU5MzFAcXEuY29t")));
 //	}
 	
-	public static void register(String email, String password, String openId) {
+	public static void register(String name, String email, String password, String openId) {
 		if(emailExists(email)) throw new BusinessException(ExceptionEnum.EMAIL_EXISTS);
 		boolean flag = false,
 				isModify = false;
@@ -66,21 +71,30 @@ public class UserService {
 		if(StringUtils.isNotEmpty(openId)){
 			// openIdexists && status == 0 
 			User user = getUserByOpenId(openId);
-			if(user.getInt("status") == 0) {
+			if(user.getInt(User.status) == 0) {
 				//绑定了邮箱但是没激活时，重新绑定
 				flag = true;
-				id = user.getLong("id");
-				isModify = user.keep("id").set("email", email).set("password", HashKit.sha512(password + user.getLong("id"))).update();
+				id = user.getLong(User.id);
+				isModify = user.keep(User.id).set(User.email, email).set(User.password, encryptPassword(password, id)).update();
 			}
 		}
 		User user = new User();
 		if(!flag) {
-			user.set("email", email).set("status", 0)
-			.set("openId", openId).set("updateTime", new Date());
+			user.set(User.name, name)
+				.set(User.email, email)
+				.set(User.status, 0)
+				.set(User.openId, openId)
+				.set(User.creater, 0)
+				.set(User.updater, 0)
+				.set(User.updateTime, new Date());
 			if(user.save()) {
 				isModify = true;
-				id = user.getLong("id");
-				user.keep("id").set("password", HashKit.sha512(password + user.getLong("id"))).update();
+				id = user.getLong(User.id);
+				user.keep(User.id)
+					.set(User.creater, id)
+					.set(User.updater, id)
+					.set(User.password, encryptPassword(password, id))
+					.update();
 			}
 		}
 		if(isModify)
@@ -100,7 +114,11 @@ public class UserService {
 		user.set("status", 1).set("updateTime", new Date()).update();
 		return saveUser2Cache(user);
 	}
-	
+
+	private static String encryptPassword(String password, Object key) {
+		return HashKit.sha512(password.concat(key.toString()));
+	}
+
 	public static boolean emailExists(String email) {
 		return getUserByEmail(email) != null;
 	}
@@ -124,5 +142,9 @@ public class UserService {
 	
 	public static User getUserByEmail(final String email) {
 		return User.dao.findFirst(User.sql_findByEmail, email);
+	}
+
+	public static List<User> getMyFriends(long id) {
+		return User.dao.find(User.sql_findMyFriends, id);
 	}
 }

@@ -1,5 +1,7 @@
+<%@ page import="org.apache.commons.codec.binary.Base64" %>
+<%@ page import="com.meida.utils.ValidatorUtils" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+         pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,7 +9,8 @@
 <title>去激活</title>
 </head>
 <body>
-你已经绑定了邮箱：<%=request.getAttribute("email") %>，当前状态待激活，
-现在<a href="#">去激活</a>，你也可以重新<a href="<%=request.getContextPath()%>/register.jsp">绑定</a>邮箱
+<%String email = new String(Base64.decodeBase64(request.getQueryString()));
+if (!ValidatorUtils.isEmail(email)) response.sendRedirect("/500.jsp");%>
+你已经绑定了邮箱：<%=email %>，当前状态待激活
 </body>
 </html>

@@ -1,4 +1,6 @@
 <%@page import="com.meida.utils.StringUtils"%>
+<%@ page import="java.net.URLDecoder" %>
+<%@ page import="com.meida.config.Constant" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -8,6 +10,7 @@
 <title>出错了</title>
 </head>
 <body>
-<%=StringUtils.getStr(request.getAttribute("errMsg")) %>
+<%String errMsg = StringUtils.getStr(request.getParameter("errMsg"));%>
+<%=errMsg.length() > 0 ?URLDecoder.decode(errMsg, Constant.CHARSET) : ""%>
 </body>
 </html>

@@ -40,8 +40,8 @@
 				<p class="mt5 mb20">
 					Login to access your account.
 				</p>
-				<input type="text" class="form-control" name="email" placeholder="Email" value="<%=StringUtils.getStr(request.getAttribute(User.email))%>"/>
-				<input type="password" class="form-control" name="password" placeholder="Password" value="<%=StringUtils.getStr(request.getAttribute(User.password))%>"/>
+				<input type="text" class="form-control" name="email" placeholder="Email" value="<%=StringUtils.getStr(request.getParameter(User.email))%>"/>
+				<input type="password" class="form-control" name="password" placeholder="Password" value="<%=StringUtils.getStr(request.getParameter(User.password))%>"/>
 				<a href=""><small>Forgot Your Password?</small></a>
 				<button class="btn btn-success btn-block">Sign In</button>
 			</form>

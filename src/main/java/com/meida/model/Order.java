@@ -26,7 +26,7 @@ import java.util.Date;
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
 public class Order extends BaseModel<Order> {
-    public final static String TABLE_NAME = "order";
+    public final static String TABLE_NAME = "tb_order";
 
     /**dao只能用作find delete*/
     public static Order dao = new Order();

@@ -1,4 +1,31 @@
-﻿
+﻿$.ajaxSetup({
+   type: "post",
+   dataType: 'json',
+   cache: false
+});
+$(document).ajaxSend(function(evt, xhr, settings) {
+	if (settings.global) $('#preloader').show();
+}).ajaxComplete(function(evt, xhr, settings) {
+	if (settings.global) $('#preloader').hide();
+});
+
+var getFormParams = function(formId) {
+   var str = $('#' + formId).serialize()||'';
+   if (!str.length) return new Object();
+   var arr = str.split('&');
+   var result = new Object();
+   for (var i=0; i<arr.length;i++) {
+      var tmp = arr[i].split('=');
+      result[tmp[0]] = tmp[1];
+   }
+   return result;
+};
+
+var curStr = function(str, len) {
+   if (!(str.length > len)) return str;
+   return str.substring(0, len) + fillStr;
+};
+
 jQuery(window).load(function() {
 
    "use strict";
@@ -11,6 +38,16 @@ jQuery(window).load(function() {
 
 jQuery(document).ready(function() {
 
+   //jQuery.getJSON(ctx + '/express/all', function (resp) {
+   //   if (resp.succ) {
+   //      var expressList = resp.data;
+   //      var html = [];
+   //      for (var i = 0;i<expressList.length; i++) {
+   //         html.push(['<option value="', expressList[i].code, '">', expressList[i].name, '</option>']);
+   //      }
+   //      jQuery.('.express').html(html.join(''));
+   //   }
+   //});
    "use strict";
 
    // Toggle Left Menu

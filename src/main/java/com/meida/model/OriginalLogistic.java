@@ -36,5 +36,6 @@ public class OriginalLogistic extends BaseModel<OriginalLogistic> {
                                orderId = "orderId";
 
     public final static String sql_findAll = "select * from " + TABLE_NAME;
-    public final static String sql_findByNumber = sql_findAll + " where " + number + "=?";
+    public final static String sql_findByNumber = sql_findAll + " where " + number + "=?",
+                               sql_findByOrderId = sql_findAll + " where " + orderId + "=?";
 }

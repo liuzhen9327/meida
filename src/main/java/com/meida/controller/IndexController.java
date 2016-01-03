@@ -9,7 +9,7 @@ import com.meida.interceptor.AuthInterceptor;
  * 2015年9月2日下午7:05:28
  */
 @Before(AuthInterceptor.class)
-public class IndexController extends Controller{
+public class IndexController extends BaseController {
 
 	public void index() {
 		renderJsp("/index.jsp");

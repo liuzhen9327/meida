@@ -90,9 +90,10 @@ public class TransitLogisticService {
             for (TransitLogistic transitLogistic : transitLogisticList) {
                 transitLogistic.set(TransitLogistic.sendTime, sendTime)
                             .set(TransitLogistic.updater, userId)
-                            .set(TransitLogistic.updateTime, now);
+                            .set(TransitLogistic.updateTime, now)
+                            .update();
             }
-            Db.batch(TransitLogistic.sql_updateSendTime, TransitLogistic.columns_updateSendTime, transitLogisticList, Constant.mysqlBatchSize);
+//            Db.batch(TransitLogistic.sql_updateSendTime, TransitLogistic.columns_updateSendTime, transitLogisticList, Constant.mysqlBatchSize);
             //改原始物流状态为出仓
             OriginalLogisticService.exWarehouse(originalIds[0], userId);
             waitExWarehouse --;

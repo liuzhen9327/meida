@@ -1,88 +1,118 @@
+DROP DATABASE IF EXISTS meida;
 create DATABASE meida;
 use meida;
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-  `id` bigint(20) NOT NULL auto_increment,
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR (50) NOT null,
-  `email` varchar(50) NOT NULL,
-  `password` varchar(128) NOT NULL,
-  `status` int DEFAULT 0,
-  `openId` varchar(50),
+  `email` VARCHAR(50) NOT NULL,
+  `password` VARCHAR(128) DEFAULT NULL,
+  `status` INT DEFAULT 0,
+  `openId` VARCHAR(50),
   `company` VARCHAR (50),
   `companyAddress` VARCHAR (50),
   `deleteFlag` BIT DEFAULT 0,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `creater` bigint(20) NOT NULL ,
+  `creater` BIGINT(20) NOT NULL ,
   `updateTime` TIMESTAMP NOT NULL,
-  `updater` bigint(20) NOT NULL ,
+  `updater` BIGINT(20) NOT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ALTER TABLE `user` ADD UNIQUE (`email`);
 ALTER TABLE `user` ADD UNIQUE (`openId`);
 
+DROP TABLE IF EXISTS `userFriend`;
+CREATE TABLE `userFriend` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `userId` BIGINT(20) NOT NULL,
+  `friendId` BIGINT(20) NOT NULL,
+  `deleteFlag` BIT DEFAULT 0,
+  `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `creater` BIGINT(20) NOT NULL ,
+  `updateTime` TIMESTAMP NOT NULL,
+  `updater` BIGINT(20) NOT NULL ,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE index friend_userid_index on `userFriend`(userId);
+CREATE index friend_friendid_index on `userFriend`(friendId);
+
+
+DROP TABLE IF EXISTS `express`;
+CREATE TABLE `express` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR (50) NOT NULL,
+  `name` VARCHAR(50) NOT NULL,
+  `deleteFlag` BIT DEFAULT 0,
+  `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `creater` BIGINT(20) NOT NULL ,
+  `updateTime` TIMESTAMP NOT NULL,
+  `updater` BIGINT(20) NOT NULL ,
+  PRIMARY KEY (`id`)
+) ENGINE=myisam DEFAULT CHARSET=utf8;
+CREATE index express_code_index on `express`(`code`);
 /*
 DROP TABLE IF EXISTS `address`;
 CREATE TABLE `address` (
-  `id` bigint(20) NOT NULL,
-  `receiver` varchar(20) NOT NULL,
-  `mobile` varchar(20) ,
-  `address` varchar(100) NOT NULL,
-  `ownerId` bigint(20) NOT NULL,
+  `id` BIGINT(20) NOT NULL,
+  `receiver` VARCHAR(20) NOT NULL,
+  `mobile` VARCHAR(20) ,
+  `address` VARCHAR(100) NOT NULL,
+  `ownerId` BIGINT(20) NOT NULL,
   `deleteFlag` BIT DEFAULT 0,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `creater` bigint(20),
+  `creater` BIGINT(20),
   `updateTime` TIMESTAMP NOT NULL,
-  `updater` bigint(20),
+  `updater` BIGINT(20),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 CREATE index address_owner_index on address(ownerId);
 */
 
-DROP TABLE IF EXISTS `order`;
-CREATE TABLE `order` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `number` varchar(20) NOT NULL COMMENT '订单号',
+DROP TABLE IF EXISTS `tb_order`;
+CREATE TABLE `tb_order` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `number` VARCHAR(20) NOT NULL COMMENT '订单号',
   `type` INT NOT NULL COMMENT '1代理 2中转 3直达',
   `status` INT DEFAULT NULL COMMENT '0：预约待受理\r\n 1：发往中转仓 2：等待出仓中转 3：中转已完成 4：直达运输完成 -1：直达件',
-  `acceptUser` bigint(20) NOT NULL DEFAULT 0 COMMENT '受理方',
-  `acceptTime` bigint(13) DEFAULT NULL,
-  `transitUser` bigint(20) NOT NULL DEFAULT 0 COMMENT '中转方',
-  `remark` varchar(200),
-  `totalWarehouse` int DEFAULT 0 COMMENT '总件数',
-  `waitInWarehouse` int DEFAULT 0 COMMENT '等待入库',
-  `waitExWarehouse` int DEFAULT 0 COMMENT '等待出库',
-  `exWarehouse` int DEFAULT 0 COMMENT '已出库',
+  `acceptUser` BIGINT(20) NOT NULL DEFAULT 0 COMMENT '受理方',
+  `acceptTime` BIGINT(13) DEFAULT NULL,
+  `transitUser` BIGINT(20) NOT NULL DEFAULT 0 COMMENT '中转方',
+  `remark` VARCHAR(200),
+  `totalWarehouse` INT DEFAULT 0 COMMENT '总件数',
+  `waitInWarehouse` INT DEFAULT 0 COMMENT '等待入库',
+  `waitExWarehouse` INT DEFAULT 0 COMMENT '等待出库',
+  `exWarehouse` INT DEFAULT 0 COMMENT '已出库',
   `deleteFlag` BIT DEFAULT 0,
-  `ownerId` bigint(20) NOT NULL,
+  `ownerId` BIGINT(20) NOT NULL,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `creater` bigint(20) NOT NULL,
+  `creater` BIGINT(20) NOT NULL,
   `updateTime` TIMESTAMP NOT NULL,
-  `updater` bigint(20) NOT NULL ,
+  `updater` BIGINT(20) NOT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-CREATE UNIQUE index order_number_index on `order`(`number`);
-CREATE index order_owner_index on `order`(ownerId);
-CREATE index order_accept_index on `order`(acceptUser);
-CREATE index order_transit_index on `order`(transitUser);
+CREATE UNIQUE index order_number_index on `tb_order`(`number`);
+CREATE index order_owner_index on `tb_order`(ownerId);
+CREATE index order_accept_index on `tb_order`(acceptUser);
+CREATE index order_transit_index on `tb_order`(transitUser);
 
 DROP TABLE IF EXISTS `originalLogistic`;
 CREATE TABLE `originalLogistic` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `name` varchar(50) NOT NULL COMMENT '物流名称',
-  `number` varchar(50) NOT NULL COMMENT '物流号',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL COMMENT '物流名称',
+  `number` VARCHAR(50) NOT NULL COMMENT '物流号',
   `weight` decimal(6,2) NOT NULL,
   `status` INT DEFAULT 0 COMMENT '处理状态 0待入库 1已入库 2已出仓',
-  `receiver` varchar(20) NOT NULL,
-  `mobile` varchar(20) NOT NULL,
-  `address` varchar(100) NOT NULL,
-  `remark` varchar(200),
-  `orderId` bigint(20) NOT NULL,
+  `receiver` VARCHAR(20) NOT NULL,
+  `mobile` VARCHAR(20) NOT NULL,
+  `address` VARCHAR(100) NOT NULL,
+  `remark` VARCHAR(200),
+  `orderId` BIGINT(20) NOT NULL,
   `deleteFlag` BIT DEFAULT 0,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `creater` bigint(20) NOT NULL ,
+  `creater` BIGINT(20) NOT NULL ,
   `updateTime` TIMESTAMP NOT NULL,
-  `updater` bigint(20) NOT NULL ,
+  `updater` BIGINT(20) NOT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 CREATE index original_number_index on `originalLogistic`(`number`);
@@ -90,21 +120,21 @@ CREATE index original_order_index on `originalLogistic`(`orderId`);
 
 DROP TABLE IF EXISTS `transitLogistic`;
 CREATE TABLE `transitLogistic` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `name` varchar(50) NOT NULL COMMENT '物流名称',
-  `number` varchar(50) NOT NULL COMMENT '物流号',
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL COMMENT '物流名称',
+  `number` VARCHAR(50) NOT NULL COMMENT '物流号',
   `type` INT NOT NULL COMMENT '1拆包 2原装转发',
   `contactInfo` VARCHAR (200),
   `weight` decimal(6,2) NOT NULL,
-  `remark` varchar(200),
-  `orderId` bigint(20) NOT NULL,
-  `originalId` bigint(20) NOT NULL DEFAULT 0,
-  `sendTime` bigint(13) DEFAULT NULL,
+  `remark` VARCHAR(200),
+  `orderId` BIGINT(20) NOT NULL,
+  `originalId` BIGINT(20) NOT NULL DEFAULT 0,
+  `sendTime` BIGINT(13) DEFAULT NULL,
   `deleteFlag` BIT DEFAULT 0,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `creater` bigint(20) NOT NULL ,
+  `creater` BIGINT(20) NOT NULL ,
   `updateTime` TIMESTAMP NOT NULL,
-  `updater` bigint(20) NOT NULL ,
+  `updater` BIGINT(20) NOT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 CREATE index transit_number_index on `transitLogistic`(`number`);

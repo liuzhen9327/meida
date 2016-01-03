@@ -40,7 +40,7 @@ public class OrderService {
         try {
             order.set(Order.number, generateOrderNumber())
                     .set(Order.type, OrderTypeEnum.proxy.getValue())
-                    .set(Order.status, null)
+                    .set(Order.status, OrderStatusEnum.reserve.getValue())
                     .set(Order.acceptUser, 0)
                     .set(Order.transitUser, 0)
                     .set(Order.totalWarehouse, 0)

@@ -6,12 +6,16 @@ import com.jfinal.core.Controller;
 import com.jfinal.core.JFinal;
 import com.meida.exception.BusinessException;
 import com.meida.model.User;
+import com.meida.utils.UrlUtils;
 import com.meida.vo.JSONResult;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by liuzhen on 2015/12/23.
@@ -36,24 +40,36 @@ public class ExceptionInterceptor implements Interceptor {
             String errCode = null, errMsg = null;
             if (e instanceof BusinessException) {
                 BusinessException ex = (BusinessException) e;
-                errMsg = ex.getMessage();
+                errMsg = ex.getErrMsg();
                 errCode = ex.getErrCode();
             }
             if (isAjax) {
                 controller.renderJson(JSONResult.error(errCode, errMsg));
             } else {
-                if (inv.getActionKey().contains("login")) {
-                    controller.setAttr("errMsg", errMsg);
-                    controller.getRequest().setAttribute(User.email, controller.getPara(User.email));
-                    controller.getRequest().setAttribute(User.password, controller.getPara(User.password));
-                    controller.renderJsp("/login.jsp");
-                    return;
+                String actionKey = inv.getActionKey();
+                try {
+                    Map<String, String> params = new HashMap<String, String>();
+                    if (actionKey.contains("login")) {
+                        params.put("errMsg", errMsg);
+                        params.put(User.email, controller.getPara(User.email));
+                        params.put(User.password, controller.getPara(User.password));
+                        controller.redirect(UrlUtils.builder("/login.jsp", params));
+                        return;
+                    } else if (actionKey.contains("register")) {
+                        params.put("errMsg", errMsg);
+                        params.put(User.email, controller.getPara(User.email));
+                        params.put(User.name, controller.getPara(User.name));
+                        controller.redirect(UrlUtils.builder("/register.jsp", params));
+                        return;
+                    }
+                    String redirctUrl = request.getHeader("referer");
+                    if (StringUtils.isBlank(redirctUrl)) redirctUrl = request.getRequestURI();
+                    params.put("redirctUrl", redirctUrl);
+                    params.put("errMsg", errMsg);
+                    controller.redirect(UrlUtils.builder("/500.jsp", params));
+                } catch (UnsupportedEncodingException e1) {
                 }
-                String redirctUrl = request.getHeader("referer");
-                if (StringUtils.isBlank(redirctUrl)) redirctUrl = request.getRequestURI();
-                controller.setAttr("errMsg", errMsg);
-                controller.setAttr("redirctUrl", redirctUrl);
-                controller.renderJsp("/500.jsp");
+
             }
         }
     }

@@ -14,7 +14,7 @@ public enum OrderTypeEnum {
         this.name = name;
     }
 
-    public static OrderTypeEnum valueOf(int value) {    //    手写的从int到enum的转换函数
+    public static OrderTypeEnum valueOf(int value) {
         switch (value) {
             case 1:
                 return proxy;

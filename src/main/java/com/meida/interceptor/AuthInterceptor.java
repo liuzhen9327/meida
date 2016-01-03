@@ -1,12 +1,11 @@
 package com.meida.interceptor;
 
 import com.meida.config.Constant;
-import com.meida.utils.ServletUtils;
+import com.meida.controller.BaseController;
 import org.apache.commons.lang.StringUtils;
 
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
-import com.jfinal.core.Controller;
 import com.jfinal.weixin.sdk.api.OpenIdApi;
 import com.meida.model.User;
 import com.meida.service.UserService;
@@ -15,17 +14,18 @@ public class AuthInterceptor implements Interceptor{
 
 	@Override
 	public void intercept(Invocation inv) {
-		Controller controller = inv.getController();
+		BaseController controller = (BaseController) inv.getController();
 
-		String authId = ServletUtils.getCookie(controller.getRequest(), Constant.COOKIE_AUTH_KEY);
+		String authId = controller.getCookie(Constant.COOKIE_AUTH_KEY);
 		if (StringUtils.isBlank(authId)) {
 			controller.redirect("/login.jsp");
 			return;
 		}
 
-		User user = UserService.getUserByCache(authId);
+		User user = controller.getCurrentUser();
 	    if (user != null) {
 			inv.invoke();
+			UserService.refreshUserByCache(authId, user);
 		} else {
 	    	String code = controller.getPara("code");
 	    	if(StringUtils.isBlank(code)) {

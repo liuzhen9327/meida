@@ -5,6 +5,8 @@ import com.jfinal.weixin.sdk.api.ApiConfig;
 
 public class Constant {
 
+	public final static String CHARSET = "UTF-8";
+
 	public static ApiConfig apiConfig = null;
 	
 	public static String  EMAIL_SUBJECT = null,
@@ -40,4 +42,6 @@ public class Constant {
 
 		mysqlBatchSize = PropKit.getInt("mysqlBatchSize");
 	}
+
+	public final static String CUT_FILL_STR = "...";
 }
