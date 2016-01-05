@@ -3,7 +3,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.meida.model.User" %>
 <%@ page import="com.meida.model.Order" %>
-<%@ page import="com.meida.utils.StringUtils" %><%--
+<%@ page import="com.meida.utils.StringUtils" %>
+<%@ page import="com.meida.enumerate.OrderTypeEnum" %><%--
   Created by IntelliJ IDEA.
   User: liuzhen
   Date: 2016/1/5
@@ -14,7 +15,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>订单受理</title>
+    <title>物流订单预报单</title>
     <%@include file="/commons/links.jsp" %>
 </head>
 
@@ -32,7 +33,7 @@ User customer = (User) request.getAttribute("customer");%>
         <%@include file="/commons/headerBar.jsp" %>
 
         <div class="pageheader">
-            <h2><i class="fa fa-pencil"></i>订单受理 <span>Meida</span></h2>
+            <h2><i class="fa fa-pencil"></i>物流订单预报单 <span>Meida</span></h2>
         </div>
         <div class="contentpanel">
             <div class="">
@@ -47,11 +48,13 @@ User customer = (User) request.getAttribute("customer");%>
                         <div id="basicWizard" class="basic-wizard">
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tab1">
-                                    <form class="form" action="/order/accept" method="post" data-toggle="validator" role="form">
-                                        <input name="id" type="hidden" value="<%=order.getLong(Order.id)%>"/>
+                                    <form class="form" action="/order/accept" method="post">
                                         <div class="form-group">
-                                            <label class="col-sm-2 control-label"><i class="fa fa-user"></i> 客户</label>
-                                            <div class="col-sm-2"> <a href="javascript:void(0)"><%=customer.getStr(User.name)%></a> </div>
+                                            <label class="col-sm-2">物流属性 <span class="asterisk">*</span></label>
+
+                                            <div class="col-sm-2">
+                                                <%=OrderTypeEnum.valueOf(order.getInt(Order.type)).getName()%>
+                                            </div>
                                         </div>
                                         <!--<div class="form-group">
                                             <label class="col-sm-2 control-label"><i class="fa fa-cubes"></i> 受理邮件数：</label>
@@ -60,14 +63,9 @@ User customer = (User) request.getAttribute("customer");%>
                                         <div class="form-group">
                                             <label class="col-sm-2"><i class="fa fa-code-fork"></i> 受理方<span class="asterisk">*</span></label>
                                             <div class="col-sm-3">
-                                                <select class="select2" data-placeholder="选择转运受理" required>
-                                                    <option value=""></option>
-                                                    <%for (User friend : myFriends) { %>
-                                                    <option value="<%=friend.getLong(User.id)%>"><%=friend.getStr(User.name)%></option>
-                                                    <%}%>
-                                                </select>
+                                                <a href="javascript:void(0)"><%=customer.getStr(User.name)%></a>
                                             </div>
-                                            <label class="col-sm-4"><a href="profile_list_my.html">转运方管理</a></label>
+                                            <!--<label class="col-sm-4"><a href="profile_list_my.html">转运方管理</a></label>-->
                                         </div>
                                         <!--多行数据添加-->
                                         <!-- BASIC WIZARD -->
@@ -135,7 +133,7 @@ User customer = (User) request.getAttribute("customer");%>
                                         <!--多行数据添加-->
 
                                         <div class="col-sm-9 col-sm-offset-3">
-                                            <button type="submit" class="btn btn-primary">受理订单</button>
+                                            <button type="submit" class="btn btn-primary">保存</button>
                                             <button type="button" onclick="javascript:window.history.back()" class="btn btn-default">返回</button>
                                         </div>
                                     </form>

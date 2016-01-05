@@ -2,6 +2,7 @@ package com.meida.interceptor;
 
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.core.JFinal;
 import com.meida.exception.BusinessException;
@@ -42,6 +43,9 @@ public class ExceptionInterceptor implements Interceptor {
                 BusinessException ex = (BusinessException) e;
                 errMsg = ex.getErrMsg();
                 errCode = ex.getErrCode();
+            } else if (e instanceof ActionException) {
+                controller.render(((ActionException) e).getErrorRender());
+                return;
             }
             if (isAjax) {
                 controller.renderJson(JSONResult.error(errCode, errMsg));

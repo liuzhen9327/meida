@@ -1,8 +1,9 @@
 package com.meida.controller;
 
-import com.jfinal.core.Controller;
-import com.meida.config.Constant;
+import com.meida.enumerate.ExceptionEnum;
+import com.meida.enumerate.OrderStatusEnum;
 import com.meida.enumerate.OrderTypeEnum;
+import com.meida.exception.BusinessException;
 import com.meida.model.Order;
 import com.meida.model.OriginalLogistic;
 import com.meida.model.User;
@@ -21,13 +22,26 @@ import java.util.List;
  */
 public class OrderController extends BaseController {
 
-//    public void detail() {
-//        long id = getParaToLong(0, 0l);
-//        if (id == 0) redirect("");//TODO  你访问的页面不存在
-//        Order order = OrderService.get(id);
-//        setAttr("order", order);
-//        renderJsp("detail.jsp");
-//    }
+    public void detail() {
+        long id = getParaToLong(0, 0l);
+        if (id == 0) renderError(404);
+        User user = getCurrentUser();
+        long userId = user.getLong(User.id);
+
+        Order order = OrderService.get(id);
+        OrderStatusEnum orderStatus = OrderStatusEnum.valueOf(order.getInt(Order.status));
+        switch (orderStatus) {
+            case reserve:
+                long ownerId = order.getLong(Order.ownerId);
+                if (ownerId == userId) {
+                    edit();
+                    return;
+                }
+                toAccept();
+                return;
+        }
+        renderError(404);
+    }
 
     private void loadBaseOrderData(long orderId, long userId) {
         List<OriginalLogistic> originalLogisticList = OriginalLogisticService.findByOrderId(orderId);
@@ -62,6 +76,10 @@ public class OrderController extends BaseController {
         renderJson(JSONResult.succ());
     }
 
+    public void edit() {
+
+    }
+
     public void list() {
         User user = getCurrentUser();
         long userId = user.getLong(User.id);
@@ -89,46 +107,25 @@ public class OrderController extends BaseController {
         renderJsp("toAccept.jsp");
     }
 
+    public void cancel() {
+        User user = getCurrentUser();
+        long userId = user.getLong(User.id);
+
+        long id = getParaToLong(Order.id, 0l);
+        OrderService.delete(id, userId);
+        renderJson(JSONResult.succ());
+    }
+
     public void accept() {
         User user = getCurrentUser();
         long userId = user.getLong(User.id);
 
-        long id = getParaToLong(Order.id);
+        long id = getParaToLong(Order.id, 0l);
         String remark = getPara(Order.remark);
         Long transitUserId = getParaToLong(Order.transitUser, 0l);
         OrderService.accept(id, transitUserId, userId, remark);
+        redirect("/order/list");
     }
 
-    public void saveOriginal() {
-        //TODO orderid 状态判断, 订单所有者判断, userId是否有编辑权限
-        User user = getCurrentUser();
-        long userId = user.getLong(User.id);
 
-        String receiver = getPara(OriginalLogistic.receiver),
-                mobile = getPara(OriginalLogistic.mobile),
-                address = getPara(OriginalLogistic.address),
-                remark = getPara(OriginalLogistic.remark),
-                name = getPara(OriginalLogistic.name),
-                number = getPara(OriginalLogistic.number),
-                weight = getPara(OriginalLogistic.weight);
-        long id = getParaToLong(OriginalLogistic.id, 0l),
-            orderId = getParaToLong(OriginalLogistic.orderId);
-        OriginalLogistic originalLogistic = OriginalLogisticService.save(
-                id, userId, orderId, remark, receiver, mobile, address, name, number, new BigDecimal(weight));
-        renderJson(JSONResult.succ(originalLogistic));
-    }
-
-    public void editOriginal() {
-        long id = getParaToLong(OriginalLogistic.id, 0l);
-        renderJson(JSONResult.succ(OriginalLogisticService.get(id)));
-    }
-
-    public void deleteOriginal() {
-        User user = getCurrentUser();
-        long userId = user.getLong(User.id);
-
-        long id = getParaToLong(OriginalLogistic.id, 0l);
-        OriginalLogisticService.delete(id, userId);
-        renderJson(JSONResult.succ());
-    }
 }

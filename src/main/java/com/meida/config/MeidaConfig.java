@@ -72,6 +72,7 @@ public class MeidaConfig extends JFinalConfig {
         me.add("/user", UserController.class);
 
         me.add("/order", OrderController.class);
+        me.add("/original", OriginalController.class);
 //        me.add("/express", ExpressController.class);
     }
 

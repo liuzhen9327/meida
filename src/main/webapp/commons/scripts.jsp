@@ -8,8 +8,11 @@
 <script src="http://cdn.bootcss.com/jquery-toggles/2.0.4/toggles.min.js"></script>
 <script src="http://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
+<script src="http://cdn.bootcss.com/jquery-validate/1.13.1/jquery.validate.min.js"></script>
+<script src="//cdn.bootcss.com/retina.js/1.3.0/retina.min.js"></script>
 
 <script src="http://cdn.bootcss.com/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
 <script src="http://cdn.bootcss.com/select2/3.5.2/select2.min.js"></script>
 
-<script src="<%=request.getContextPath()%>/js/commons/default.js"></script>
+<%--<script src="/js/commons/validator.min.js"></script>--%>
+<script src="/js/commons/default.js"></script>

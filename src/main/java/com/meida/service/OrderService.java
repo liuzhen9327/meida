@@ -144,14 +144,17 @@ public class OrderService {
         order.set(Order.transitUser, transitUserId)
                 .set(Order.acceptTime, DateUtils.getTimeInMillis())
                 .set(Order.updater, userId)
-                .set(Order.status, OrderStatusEnum.accepted)
+                .set(Order.status, OrderStatusEnum.accepted.getValue())
                 .set(Order.remark, remark)
                 .update();
     }
 
     public static Order toAccept(long id, long userId) {
         Order order = get(id);
-        if (order.getLong(Order.acceptUser) != userId) {
+        long acceptUserId = order.getLong(Order.acceptUser);
+        if (order.getInt(Order.type) != OrderTypeEnum.proxy.getValue())
+            throw new BusinessException(ExceptionEnum.ACCEPT_ORDER_TYPE_ERROR);
+        if (acceptUserId != 0 && acceptUserId != userId) {
             throw new BusinessException(ExceptionEnum.NOT_ORDER_ACCEPTER);
         }
         return order;

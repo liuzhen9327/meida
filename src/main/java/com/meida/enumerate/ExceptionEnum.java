@@ -20,7 +20,8 @@ public enum ExceptionEnum {
     NOT_ORDER_CREATER("您不是该订单创建人，无权取消订单"),
     NOT_ORDER_ACCEPTER("您不是该订单的受理人，无权受理订单"),
     ORDER_TYPE_MUST_PROXY("订单类型必须是代理才能受理订单"),
-    ORDER_CANCEL_ERROR("订单状态为[{0}]，不能取消订单")
+    ORDER_CANCEL_ERROR("订单状态为[{0}]，不能取消订单"),
+    ACCEPT_ORDER_TYPE_ERROR("订单属性不是[{0}], 不能受理订单"),
     ;
 
     private String message;

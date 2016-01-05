@@ -267,7 +267,7 @@ List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.g
 
 
                                 <div class="col-lg-4">
-                                    <select class="select2 select2-offscreen required" name="name" placeholder="邮件公司" >
+                                    <select class="select2 required" name="name" placeholder="邮件公司" >
                                         <%for (Express express: expressList){%>
                                         <option value="<%=express.getStr(Express.code)%>"><%=express.getStr(Express.name)%></option>
                                         <%}%>
@@ -301,6 +301,7 @@ List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.g
 </body>
 <%@include file="/commons/scripts.jsp" %>
 <script src="//cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
+<script src="/js/order/commons.js"></script>
 <script src="/js/order/newOrder.js"></script>
 <script>
     //选择直达后隐藏受理方控件

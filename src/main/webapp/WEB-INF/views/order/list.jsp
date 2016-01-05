@@ -95,7 +95,9 @@
                                 <%for (Order order : orderList) {%>
                                 <%OrderStatusEnum orderStatus = OrderStatusEnum.valueOf(order.getInt(Order.status));%>
                                 <tr class="gradeC">
-                                    <th ><a href="/order/detail/<%=order.get(Order.id)%>"><%=order.get(Order.number)%></a></th>
+                                    <th ><a href="/order/detail/<%=order.get(Order.id)%>">
+                                        <input type="hidden" value="<%=order.getLong(Order.id)%>"/><%=order.get(Order.number)%>
+                                    </a></th>
                                     <th ><i class="fa <%=orderStatus.getClassName()%>"></i> <strong><%=orderStatus.getName()%></strong></th>
                                     <th ><%=order.getInt(Order.totalWarehouse)%></th>
                                     <th ><%=order.getInt(Order.waitInWarehouse) == 0 ? "-":order.getInt(Order.waitInWarehouse)%></th>
@@ -104,7 +106,7 @@
                                     <th ><%=order.getAcceptTime()%></th>
                                     <th ><%=orderStatus == OrderStatusEnum.reserve
                                             && order.getLong(Order.ownerId).equals(((User) request.getAttribute("user")).getLong(User.id))?
-                                            "<button class='btn btn-primary btn-xs'>取消订单</button>":""%></th>
+                                            "<button class='btn btn-primary x-cancel-btn btn-xs'>取消订单</button>":""%></th>
                                 </tr>
                                 <%}%>
 
@@ -161,9 +163,10 @@
 
                                     <select class="select2" data-placeholder="选择订单状态">
                                         <option value=""></option>
-                                        <option value="">预约待受理</option>
-                                        <option value="">受理成功</option>
-                                        <option value="">直达件</option>
+                                        <%OrderStatusEnum[] orderStatusEnums = OrderStatusEnum.values();
+                                            for (OrderStatusEnum orderStatusEnum : orderStatusEnums) {%>
+                                        <option value="<%=orderStatusEnum.getValue()%>"><%=orderStatusEnum.getName()%></option>
+                                        <%}%>
                                     </select>
 
                                 </div>
@@ -231,12 +234,22 @@
         });
 
         // Delete row in a table
-        jQuery('.delete_row').click(function(){
-            var c = confirm("确认删除此条信息吗？");
+        jQuery('.x-cancel-btn').click(function(){
+            var ele = $(this);
+            var id = ele.closest('tr').find('th:first').find('input:first').val();
+            if(isNaN(id)) {
+                console.log('id %s not number!', id);
+                return;
+            }
+            var c = confirm("确认取消订单吗？");
             if(c)
-                jQuery(this).closest('tr').fadeOut(function(){
-                    jQuery(this).remove();
-                });
+                $.post('/order/cancel',{id:id}, function(resp){
+                    if(resp.succ) {
+                        ele.closest('tr').fadeOut(function () {
+                            jQuery(this).remove();
+                        });
+                    }
+                },'json');
 
             return false;
         });
