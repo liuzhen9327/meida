@@ -4,7 +4,9 @@ import com.jfinal.kit.HashKit;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.meida.config.Constant;
 import com.meida.enumerate.ExceptionEnum;
+import com.meida.enumerate.OrderTypeEnum;
 import com.meida.exception.BusinessException;
+import com.meida.model.Order;
 import com.meida.model.User;
 import com.meida.utils.EmailUtils;
 import org.apache.commons.codec.binary.Base64;
@@ -41,7 +43,19 @@ public class UserService {
 		return saveUser2Cache(user);
 	}
 
-	/**
+    public static User get(long id) {
+        return User.dao.findById(id);
+    }
+
+    public static User getCustomerByOrder(Order order) {
+        int orderType = order.getInt(Order.type);
+        if(orderType != OrderTypeEnum.proxy.getValue()) {
+            throw new BusinessException(ExceptionEnum.ORDER_TYPE_MUST_PROXY);
+        }
+        return get(order.getLong(Order.acceptUser));
+    }
+
+    /**
 	 * @param user
 	 * @return authId
      */

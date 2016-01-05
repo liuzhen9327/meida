@@ -1,0 +1,15 @@
+@charset "utf-8";
+/*扩展 CSS Document */
+.box_st{position:fixed; bottom:0;}
+.so_title{background:#1caf9a;color:#FFF;}
+.so_tex{color:#FFF;height:40px;line-height:40px;text-align:center;background:#0b0f14;}
+.so_activit{background:#DFDFDF;}
+.fj_padding_top{padding-top:20px;}
+.fj_padding{padding:7px;}
+.fj_text_c{color:#FFF;}
+.fg{height:5px;background:#60F}
+.fj_sm_text_title{
+	color:#333;
+	font-weight: bold;
+}
+

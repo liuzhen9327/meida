@@ -37,7 +37,7 @@ public class ExceptionInterceptor implements Interceptor {
             //判断是否ajax请求
             String header = request.getHeader("X-Requested-With");
             boolean isAjax = "XMLHttpRequest".equalsIgnoreCase(header);
-            String errCode = null, errMsg = null;
+            String errCode = null, errMsg = "系统出错啦!";
             if (e instanceof BusinessException) {
                 BusinessException ex = (BusinessException) e;
                 errMsg = ex.getErrMsg();

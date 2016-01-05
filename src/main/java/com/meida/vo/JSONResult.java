@@ -1,7 +1,5 @@
 package com.meida.vo;
 
-import com.alibaba.fastjson.JSON;
-import com.jfinal.kit.JsonKit;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -9,28 +7,27 @@ import org.apache.commons.lang.StringUtils;
  */
 public class JSONResult {
     private boolean succ;
-    private String succMsg = StringUtils.EMPTY;
     private String errCode = StringUtils.EMPTY;
     private String errMsg = StringUtils.EMPTY;
     private Object data;
 
-    public static String succ() {
+    public static JSONResult succ() {
         return succ(null);
     }
-    public static String succ(Object data) {
+    public static JSONResult succ(Object data) {
         JSONResult result = new JSONResult();
         result.setSucc(true);
         if(data != null){
-            result.setData(JsonKit.toJson(data));
+            result.setData(data);
         }
-        return JSON.toJSONString(result);
+        return result;
     }
 
-    public static String error(String errCode, String errMsg) {
+    public static JSONResult error(String errCode, String errMsg) {
         JSONResult result = new JSONResult();
         result.setErrCode(errCode);
         result.setErrMsg(errMsg);
-        return JSON.toJSONString(result);
+        return result;
     }
 
     public boolean isSucc() {
@@ -39,14 +36,6 @@ public class JSONResult {
 
     public void setSucc(boolean succ) {
         this.succ = succ;
-    }
-
-    public String getSuccMsg() {
-        return succMsg;
-    }
-
-    public void setSuccMsg(String succMsg) {
-        this.succMsg = succMsg;
     }
 
     public String getErrCode() {

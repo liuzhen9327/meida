@@ -16,7 +16,7 @@ import java.util.List;
 public class OriginalLogisticService {
 
     @Before(Tx.class)
-    public static void save(Long id, long userId, long orderId, String remark,
+    public static OriginalLogistic save(long id, long userId, long orderId, String remark,
             String receiver, String mobile, String address,
             String name, String number, BigDecimal weight) {
         OriginalLogistic originalLogistic = new OriginalLogistic().set(OriginalLogistic.name, name)
@@ -29,21 +29,23 @@ public class OriginalLogisticService {
                 .set(OriginalLogistic.remark, remark)
                 .set(OriginalLogistic.orderId, orderId)
                 .set(OriginalLogistic.updater, userId);
-        if (id == null) {
+        if (id == 0) {
             originalLogistic.set(OriginalLogistic.creater, userId)
-                    .set(OriginalLogistic.status, OriginalLogisticStatusEnum.waitInWarehouse)
+                    .set(OriginalLogistic.status, OriginalLogisticStatusEnum.waitInWarehouse.getValue())
                     .save();
             Order order = OrderService.get(orderId);
             int totalWarehouse = order.getInt(Order.totalWarehouse);
             int waitInWarehouse = order.getInt(Order.waitInWarehouse);
             int waitExWarehouse = order.getInt(Order.waitExWarehouse);
             int exWarehouse = order.getInt(Order.exWarehouse);
-            OrderService.updateWarehouse(orderId, totalWarehouse++, waitInWarehouse++, waitExWarehouse, exWarehouse);
+            totalWarehouse ++;
+            waitInWarehouse ++;
+            OrderService.updateWarehouse(orderId, totalWarehouse, waitInWarehouse, waitExWarehouse, exWarehouse);
         } else {
             originalLogistic.set(OriginalLogistic.id, id);
             originalLogistic.update();
         }
-
+        return originalLogistic;
     }
 
     @Before(Tx.class)
@@ -67,11 +69,12 @@ public class OriginalLogisticService {
                 exWarehouse --;
                 break;
         }
-        OrderService.updateWarehouse(orderId, totalWarehouse--, waitInWarehouse, waitExWarehouse, exWarehouse);
+        totalWarehouse --;
+        OrderService.updateWarehouse(orderId, totalWarehouse, waitInWarehouse, waitExWarehouse, exWarehouse);
         originalLogistic.deleteById(id);
     }
 
-    public static OriginalLogistic edit(long id) {
+    public static OriginalLogistic get(long id) {
         return OriginalLogistic.dao.findById(id);
     }
 

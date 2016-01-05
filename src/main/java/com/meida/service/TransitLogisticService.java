@@ -40,8 +40,10 @@ public class TransitLogisticService {
         int waitInWarehouse = order.getInt(Order.waitInWarehouse);
         int waitExWarehouse = order.getInt(Order.waitExWarehouse);
         int exWarehouse = order.getInt(Order.exWarehouse);
+        waitInWarehouse --;
+        waitExWarehouse ++;
         //改变订单 待入库和已入库数量
-        OrderService.updateWarehouse(orderId, totalWarehouse, waitInWarehouse--, waitExWarehouse++, exWarehouse);
+        OrderService.updateWarehouse(orderId, totalWarehouse, waitInWarehouse, waitExWarehouse, exWarehouse);
     }
 
     public static void save(long originalId, long orderId, long userId,

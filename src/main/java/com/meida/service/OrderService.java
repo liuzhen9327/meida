@@ -6,6 +6,7 @@ import com.meida.enumerate.OrderStatusEnum;
 import com.meida.enumerate.OrderTypeEnum;
 import com.meida.exception.BusinessException;
 import com.meida.model.Order;
+import com.meida.model.User;
 import com.meida.utils.DateUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -13,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -62,18 +62,24 @@ public class OrderService {
     }
 
     public static boolean saveOrCommit(long id, OrderTypeEnum orderType,
-                long userId, String remark, boolean isCommit) {
-        Order order = new Order().set(Order.type, orderType.getValue());
+                long userId, String remark, Long acceptUserId, boolean isCommit) {
+        Order order = null;
+        if(isCommit) {
+            order = get(id);
+            if(order.getInt(Order.totalWarehouse) == 0) throw new BusinessException(ExceptionEnum.ORDER_NO_LOGISTIC);
+        }
+        order = new Order();
+        order.set(Order.type, orderType.getValue());
         switch (orderType) {
             case proxy:
-                order.set(Order.acceptUser, userId);
+                order.set(Order.acceptUser, acceptUserId);
                 break;
             case transit:
-                order.set(Order.transitUser, userId);
+                order.set(Order.transitUser, acceptUserId);
                 break;
-            default:
-                throw new BusinessException(ExceptionEnum.SAVE_ORDER_ERROR,
-                        !isCommit? "保存" : "提交", orderType.getName());
+//            default:
+//                throw new BusinessException(ExceptionEnum.SAVE_ORDER_ERROR,
+//                        !isCommit? "保存" : "提交", orderType.getName());
         }
         if (isCommit) order.set(Order.status, OrderStatusEnum.reserve.getValue());
         order.set(Order.updater, userId)
@@ -93,7 +99,20 @@ public class OrderService {
     }
 
     public static Order get(long id) {
-        return Order.dao.findById(id);
+        Order order = Order.dao.findById(id);
+        if (order == null) {
+            throw new BusinessException(ExceptionEnum.ORDER_NOT_EXIST, id);
+        }
+
+        if(order.getBoolean(Order.deleteFlag)) {
+            User user = UserService.get(order.getLong(Order.updater));
+            throw new BusinessException(ExceptionEnum.ORDER_WAS_CANCELED, user != null ? user.getStr(User.name):"");
+        }
+        return order;
+    }
+
+    public static List<Order> getMyAllOrders(long userId) {
+        return Order.dao.find(Order.sql_findMyOrders, userId, userId, userId, false);
     }
 
     /**
@@ -102,9 +121,16 @@ public class OrderService {
      * @param userId 操作人
      */
     public static void delete(long id, long userId) {
-        new Order().set(Order.deleteFlag, true)
+        Order order = get(id);
+        if(order.getInt(Order.status) != OrderStatusEnum.reserve.getValue())
+            throw new BusinessException(ExceptionEnum.ORDER_STATUS_NOT_RESERVE);
+        if(!order.getLong(Order.ownerId).equals(userId))
+            throw new BusinessException(ExceptionEnum.NOT_ORDER_CREATER);
+        if(order.getInt(Order.status) != OrderStatusEnum.reserve.getValue())
+            throw new BusinessException(ExceptionEnum.ORDER_CANCEL_ERROR, OrderStatusEnum.valueOf(order.getInt(Order.status)).getName());
+        order.set(Order.deleteFlag, true)
                 .set(Order.updater, userId)
-                .set(Order.id, id).update();
+                .update();
     }
 
     /**
@@ -113,12 +139,22 @@ public class OrderService {
      * @param transitUserId 受理时选择的中转方
      * @param userId
      */
-    public static void accept(long id, long transitUserId, long userId) {
-        new Order().set(Order.transitUser, transitUserId)
+    public static void accept(long id, long transitUserId, long userId, String remark) {
+        Order order = toAccept(id, userId);
+        order.set(Order.transitUser, transitUserId)
                 .set(Order.acceptTime, DateUtils.getTimeInMillis())
                 .set(Order.updater, userId)
                 .set(Order.status, OrderStatusEnum.accepted)
-                .set(Order.id, id).update();
+                .set(Order.remark, remark)
+                .update();
+    }
+
+    public static Order toAccept(long id, long userId) {
+        Order order = get(id);
+        if (order.getLong(Order.acceptUser) != userId) {
+            throw new BusinessException(ExceptionEnum.NOT_ORDER_ACCEPTER);
+        }
+        return order;
     }
 
 }
