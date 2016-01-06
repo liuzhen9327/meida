@@ -22,6 +22,7 @@ public enum ExceptionEnum {
     ORDER_TYPE_MUST_PROXY("订单类型必须是代理才能受理订单"),
     ORDER_CANCEL_ERROR("订单状态为[{0}]，不能取消订单"),
     ACCEPT_ORDER_TYPE_ERROR("订单属性不是[{0}], 不能受理订单"),
+    NO_MATCH_ORIGINAL_LOGISTIC("没有检索到物流信息"),
     ;
 
     private String message;

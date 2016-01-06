@@ -4,8 +4,10 @@ import com.jfinal.aop.Before;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.meida.config.Constant;
+import com.meida.enumerate.ExceptionEnum;
 import com.meida.enumerate.OriginalLogisticStatusEnum;
 import com.meida.enumerate.TransitLogisticTypeEnum;
+import com.meida.exception.BusinessException;
 import com.meida.model.Order;
 import com.meida.model.OriginalLogistic;
 import com.meida.model.TransitLogistic;
@@ -32,6 +34,7 @@ public class TransitLogisticService {
     @Before(Tx.class)
     public static void scan(String number, long userId) {
         OriginalLogistic originalLogistic = OriginalLogisticService.findByNumber(number);
+        if (originalLogistic == null) throw new BusinessException(ExceptionEnum.NO_MATCH_ORIGINAL_LOGISTIC);
         //原始物流状态变更为 已入库
         originalLogistic.set(OriginalLogistic.status, OriginalLogisticStatusEnum.alreadyInWarehouse.getValue()).update();
         long orderId = originalLogistic.getLong(OriginalLogistic.orderId);

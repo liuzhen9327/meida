@@ -7,7 +7,8 @@ public class StringUtils {
     }
 
     public static String getStr(Object obj) {
-        return getStr((String) obj);
+        if (obj == null) return "";
+        return getStr(obj.toString());
     }
 
     public static String cutStr(String str, int len) {
