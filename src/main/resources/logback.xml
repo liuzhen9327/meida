@@ -34,5 +34,8 @@
     	<!-- 控制台输出不写入文件 -->
         <!-- <appender-ref ref="STDOUT"/> -->     
         <appender-ref ref="FILE" />     
-    </root> 
+    </root>
+
+    <logger name="com.meida"/>
+    <logger name="com.jfinal"/>
 </configuration>

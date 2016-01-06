@@ -30,7 +30,11 @@ public class OrderController extends BaseController {
 
         Order order = OrderService.get(id);
         OrderStatusEnum orderStatus = OrderStatusEnum.valueOf(order.getInt(Order.status));
+
         switch (orderStatus) {
+            case NULL:
+                newOrder();
+                return;
             case reserve:
                 long ownerId = order.getLong(Order.ownerId);
                 if (ownerId == userId) {
@@ -72,12 +76,25 @@ public class OrderController extends BaseController {
         String remark = getPara(Order.remark);
         Long acceptUserId = getParaToLong(Order.acceptUser, 0l);
 
-        OrderService.saveOrCommit(id, OrderTypeEnum.valueOf(orderType), userId, remark, acceptUserId, false);
+        boolean isCommit = getParaToBoolean("isCommit", false);
+
+        OrderService.saveOrCommit(id, OrderTypeEnum.valueOf(orderType), userId, remark, acceptUserId, isCommit);
         renderJson(JSONResult.succ());
     }
 
-    public void edit() {
+    private void edit() {
+        User user = getCurrentUser();
+        long userId = user.getLong(User.id);
 
+        long id = getParaToLong(0, 0l);
+        Order order = OrderService.get(id);
+        setAttr("order", order);
+
+        User customer = UserService.getCustomerByOrder(order);
+        setAttr("customer", customer);
+
+        loadBaseOrderData(order.getLong(Order.id), userId);
+        renderJsp("edit.jsp");
     }
 
     public void list() {
@@ -88,15 +105,11 @@ public class OrderController extends BaseController {
         renderJsp("list.jsp");
     }
 
-    public void toAccept() {
+    private void toAccept() {
         User user = getCurrentUser();
         long userId = user.getLong(User.id);
 
-        Long id = getParaToLong(0);
-        if (id == null || !StringUtils.isNumeric(String.valueOf(id))) {
-            redirect("");//TODO 非法参数
-            return;
-        }
+        long id = getParaToLong(0, 0l);
         Order order = OrderService.toAccept(id, userId);
         setAttr("order", order);
 
@@ -104,7 +117,7 @@ public class OrderController extends BaseController {
         setAttr("customer", customer);
 
         loadBaseOrderData(order.getLong(Order.id), userId);
-        renderJsp("toAccept.jsp");
+        renderJsp("accept.jsp");
     }
 
     public void cancel() {

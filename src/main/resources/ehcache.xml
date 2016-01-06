@@ -43,6 +43,14 @@
            overflowToDisk="true"
            diskPersistent="true"
     />
+
+    <cache name="menu"
+           maxElementsInMemory="100"
+           maxElementsOnDisk="100"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"
+    />
             
      <!--<cache name="addressList"-->
            <!--maxElementsInMemory="10000"-->

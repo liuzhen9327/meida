@@ -32,6 +32,7 @@ public class ExceptionInterceptor implements Interceptor {
 
         try {
             inv.invoke();
+            request.setAttribute("currentMenu", inv.getActionKey());
         } catch (Exception e) {
             //记录日志
             doLog(inv, e);

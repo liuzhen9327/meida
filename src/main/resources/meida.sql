@@ -51,6 +51,23 @@ CREATE TABLE `express` (
   PRIMARY KEY (`id`)
 ) ENGINE=myisam DEFAULT CHARSET=utf8;
 CREATE index express_code_index on `express`(`code`);
+
+
+DROP TABLE IF EXISTS `menu`;
+CREATE TABLE `menu` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR (50) NOT NULL,
+  `path` VARCHAR(50) NOT NULL,
+  `className` VARCHAR(50) NOT NULL,
+  `parentId` BIGINT(20) NOT NULL DEFAULT 0,
+  `deleteFlag` BIT DEFAULT 0,
+  `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `creater` BIGINT(20) NOT NULL ,
+  `updateTime` TIMESTAMP NOT NULL,
+  `updater` BIGINT(20) NOT NULL ,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE index menu_parentid_index on `express`(`parentId`);
 /*
 DROP TABLE IF EXISTS `address`;
 CREATE TABLE `address` (

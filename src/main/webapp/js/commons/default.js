@@ -51,29 +51,30 @@ jQuery(document).ready(function() {
    "use strict";
 
    // Toggle Left Menu
-   jQuery('.leftpanel .nav-parent > a').live('click', function() {
+    $('.leftpanel').on('click','.nav-parent > a',function(){
+        var parent = jQuery(this).parent();
+        var sub = parent.find('> ul');
 
-      var parent = jQuery(this).parent();
-      var sub = parent.find('> ul');
-
-      // Dropdown works only when leftpanel is not collapsed
-      if(!jQuery('body').hasClass('leftpanel-collapsed')) {
-         if(sub.is(':visible')) {
-            sub.slideUp(200, function(){
-               parent.removeClass('nav-active');
-               jQuery('.mainpanel').css({height: ''});
-               adjustmainpanelheight();
-            });
-         } else {
-            closeVisibleSubMenu();
-            parent.addClass('nav-active');
-            sub.slideDown(200, function(){
-               adjustmainpanelheight();
-            });
-         }
-      }
-      return false;
-   });
+        // Dropdown works only when leftpanel is not collapsed
+        if(!jQuery('body').hasClass('leftpanel-collapsed')) {
+            if(sub.is(':visible')) {
+                sub.slideUp(200, function(){
+                    parent.removeClass('nav-active');
+                    jQuery('.mainpanel').css({height: ''});
+                    adjustmainpanelheight();
+                });
+            } else {
+                closeVisibleSubMenu();
+                parent.addClass('nav-active');
+                sub.slideDown(200, function(){
+                    adjustmainpanelheight();
+                });
+            }
+        }
+        return false;
+    }).find('li.active').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
+        adjustmainpanelheight();
+    });
 
    function closeVisibleSubMenu() {
       jQuery('.leftpanel .nav-parent').each(function() {

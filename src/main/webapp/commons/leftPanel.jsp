@@ -1,3 +1,5 @@
+<%@ page import="com.meida.model.Menu" %>
+<%@ page import="org.apache.commons.lang.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!-- Preloader -->
 <div id="preloader">
@@ -11,6 +13,7 @@
 	<!-- logopanel -->
 	<div class="leftpanelinner">
 		<!-- This is only visible to small devices -->
+        <!--
 		<div class="visible-xs hidden-sm hidden-md hidden-lg">
 			<div class="media userlogged">
 				<img alt="" src="<%=request.getContextPath()%>/images/photos/loggeduser.png" class="media-object">
@@ -26,44 +29,31 @@
 				<li><a href="signin.html"><i class="fa fa-sign-out"></i><span>退出</span></a></li>
 			</ul>
 		</div>
-		<h5 class="sidebartitle">快捷导航</h5>
-		<ul class="nav nav-pills nav-stacked nav-bracket">
-			<li class="active"><a href="index.html"><i class="fa fa-home"></i><span>控制总台</span></a></li>
-			<li class="nav-parent"><a href=""><i class="fa fa-th-list"></i><span>物流处理中心</span></a>
-			<ul class="children">
-				<li><a href="new_form.html"><i class="fa fa-caret-right"></i> 新建物流单</a></li>
-				<li><a href="tables_body.html"><i class="fa fa-caret-right"></i> 物流列表明细</a></li>
-			</ul>
-			</li>
-			<li class="nav-parent"><a href=""><i class="fa fa-th-list"></i><span>国内件处理中心</span></a>
-			<ul class="children">
-				<li><a href="gn_KGtables.html"><i class="fa fa-caret-right"></i> 物流列表明细</a></li>
-				<li><a href="sltables.html"><i class="fa fa-caret-right"></i> 待受理件</a></li>
-				<li><a href="new_form.html"><i class="fa fa-caret-right"></i> 待妥投件</a></li>
-			</ul>
-			</li>
-			<li class="nav-parent"><a href=""><i class="fa fa-th-list"></i><span>国际直邮件处理中心</span></a>
-			<ul class="children">
-				<li><a href="zy_tables.html"><i class="fa fa-caret-right"></i> 物流列表明细</a></li>
-				<li><a href="sltables.html"><i class="fa fa-caret-right"></i> 待受理件</a></li>
-				<li><a href="new_form.html"><i class="fa fa-caret-right"></i> 待妥投件</a></li>
-			</ul>
-			</li>
-			<li class="nav-parent"><a href=""><i class="fa fa-th-list"></i><span>中转仓处理中心</span></a>
-			<ul class="children">
-				<li><a href="#"><i class="fa fa-caret-right"></i> 入库扫描</a></li>
-				<li><a href="zz_tables.html"><i class="fa fa-caret-right"></i> 中转仓储明细</a></li>
-				<li><a href="zz_tables.html"><i class="fa fa-caret-right"></i> 待中转件</a></li>
-			</ul>
-			</li>
-			<li class="nav-parent"><a href=""><i class="fa fa-th-list"></i><span>Meida社区</span></a>
-			<ul class="children">
-				<li><a href="#"><i class="fa fa-caret-right"></i>联系我们</a></li>
-				<li><a href="#"><i class="fa fa-caret-right"></i> Meida社区</a></li>
-				<li>abihboy</li>
-			</ul>
-			</li>
-		</ul>
+		-->
+
+        <h5 class="sidebartitle">快捷导航</h5>
+        <ul class="nav nav-pills nav-stacked nav-bracket">
+            <%List<Menu> parentMenuList = Menu.allParentMenu();
+                boolean flag = false;
+                String currentMenu = (String) request.getAttribute("currentMenu");
+                for (Menu parentMenu : parentMenuList) {
+            %>
+            <li class="nav-parent"><a href="<%=parentMenu.getStr(Menu.path)%>">
+                <i class="<%=parentMenu.getStr(Menu.className)%>"></i><span><%=parentMenu.getStr(Menu.name)%></span></a>
+                <ul class="children">
+                    <%List<Menu> subMenuList = parentMenu.findSubMenu(parentMenu.getLong(Menu.id));
+                        for (Menu subMenu : subMenuList) {%>
+                    <li
+                            <%if (!flag && org.apache.commons.lang.StringUtils.isNotBlank(currentMenu) && subMenu.getStr(Menu.path).equals(currentMenu)){
+                                flag = true;%>" class='active'"
+                            <%}%>
+
+                    ><a href="<%=subMenu.getStr(Menu.path)%>"><i class="<%=subMenu.getStr(Menu.className)%>"></i><%=subMenu.getStr(Menu.name)%></a></li>
+                    <%}%>
+                </ul>
+            </li>
+            <%}%>
+        </ul>
 	</div>
 	<!-- leftpanelinner -->
 </div>

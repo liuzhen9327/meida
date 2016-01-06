@@ -48,10 +48,12 @@ User customer = (User) request.getAttribute("customer");%>
                         <div id="basicWizard" class="basic-wizard">
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tab1">
-                                    <form class="form" action="/order/accept" method="post">
+                                    <form id="form1" class="form" action="/order/save" method="post">
+                                        <input name="id" type="hidden" value="<%=order.getLong(Order.id)%>"/>
                                         <div class="form-group">
                                             <label class="col-sm-2">物流属性 <span class="asterisk">*</span></label>
-
+                                            <input type="hidden" name="type" value="<%=order.getInt(Order.type)%>"/>
+                                            <input type="hidden" name="acceptUser" value="<%=order.getLong(Order.acceptUser)%>"/>
                                             <div class="col-sm-2">
                                                 <%=OrderTypeEnum.valueOf(order.getInt(Order.type)).getName()%>
                                             </div>
@@ -217,6 +219,7 @@ User customer = (User) request.getAttribute("customer");%>
 </div>
 <!-- 修改modal -->
 <%@include file="/commons/scripts.jsp" %>
+<script src="//cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
 <script src="/js/order/commons.js"></script>
 <script>
 
@@ -240,6 +243,25 @@ User customer = (User) request.getAttribute("customer");%>
             });
             return false;
         });
+
+        $('#form1').submit(function(){
+            var form = $(this);
+            var errPanel = $('.x-err-msg:first');
+            form.ajaxSubmit({
+                type: 'post',
+                success: function (resp) {
+                    if (resp.succ) {
+                        errPanel.text('保存成功!').removeClass('hide');
+                        setTimeout(function(){
+                            errPanel.text('').addClass('hide');
+                        },5000)
+                    } else {
+                        errPanel.text(resp.errMsg).removeClass('hide');
+                    }
+                }
+            });
+            return false;
+        })
     })
 </script>
 </body>

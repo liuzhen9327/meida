@@ -73,6 +73,7 @@ public class MeidaConfig extends JFinalConfig {
 
         me.add("/order", OrderController.class);
         me.add("/original", OriginalController.class);
+        me.add("/transit", TransitController.class);
 //        me.add("/express", ExpressController.class);
     }
 
@@ -94,6 +95,7 @@ public class MeidaConfig extends JFinalConfig {
         arpMysql.addMapping(TransitLogistic.TABLE_NAME, TransitLogistic.class);
         arpMysql.addMapping(User.TABLE_NAME, User.class);
         arpMysql.addMapping(UserFriend.TABLE_NAME, UserFriend.class);
+        arpMysql.addMapping(Menu.TABLE_NAME, Menu.class);
 
     }
 

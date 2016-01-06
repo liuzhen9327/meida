@@ -34,14 +34,14 @@ public class OrderService {
 
     public static Order newOrder(long ownerId) {
         //找出没有取消的 且 是这个人创建的, 且状态是空的订单
-        Order order = Order.dao.findFirst(Order.sql_findByOwner, ownerId, false, OrderStatusEnum.reserve.getValue());
+        Order order = Order.dao.findFirst(Order.sql_findNewOrder, ownerId, false, OrderStatusEnum.NULL.getValue());
         if (order != null) return order;
         order = new Order();
         try {
             order.set(Order.number, generateOrderNumber())
                     .set(Order.type, OrderTypeEnum.proxy.getValue())
-                    .set(Order.status, OrderStatusEnum.reserve.getValue())
                     .set(Order.acceptUser, 0)
+                    .set(Order.status, OrderStatusEnum.NULL.getValue())
                     .set(Order.transitUser, 0)
                     .set(Order.totalWarehouse, 0)
                     .set(Order.waitInWarehouse, 0)

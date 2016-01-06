@@ -3,8 +3,6 @@ package com.meida.model;
 import com.meida.utils.DateUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
-import java.util.Date;
-
 /**
  * CREATE TABLE `order` (
  `id` bigint(20) NOT NULL auto_increment,
@@ -50,11 +48,11 @@ public class Order extends BaseModel<Order> {
 
     public final static String sql_findAll = "select * from " + TABLE_NAME;
 
-    public static String sql_findByOwner,
+    public static String sql_findNewOrder,
                          sql_findMyOrders;
 
     static {
-        sql_findByOwner = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? and ").append(Order.deleteFlag).append("=? and ").append(Order.status).append("=?").toString();
+        sql_findNewOrder = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? and ").append(Order.deleteFlag).append("=? and ").append(Order.status).append("=?").toString();
         sql_findMyOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? or ").append(Order.acceptUser).append("=? or ").append(Order.transitUser).append("=? and ").append(Order.deleteFlag).append("=?").append(" ORDER BY ").append(Order.updateTime).append(" DESC").toString();
     }
 

@@ -10,7 +10,7 @@ public enum OrderStatusEnum {
     accepted(1, "受理成功", "fa-check-circle"),
     transit(2, "直发中转", "fa-retweet"),
     through(3, "直达件", "fa-plane"),
-    NULL(0, "", "");
+    NULL(-1, "", "");
 
     private int value;
     private String name, className;
