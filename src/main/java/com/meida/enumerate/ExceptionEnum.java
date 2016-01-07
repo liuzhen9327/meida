@@ -23,6 +23,9 @@ public enum ExceptionEnum {
     ORDER_CANCEL_ERROR("订单状态为[{0}]，不能取消订单"),
     ACCEPT_ORDER_TYPE_ERROR("订单属性不是[{0}], 不能受理订单"),
     NO_MATCH_ORIGINAL_LOGISTIC("没有检索到物流信息"),
+
+    ORDER_STATUS_NOT_TRANSIT("订单状态:[{0}], 目前不能中转"),
+    NOT_ORDER_TRANSIT_USER("您不是订单中转受理方"),
     ;
 
     private String message;

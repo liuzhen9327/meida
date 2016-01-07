@@ -47,13 +47,6 @@ public class UserService {
         return User.dao.findById(id);
     }
 
-    public static User getCustomerByOrder(Order order) {
-        int orderType = order.getInt(Order.type);
-        if(orderType != OrderTypeEnum.proxy.getValue()) {
-            throw new BusinessException(ExceptionEnum.ORDER_TYPE_MUST_PROXY);
-        }
-        return get(order.getLong(Order.acceptUser));
-    }
 
     /**
 	 * @param user

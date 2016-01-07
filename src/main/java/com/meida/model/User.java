@@ -47,13 +47,19 @@ public class User extends BaseModel<User>{
 							   sql_findByOpenId = sql_findAll + " where openId=?",
 
 							   sql_findMyFriends = sql_findAll + " where id in(" +"select "+ UserFriend.friendId+" from " + UserFriend.TABLE_NAME + " where " + UserFriend.userId + "=?)";
-//	/**
-//	 * 获取缓存
-//	 * @param ids
-//	 * @return
-//	 */
-//	public User cacheGet(String ids){
-//		User user = CacheKit.get(CACHE_NAME, CACHE_KEY_START + ids);
-//		return user;
-//	}
+
+	private String currentMenu, prevMenu;
+
+	public String getCurrentMenu() {
+		return currentMenu == null ? "" : currentMenu;
+	}
+
+	public void setCurrentMenu(String currentMenu) {
+		this.prevMenu = this.currentMenu;
+		this.currentMenu = currentMenu;
+	}
+
+	public String getPrevMenu() {
+		return prevMenu;
+	}
 }

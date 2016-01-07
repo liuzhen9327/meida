@@ -5,6 +5,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.meida.config.Constant;
 import com.meida.enumerate.ExceptionEnum;
+import com.meida.enumerate.OrderStatusEnum;
 import com.meida.enumerate.OriginalLogisticStatusEnum;
 import com.meida.enumerate.TransitLogisticTypeEnum;
 import com.meida.exception.BusinessException;
@@ -49,10 +50,11 @@ public class TransitLogisticService {
         OrderService.updateWarehouse(orderId, totalWarehouse, waitInWarehouse, waitExWarehouse, exWarehouse);
     }
 
-    public static void save(long originalId, long orderId, long userId,
+    public static void save(long originalId, String originalNumber, long orderId, long userId,
                 TransitLogisticTypeEnum type, String contactInfo, String name,
                 String number, BigDecimal weight, String remark) {
         new TransitLogistic().set(TransitLogistic.originalId, originalId)
+                .set(TransitLogistic.originalNumber, originalNumber)
                 .set(TransitLogistic.type, type)
                 .set(TransitLogistic.contactInfo, contactInfo)
                 .set(TransitLogistic.name, name)
@@ -72,6 +74,32 @@ public class TransitLogisticService {
         return TransitLogistic.dao.find(TransitLogistic.sql_findByOriginalId, originalId);
     }
 
+    public static List<TransitLogistic> findByOrderId(long orderId) {
+        return TransitLogistic.dao.find(TransitLogistic.sql_findByOrderId, orderId);
+    }
+
+    public static Order getTransitOrder(long orderId, long userId) {
+        Order order = OrderService.get(orderId);
+        OrderStatusEnum orderStatus = OrderStatusEnum.valueOf(order.getInt(Order.status));
+        switch (orderStatus) {
+            case accepted:
+            case transit:
+                long transitUser = order.getLong(Order.transitUser);
+                if (transitUser == userId) return order;
+                throw new BusinessException(ExceptionEnum.NOT_ORDER_TRANSIT_USER);
+            default:
+                throw new BusinessException(ExceptionEnum.ORDER_STATUS_NOT_TRANSIT);
+        }
+    }
+
+    /**
+     * 获取没有发货的原始物流
+     * @param orderId
+     * @return
+     */
+    public static List<OriginalLogistic> getUnSendOriginalLogistic(long orderId) {
+        return OriginalLogistic.dao.find(OriginalLogistic.sql_findUnSendOriginalLogistic, orderId, orderId);
+    }
     /**
      * 中转发货
      * @param type
@@ -83,7 +111,7 @@ public class TransitLogisticService {
     public static void sending(TransitLogisticTypeEnum type, long orderId, long userId, long... originalIds) {
         long sendTime = DateUtils.getTimeInMillis();
         Date now = new Date();
-        //TODO 改order 数量
+        // 改order 数量
         Order order = OrderService.get(orderId);
         int totalWarehouse = order.getInt(Order.totalWarehouse);
         int waitInWarehouse = order.getInt(Order.waitInWarehouse);
@@ -122,7 +150,8 @@ public class TransitLogisticService {
                         .set(TransitLogistic.number, originalLogistic.get(OriginalLogistic.number))
                         .set(TransitLogistic.orderId, originalLogistic.get(OriginalLogistic.orderId))
                         .set(TransitLogistic.originalId, originalLogistic.get(OriginalLogistic.id))
-                        .set(TransitLogistic.type, TransitLogisticTypeEnum.forward)
+                        .set(TransitLogistic.originalNumber, originalLogistic.get(OriginalLogistic.number))
+                        .set(TransitLogistic.type, TransitLogisticTypeEnum.forward.getValue())
                         .save();
                 //改原始物流状态为出仓
                 OriginalLogisticService.exWarehouse(originalLogistic.getLong(OriginalLogistic.id), userId);

@@ -27,7 +27,7 @@
 List<User> myFriends = (List<User>) request.getAttribute("myFriends");
 List<Express> expressList = (List<Express>)request.getAttribute("expressList");
 List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.getAttribute("originalLogisticList");
-User customer = (User) request.getAttribute("customer");%>
+User customer = order.getAcceptUser();%>
     <div class="mainpanel">
 
         <%@include file="/commons/headerBar.jsp" %>
@@ -45,7 +45,7 @@ User customer = (User) request.getAttribute("customer");%>
                     <div class="panel-body panel-body-nopadding">
 
                         <!-- BASIC WIZARD -->
-                        <div id="basicWizard" class="basic-wizard">
+                        <div class="basic-wizard">
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tab1">
                                     <form id="form1" class="form" action="/order/save" method="post">
@@ -71,7 +71,7 @@ User customer = (User) request.getAttribute("customer");%>
                                         </div>
                                         <!--多行数据添加-->
                                         <!-- BASIC WIZARD -->
-                                        <div id="basicWizard" class="basic-wizard">
+                                        <div class="basic-wizard">
                                             <div class="tab-content">
 
                                                 <!--多行数据添加-->

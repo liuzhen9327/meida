@@ -32,12 +32,13 @@ public class TransitLogistic extends BaseModel<TransitLogistic>{
                                type = "type",
                                contactInfo = "contactInfo",
                                originalId = "originalId",
+                               originalNumber = "originalNumber",
                                remark = "remark",
                                orderId = "orderId",
                                sendTime = "sendTime";
 
-    public final static String sql_findByOriginalId = "select * from " + TABLE_NAME + " where " + originalId + "=?";
-    public final static String sql_updateSendTime = "update " + TABLE_NAME + " set " + sendTime + " =?, " + updater + "=?, " + updateTime + "=?" + " where id=?";
+    public final static String sql_findAll = "select * from " + TABLE_NAME;
+    public final static String sql_findByOriginalId = sql_findAll + " where " + originalId + "=?";
+    public final static String sql_findByOrderId = sql_findAll + " where " + orderId + "=?";
 
-    public final static String columns_updateSendTime = sendTime + "," + updater + "," + updateTime + "," + id;
 }

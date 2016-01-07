@@ -29,10 +29,8 @@ public class ExceptionInterceptor implements Interceptor {
     public void intercept(Invocation inv) {
         Controller controller = inv.getController();
         HttpServletRequest request = controller.getRequest();
-
         try {
             inv.invoke();
-            request.setAttribute("currentMenu", inv.getActionKey());
         } catch (Exception e) {
             //记录日志
             doLog(inv, e);

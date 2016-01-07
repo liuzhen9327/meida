@@ -51,7 +51,8 @@ jQuery(document).ready(function() {
    "use strict";
 
    // Toggle Left Menu
-    $('.leftpanel').on('click','.nav-parent > a',function(){
+   var leftPanel = $('.leftpanel');
+   leftPanel.on('click','.nav-parent > a',function(){
         var parent = jQuery(this).parent();
         var sub = parent.find('> ul');
 
@@ -72,9 +73,20 @@ jQuery(document).ready(function() {
             }
         }
         return false;
-    }).find('li.active').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
-        adjustmainpanelheight();
+    //}).find('li.active').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
+    //    adjustmainpanelheight();
     });
+   var activeMenu = leftPanel.find('li.active');
+   if (activeMenu.length) {
+      activeMenu.closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
+         adjustmainpanelheight();
+      });
+   } else {
+      leftPanel.find('a[href="'+prevMenu+'"]').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
+         adjustmainpanelheight();
+      });
+   }
+
 
    function closeVisibleSubMenu() {
       jQuery('.leftpanel .nav-parent').each(function() {

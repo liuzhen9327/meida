@@ -13,4 +13,8 @@ public class BaseController extends Controller {
     public User getCurrentUser() {
         return UserService.getUserByCache(getCookie(Constant.COOKIE_AUTH_KEY));
     }
+
+    public long getCurrentUserId() {
+        return getCurrentUser().getLong(User.id);
+    }
 }

@@ -13,8 +13,6 @@ import java.math.BigDecimal;
 public class OriginalController extends BaseController {
     public void save() {
         //TODO orderid 状态判断, 订单所有者判断, userId是否有编辑权限
-        User user = getCurrentUser();
-        long userId = user.getLong(User.id);
 
         String receiver = getPara(OriginalLogistic.receiver),
                 mobile = getPara(OriginalLogistic.mobile),
@@ -26,7 +24,7 @@ public class OriginalController extends BaseController {
         long id = getParaToLong(OriginalLogistic.id, 0l),
                 orderId = getParaToLong(OriginalLogistic.orderId);
         OriginalLogistic originalLogistic = OriginalLogisticService.save(
-                id, userId, orderId, remark, receiver, mobile, address, name, number, new BigDecimal(weight));
+                id, getCurrentUserId(), orderId, remark, receiver, mobile, address, name, number, new BigDecimal(weight));
         renderJson(JSONResult.succ(originalLogistic));
     }
 
@@ -36,11 +34,8 @@ public class OriginalController extends BaseController {
     }
 
     public void delete() {
-        User user = getCurrentUser();
-        long userId = user.getLong(User.id);
-
         long id = getParaToLong(OriginalLogistic.id, 0l);
-        OriginalLogisticService.delete(id, userId);
+        OriginalLogisticService.delete(id, getCurrentUserId());
         renderJson(JSONResult.succ());
     }
 }

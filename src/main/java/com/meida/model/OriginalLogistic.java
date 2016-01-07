@@ -37,5 +37,6 @@ public class OriginalLogistic extends BaseModel<OriginalLogistic> {
 
     public final static String sql_findAll = "select * from " + TABLE_NAME;
     public final static String sql_findByNumber = sql_findAll + " where " + number + "=?",
-                               sql_findByOrderId = sql_findAll + " where " + orderId + "=?";
+                               sql_findByOrderId = sql_findAll + " where " + orderId + "=?",
+                               sql_findUnSendOriginalLogistic = new StringBuilder(sql_findAll).append(" where ").append(orderId).append("=? and ").append(id).append(" not in(select ").append(TransitLogistic.originalId).append(" from ").append(TransitLogistic.TABLE_NAME).append(" where ").append(orderId).append("=?)").toString();
 }

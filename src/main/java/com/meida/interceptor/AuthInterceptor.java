@@ -25,6 +25,7 @@ public class AuthInterceptor implements Interceptor{
 		User user = controller.getCurrentUser();
 	    if (user != null) {
 			inv.invoke();
+			user.setCurrentMenu(inv.getActionKey());
             controller.setCookie(Constant.COOKIE_AUTH_KEY, authId, 3600, Constant.COOKIE_PATH);
 			UserService.refreshUserByCache(authId, user);
             controller.setAttr("user", user);

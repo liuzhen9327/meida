@@ -73,15 +73,20 @@ public class OrderService {
         switch (orderType) {
             case proxy:
                 order.set(Order.acceptUser, acceptUserId);
+                if (isCommit) order.set(Order.status, OrderStatusEnum.reserve.getValue());
                 break;
             case transit:
                 order.set(Order.transitUser, acceptUserId);
+                if (isCommit) order.set(Order.status, OrderStatusEnum.transit.getValue());
+                break;
+            case through:
+                if (isCommit) order.set(Order.status, OrderStatusEnum.through.getValue());
                 break;
 //            default:
 //                throw new BusinessException(ExceptionEnum.SAVE_ORDER_ERROR,
 //                        !isCommit? "保存" : "提交", orderType.getName());
         }
-        if (isCommit) order.set(Order.status, OrderStatusEnum.reserve.getValue());
+
         order.set(Order.updater, userId)
              .set(Order.remark, remark)
              .set(Order.id, id);
@@ -113,6 +118,10 @@ public class OrderService {
 
     public static List<Order> getMyAllOrders(long userId) {
         return Order.dao.find(Order.sql_findMyOrders, userId, userId, userId, false);
+    }
+
+    public static List<Order> getMyTransitOrders(long userId) {
+        return Order.dao.find(Order.sql_findMyTransitOrders, userId, userId, userId, OrderStatusEnum.accepted.getValue(), OrderTypeEnum.through.getValue(), false);
     }
 
     /**

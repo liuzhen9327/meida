@@ -26,7 +26,7 @@
 List<User> myFriends = (List<User>) request.getAttribute("myFriends");
 List<Express> expressList = (List<Express>)request.getAttribute("expressList");
 List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.getAttribute("originalLogisticList");
-User customer = (User) request.getAttribute("customer");%>
+User customer = order.getAcceptUser();%>
     <div class="mainpanel">
 
         <%@include file="/commons/headerBar.jsp" %>

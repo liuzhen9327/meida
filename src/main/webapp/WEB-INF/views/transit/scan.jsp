@@ -1,9 +1,9 @@
-<%@ page import="com.meida.model.OriginalLogistic" %>
-<%@ page import="com.meida.model.Order" %>
 <%@ page import="com.meida.enumerate.OriginalLogisticStatusEnum" %>
-<%@ page import="com.meida.utils.*" %>
+<%@ page import="com.meida.model.Order" %>
+<%@ page import="com.meida.model.OriginalLogistic" %>
+<%@ page import="com.meida.model.User" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
-<%@ page import="com.meida.model.User" %><%--
+<%--
   Created by IntelliJ IDEA.
   User: liuzhen
   Date: 2016/1/6
@@ -37,7 +37,7 @@
 <%String errMsg = (String) request.getAttribute("errMsg");
 OriginalLogistic originalLogistic = (OriginalLogistic) request.getAttribute("originalLogistic");
 Order order = (Order) request.getAttribute("order");
-    User customer = (User) request.getAttribute("customer");
+    User customer = order.getAcceptUser();
 %>
         <div class="contentpanel">
 
@@ -66,10 +66,10 @@ Order order = (Order) request.getAttribute("order");
                         <!--  <div class="row editable-list-item">
                             <div class="col-sm-5"><a class="btn btn-primary-alt" href="#"><i class="fa  fa-print"></i> <span>打印地址</span></a></div>
                           </div>-->
-                        <div class="row editable-list-item">
+                        <div class="row editable-list-item"><%String waitInWarehouse = com.meida.utils.StringUtils.getStr(order.getInt(Order.waitInWarehouse));%>
                             <div class="col-sm-3 fj_sm_text_title">订单编号&nbsp;：<%=com.meida.utils.StringUtils.getStr(order.getStr(Order.number))%></div>
                             <div class="col-sm-3 fj_sm_text_title">订单时间&nbsp;：<%=com.meida.utils.StringUtils.getStr(order.getTimestamp(Order.createTime))%></div>
-                            <div class="col-sm-2 fj_sm_text_title" >订单数量&nbsp;：1/6</div>
+                            <div class="col-sm-2 fj_sm_text_title" >订单数量&nbsp;：<%=StringUtils.isBlank(waitInWarehouse)?"":waitInWarehouse + "/"%><%=com.meida.utils.StringUtils.getStr(order.getInt(Order.totalWarehouse))%></div>
                             <div class="col-sm-2 fj_sm_text_title"><i class="fa   fa-code-fork"></i> 客户信息&nbsp;：</div>
                             <div class="col-sm-2" ><%=customer.getLong(User.id) != null?"<a href='profile.html'><strong>"+customer.getStr(User.name)+"</strong></a>" : ""%></div>
                         </div><!-- row -->

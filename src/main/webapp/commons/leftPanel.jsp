@@ -33,9 +33,10 @@
 
         <h5 class="sidebartitle">快捷导航</h5>
         <ul class="nav nav-pills nav-stacked nav-bracket">
-            <%List<Menu> parentMenuList = Menu.allParentMenu();
+            <%User user = (User) request.getAttribute("user");
+                List<Menu> parentMenuList = Menu.allParentMenu();
                 boolean flag = false;
-                String currentMenu = (String) request.getAttribute("currentMenu");
+                String currentMenu = user.getCurrentMenu();
                 for (Menu parentMenu : parentMenuList) {
             %>
             <li class="nav-parent"><a href="<%=parentMenu.getStr(Menu.path)%>">
@@ -43,11 +44,9 @@
                 <ul class="children">
                     <%List<Menu> subMenuList = parentMenu.findSubMenu(parentMenu.getLong(Menu.id));
                         for (Menu subMenu : subMenuList) {%>
-                    <li
-                            <%if (!flag && org.apache.commons.lang.StringUtils.isNotBlank(currentMenu) && subMenu.getStr(Menu.path).equals(currentMenu)){
+                    <li<%if (!flag && org.apache.commons.lang.StringUtils.isNotBlank(currentMenu) && subMenu.getStr(Menu.path).equals(currentMenu)){
                                 flag = true;%>" class='active'"
                             <%}%>
-
                     ><a href="<%=subMenu.getStr(Menu.path)%>"><i class="<%=subMenu.getStr(Menu.className)%>"></i><%=subMenu.getStr(Menu.name)%></a></li>
                     <%}%>
                 </ul>
@@ -55,6 +54,7 @@
             <%}%>
         </ul>
 	</div>
+    <script>var prevMenu = '<%=user.getPrevMenu()%>';</script>
 	<!-- leftpanelinner -->
 </div>
 <!-- leftpanel -->
