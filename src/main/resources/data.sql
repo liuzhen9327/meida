@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50171
 File Encoding         : 65001
 
-Date: 2016-01-05 09:03:57
+Date: 2016-01-07 17:37:13
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -246,6 +246,48 @@ INSERT INTO `express` VALUES ('224', 'sujievip', '郑州速捷', '', '2016-01-03
 INSERT INTO `express` VALUES ('225', 'ztong', '智通物流', '', '2016-01-03 11:54:16', '0', '2016-01-03 11:54:16', '0');
 
 -- ----------------------------
+-- Table structure for `menu`
+-- ----------------------------
+DROP TABLE IF EXISTS `menu`;
+CREATE TABLE `menu` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `path` varchar(50) NOT NULL,
+  `parentId` bigint(20) NOT NULL DEFAULT '0',
+  `deleteFlag` bit(1) DEFAULT b'0',
+  `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `creater` bigint(20) NOT NULL,
+  `updateTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updater` bigint(20) NOT NULL,
+  `className` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `menu_parentid_index` (`parentId`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of menu
+-- ----------------------------
+INSERT INTO `menu` VALUES ('1', '控制总台', 'javascript:void(0)', '0', '', '2016-01-06 16:17:52', '0', '2016-01-06 16:26:22', '0', 'fa fa-home');
+INSERT INTO `menu` VALUES ('2', '物流处理中心', 'javascript:void(0)', '0', '', '2016-01-06 16:18:08', '0', '2016-01-06 16:26:22', '0', 'fa fa-th-list');
+INSERT INTO `menu` VALUES ('3', '新建物流单', '/order/newOrder', '2', '', '2016-01-06 16:18:33', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('4', '物流列表明细', '/order/list', '2', '', '2016-01-06 16:18:53', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('5', '国内件处理中心', 'javascript:void(0)', '0', '', '2016-01-06 16:19:08', '0', '2016-01-06 16:26:22', '0', 'fa fa-th-list');
+INSERT INTO `menu` VALUES ('6', '物流列表明细', 'javascript:void(0)', '5', '', '2016-01-06 16:19:27', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('7', '待受理件', 'javascript:void(0)', '5', '', '2016-01-06 16:19:50', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('8', '待妥投件', 'javascript:void(0)', '5', '', '2016-01-06 16:20:01', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('9', '国际直邮件处理中心', 'javascript:void(0)', '0', '', '2016-01-06 16:21:03', '0', '2016-01-06 16:26:22', '0', 'fa fa-th-list');
+INSERT INTO `menu` VALUES ('10', '物流列表明细', 'javascript:void(0)', '9', '', '2016-01-06 16:21:47', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('11', '待受理件', 'javascript:void(0)', '9', '', '2016-01-06 16:22:09', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('12', '待妥投件', 'javascript:void(0)', '9', '', '2016-01-06 16:22:22', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('13', '中转仓处理中心', 'javascript:void(0)', '0', '', '2016-01-06 16:22:36', '0', '2016-01-06 16:26:22', '0', 'fa fa-th-list');
+INSERT INTO `menu` VALUES ('14', '入库扫描', 'javascript:void(0)', '13', '', '2016-01-06 16:23:12', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('15', '中转仓储明细', 'javascript:void(0)', '13', '', '2016-01-06 16:23:38', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('16', '待中转件', 'javascript:void(0)', '13', '', '2016-01-06 16:23:45', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('17', 'Meida社区', 'javascript:void(0)', '0', '', '2016-01-06 16:24:10', '0', '2016-01-06 16:26:22', '0', 'fa fa-th-list');
+INSERT INTO `menu` VALUES ('18', '联系我们', 'javascript:void(0)', '17', '', '2016-01-06 16:24:22', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+INSERT INTO `menu` VALUES ('19', 'Meida社区', 'javascript:void(0)', '17', '', '2016-01-06 16:24:34', '0', '2016-01-06 16:26:22', '0', 'fa fa-caret-right');
+
+-- ----------------------------
 -- Table structure for `originalLogistic`
 -- ----------------------------
 DROP TABLE IF EXISTS `originalLogistic`;
@@ -308,12 +350,13 @@ CREATE TABLE `tb_order` (
   KEY `order_owner_index` (`ownerId`),
   KEY `order_accept_index` (`acceptUser`),
   KEY `order_transit_index` (`transitUser`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of tb_order
 -- ----------------------------
-INSERT INTO `tb_order` VALUES ('1', 'FIM160105015621610', '1', '0', '20', '1451950406800', '0', 'ss', '6', '6', '0', '0', '', '18', '2016-01-05 01:56:19', '18', '2016-01-05 07:33:26', '18');
+INSERT INTO `tb_order` VALUES ('1', 'FIM160105015621610', '1', '1', '20', '1452083085176', '0', 'ssdd', '6', '6', '0', '0', '', '18', '2016-01-05 01:56:19', '18', '2016-01-06 20:22:10', '20');
+INSERT INTO `tb_order` VALUES ('2', 'VVE160106060851664', '1', '-1', '0', null, '0', null, '0', '0', '0', '0', '', '18', '2016-01-06 18:08:50', '18', '2016-01-06 18:08:51', '18');
 
 -- ----------------------------
 -- Table structure for `transitLogistic`
@@ -391,10 +434,11 @@ CREATE TABLE `userFriend` (
   PRIMARY KEY (`id`),
   KEY `friend_userid_index` (`userId`),
   KEY `friend_friendid_index` (`friendId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of userFriend
 -- ----------------------------
 INSERT INTO `userFriend` VALUES ('1', '18', '19', '', '2016-01-05 07:17:01', '18', '2016-01-05 07:17:57', '18');
 INSERT INTO `userFriend` VALUES ('2', '18', '20', '', '2016-01-05 07:17:15', '18', '2016-01-05 07:17:57', '18');
+INSERT INTO `userFriend` VALUES ('3', '20', '19', '', '2016-01-06 20:24:28', '0', '2016-01-06 20:24:20', '18');
