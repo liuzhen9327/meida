@@ -26,6 +26,8 @@ public enum ExceptionEnum {
 
     ORDER_STATUS_NOT_TRANSIT("订单状态:[{0}], 目前不能中转"),
     NOT_ORDER_TRANSIT_USER("您不是订单中转受理方"),
+
+    PARAMS_ERROR("参数错误"),
     ;
 
     private String message;

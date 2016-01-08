@@ -55,7 +55,7 @@ public class TransitLogisticService {
                 String number, BigDecimal weight, String remark) {
         new TransitLogistic().set(TransitLogistic.originalId, originalId)
                 .set(TransitLogistic.originalNumber, originalNumber)
-                .set(TransitLogistic.type, type)
+                .set(TransitLogistic.type, type.getValue())
                 .set(TransitLogistic.contactInfo, contactInfo)
                 .set(TransitLogistic.name, name)
                 .set(TransitLogistic.number, number)

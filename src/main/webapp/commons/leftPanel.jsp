@@ -45,7 +45,7 @@
                     <%List<Menu> subMenuList = parentMenu.findSubMenu(parentMenu.getLong(Menu.id));
                         for (Menu subMenu : subMenuList) {%>
                     <li<%if (!flag && org.apache.commons.lang.StringUtils.isNotBlank(currentMenu) && subMenu.getStr(Menu.path).equals(currentMenu)){
-                                flag = true;%>" class='active'"
+                                flag = true;%> class='active'
                             <%}%>
                     ><a href="<%=subMenu.getStr(Menu.path)%>"><i class="<%=subMenu.getStr(Menu.className)%>"></i><%=subMenu.getStr(Menu.name)%></a></li>
                     <%}%>

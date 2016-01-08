@@ -171,14 +171,14 @@ List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.g
 
 </section>
 <!-- 添加Modal -->
-<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
     <form class="form-horizontal x-data-form">
         <input type="hidden" id="orderId" name="orderId" value="<%=order.getLong(Order.id)%>"/>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">添加信息</h4>
+                    <h4 class="modal-title" id="addModalLabel">添加信息</h4>
                 </div>
                 <div class="modal-body">
 
@@ -299,7 +299,7 @@ List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.g
 </div>
 <!-- 修改modal -->
 </body>
-<%@include file="/commons/scripts.jsp" %>
+<%@include file="/commons/scripts.jsp"  %>
 <script src="//cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
 <script src="/js/order/commons.js"></script>
 <script src="/js/order/newOrder.js"></script>

@@ -1,16 +1,19 @@
 package com.meida.controller;
 
+import com.meida.enumerate.ExceptionEnum;
 import com.meida.enumerate.OrderStatusEnum;
 import com.meida.enumerate.OrderTypeEnum;
+import com.meida.enumerate.TransitLogisticTypeEnum;
+import com.meida.exception.BusinessException;
 import com.meida.model.Order;
 import com.meida.model.OriginalLogistic;
+import com.meida.model.TransitLogistic;
 import com.meida.model.User;
-import com.meida.service.OrderService;
-import com.meida.service.OriginalLogisticService;
-import com.meida.service.TransitLogisticService;
-import com.meida.service.UserService;
+import com.meida.service.*;
+import com.meida.vo.JSONResult;
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -65,6 +68,36 @@ public class TransitController extends BaseController {
         setAttr("order", order);
         List<OriginalLogistic> originalLogisticList = TransitLogisticService.getUnSendOriginalLogistic(orderId);
         setAttr("originalLogisticList", originalLogisticList);
+
+        setAttr("expressList", ExpressService.findAll());
         renderJsp("add.jsp");
+    }
+
+    public void save() {
+        String contactInfo = getPara(TransitLogistic.contactInfo),
+                receiver = getPara(OriginalLogistic.receiver),
+                mobile = getPara(OriginalLogistic.mobile),
+                address = getPara(OriginalLogistic.address),
+                name = getPara(TransitLogistic.name),
+                number = getPara(TransitLogistic.number),
+                weight = getPara(TransitLogistic.weight),
+                remark = getPara(TransitLogistic.remark),
+                originalNumber = getPara(TransitLogistic.originalNumber);
+
+        long orderId = getParaToLong(TransitLogistic.orderId, 0l),
+             originalId = getParaToLong(TransitLogistic.originalId, 0l);
+
+        Integer transitType = getParaToInt("transitType");
+
+        if (orderId == 0 || originalId == 0 || transitType == null)
+            throw new BusinessException(ExceptionEnum.PARAMS_ERROR);
+
+        if ("qt".equals(contactInfo)) {
+            contactInfo = receiver +  "," + mobile + "," + address;
+        }
+        TransitLogisticService.save(originalId, originalNumber, orderId,
+                getCurrentUserId(), TransitLogisticTypeEnum.valueOf(transitType),
+                contactInfo, name, number, new BigDecimal(weight), remark);
+        renderJson(JSONResult.succ());
     }
 }

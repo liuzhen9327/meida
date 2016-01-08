@@ -2,6 +2,7 @@
 <%@ page import="com.meida.model.OriginalLogistic" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.meida.utils.StringUtils" %>
+<%@ page import="com.meida.model.Express" %>
 <%--
   Created by IntelliJ IDEA.
   User: admin
@@ -19,6 +20,7 @@
     <style>
         .tr{background:#0C9;}
     </style>
+
 </head>
 
 <body>
@@ -30,7 +32,8 @@
 
         <%@include file="/commons/headerBar.jsp" %>
 <%Order order = (Order) request.getAttribute("order");
-    List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.getAttribute("originalLogisticList");
+List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.getAttribute("originalLogisticList");
+List<Express> expressList = (List<Express>) request.getAttribute("expressList");
 %>
         <div class="pageheader">
             <h2><i class="fa fa-pencil"></i>订单信息 <span>Meida</span></h2>
@@ -62,10 +65,10 @@
                                 <div id="cb" class="panel-body-nopadding hide">
                                     <div  class="row row-pad-5 ">
                                         <div class="col-lg-4">
-                                            <select id="cbwld"  class="select2"  data-placeholder="选择原始单号" required>
+                                            <select id="select_original_number"  class="select2"  data-placeholder="选择原始单号" required>
                                                 <option value=""></option>
                                                 <%for (OriginalLogistic originalLogistic : originalLogisticList){%>
-                                                    <option value="<%=originalLogistic.get(OriginalLogistic.id)%>"><%=originalLogistic.get(OriginalLogistic.name)%></option>
+                                                    <option value="<%=originalLogistic.get(OriginalLogistic.id)%>" remark="<%=StringUtils.getStr(originalLogistic.get(OriginalLogistic.remark))%>" weight="<%=originalLogistic.get(OriginalLogistic.weight)%>"><%=originalLogistic.get(OriginalLogistic.name)%></option>
                                                 <%}%>
                                             </select>
                                         </div>
@@ -194,11 +197,17 @@
 
     </div>
     <!-- mainpanel -->
-
+<input id="orderId" value="<%=order.get(Order.id)%>"/>
 </section>
 <!-- 添加中转信息Modal -->
 <div class="modal fade" id="add_transit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <form id="basicForm" action="" class="form-horizontal">
+    <form id="add_transit_form" action="" class="form-horizontal">
+        <input name="orderId" type="hidden"/>
+        <input name="originalId" type="hidden"/>
+        <input name="transitType" type="hidden"/>
+        <input name="originalNumber" type="hidden"/>
+
+
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -210,48 +219,53 @@
                         <div class="panel-body">
                             <div class="row row-pad-5">
                                 <div class="col-lg-4">
-                                    <select id="sjrxx2" class="select2"  data-placeholder="收件人信息" required>
-                                        <option class="1" value=""></option>
-                                        <option class="1" value="qt">其他地址</option>
-                                        <option class="1" value="1">胡浩,188982323238,广东省广州市白云区三元里大道北马路对面22号云峰酒店2楼302室</option>
+                                    <select id="select_contact_info" class="select2" name="contactInfo" data-placeholder="收件人信息" required>
+                                        <option value=""></option>
+                                        <option value="qt">其他地址</option>
+                                        <%for (OriginalLogistic originalLogistic : originalLogisticList){%>
+                                        <option value="<%=originalLogistic.get(OriginalLogistic.receiver)%>,<%=originalLogistic.get(OriginalLogistic.mobile)%>,<%=originalLogistic.get(OriginalLogistic.address)%>" ><%=originalLogistic.get(OriginalLogistic.receiver)%>,<%=originalLogistic.get(OriginalLogistic.mobile)%>,<%=originalLogistic.get(OriginalLogistic.address)%></option>
+                                        <%}%>
                                     </select>
                                 </div>
-                                <div id="wlnmb"class="col-lg-4"> </div>
-                                <div class="col-lg-4"> 总重量:95KG </div>
+                                <div class="col-lg-4"> </div>
+                                <div class="col-lg-4"> 总重量:<span id="weight"></span>KG </div>
                             </div>
                             <!-- row -->
                             <div id="new_address2" class="row row-pad-5 hide">
                                 <div class="col-lg-4">
-                                    <input type="text" name="name" placeholder="* 收件人" class="form-control"  required/>
+                                    <input type="text" name="receiver" placeholder="* 收件人" class="form-control"  required/>
                                 </div>
                                 <div class="col-lg-4">
-                                    <input type="phone" name="phone" placeholder="* 联系号码" class="form-control"  required/>
+                                    <input type="phone" name="mobile" placeholder="* 联系号码" class="form-control"  required/>
                                 </div>
                                 <div class="panel">
-                                    <textarea class="form-control" rows="5" placeholder="* 详细联系地址"></textarea>
+                                    <textarea name="address" class="form-control" rows="5" placeholder="* 详细联系地址"></textarea>
                                 </div>
                             </div>
 
                             <!--row-->
                             <div  class="row row-pad-5 ">
                                 <div class="col-lg-4">
-                                    <select class="select2"  data-placeholder="物流公司" required>
-                                        <option class="1" value=""></option>
-                                        <option class="1" value="qt">顺丰</option>
+                                    <select class="select2" name="name" data-placeholder="物流公司" required>
+                                        <option class="" value=""></option>
+                                        <%for (Express express: expressList){%>
+                                        <option value="<%=express.getStr(Express.code)%>"><%=express.getStr(Express.name)%></option>
+                                        <%}%>
                                     </select>
                                 </div>
                                 <div class="col-lg-4">
-                                    <input type="phone" name="phone" placeholder="* 物流单号" class="form-control"  required/>
+                                    <input type="phone" name="number" placeholder="* 物流单号" class="form-control"  required/>
                                 </div>
                                 <div class="col-lg-4">
-                                    <input class="form-control" rows="5" placeholder="* 邮件重量（KG）" required/>
+                                    <input name="weight" class="form-control" rows="5" placeholder="* 邮件重量（KG）" required/>
                                 </div>
                             </div>
 
                             <!--row-->
 
-                            <textarea class="form-control" rows="5" placeholder="备注信息" readonly="readonly">这个帮我发两项：打瞌睡时尿道口见到喀什</textarea>
+                            <textarea name="remark" class="form-control" rows="5" placeholder="备注信息"></textarea>
                         </div>
+                        <p class="text-danger x-err-msg hide"></p>
                         <!-- panel-body -->
 
                     </div>
@@ -259,8 +273,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-default" ><i class="fa fa-print"></i>&nbsp;打印地址单</button>
-                    <button type="submit" class="btn btn-primary">发货</button>
+                    <button type="button" class="btn btn-default" ><i class="fa fa-print"></i>&nbsp;打印地址单</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
                 </div>
             </div>
             <!-- modal-content -->
@@ -270,121 +284,10 @@
 </div>
 <!-- 添加中转信息modal -->
 <%@include file="/commons/scripts.jsp" %>
+<script src="//cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
 <script src="/js/jquery.gritter.min.js"></script>
 <script src="/js/XTableList.js"></script>
-
-<script>
-    jQuery(document).ready(function() {
-
-        //checkbox复选框
-        jQuery(function () {
-            $.XTableList();
-        });
-
-        //选择原始单号后，有备注的会弹窗显示
-        jQuery('#cbwld').change(function(){
-            $('#add_btn').removeClass('hide');
-
-            if($('#cbwld').val()!=""){
-
-                jQuery.gritter.add({
-                    title: $('#cbwld option:selected').text()+'<br/>此邮件客户特别备注',
-                    text: $(this).val(),
-                    image: 'images/screen.png',
-                    sticky: false,
-                    time: ''});
-            };
-
-        });
-        //选择原始单号后，有备注的会弹窗显示
-        jQuery('.info').click(function(){
-
-            jQuery.gritter.add({
-                title: $(this).parents("tr").find(".wldh").text()+'<br/>此邮件客户特别备注',
-                text:$(this).parents("tr").find(".field_name").val(),
-                image: 'images/screen.png',
-                sticky: false,
-                time: ''});
-
-
-        });
-
-        //选择多选原始单号后，有备注的会弹窗显示
-
-
-
-        //选择分发方式
-        jQuery('#cbfs').change(function(){
-
-            if($(this).val()=="1"){
-                $('#cb').removeClass('hide');
-                $('#yb').addClass('hide');
-
-            }else{
-
-                $('#yb').removeClass('hide');
-                $('#cb').addClass('hide');
-
-            };
-        });
-
-
-
-        //选择收件人'其他收件人'后显示控件
-        jQuery('#sjrxx').change(function(){
-
-            if($(this).val()=="qt"){
-                $('#new_address').removeClass('hide');
-            }else{
-
-                $('#new_address').addClass('hide');
-
-            };
-        });
-        jQuery('#sjrxx2').change(function(){
-
-            if($(this).val()=="qt"){
-                $('#new_address2').removeClass('hide');
-            }else{
-
-                $('#new_address2').addClass('hide');
-
-            };
-        });
-
-        //添加删除中转物流信息
-
-
-        // Delete row in a table
-        jQuery('.delete-row').click(function(){
-            var c = confirm("是否删除此项信息?");
-            if(c)
-                jQuery(this).closest('tr').fadeOut(function(){
-                    jQuery(this).remove();
-                });
-
-            return false;
-        });
-
-
-
-        // Select2
-        jQuery(".select2").select2({
-            width: '100%'
-        });
-        //table2
-        jQuery('#table2').dataTable({
-            "sPaginationType": "full_numbers"
-        });
-
-
-
-
-
-    });
-
-
-
-</script>
+<script src="/js/transit/add.js"></script>
+<script>$('#totalWeight').text('<%=totalWeight%>')</script>
 </body>
 </html>
