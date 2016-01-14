@@ -1,5 +1,7 @@
 package com.meida.model;
 
+import com.meida.service.OrderService;
+
 /**
  * 原始物流
  * Created by admin on 15/12/20.
@@ -39,4 +41,8 @@ public class OriginalLogistic extends BaseModel<OriginalLogistic> {
     public final static String sql_findByNumber = sql_findAll + " where " + number + "=?",
                                sql_findByOrderId = sql_findAll + " where " + orderId + "=?",
                                sql_findUnSendOriginalLogistic = new StringBuilder(sql_findAll).append(" where ").append(orderId).append("=? and ").append(id).append(" not in(select ").append(TransitLogistic.originalId).append(" from ").append(TransitLogistic.TABLE_NAME).append(" where ").append(orderId).append("=?)").toString();
+
+    public Order getOrder() {
+        return OrderService.get(getLong(orderId));
+    }
 }

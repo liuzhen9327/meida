@@ -37,7 +37,7 @@
 <%String errMsg = (String) request.getAttribute("errMsg");
 OriginalLogistic originalLogistic = (OriginalLogistic) request.getAttribute("originalLogistic");
 Order order = (Order) request.getAttribute("order");
-    User customer = order.getAcceptUser();
+User customer = order.getAcceptUser();
 %>
         <div class="contentpanel">
 
@@ -50,9 +50,8 @@ Order order = (Order) request.getAttribute("order");
                             <div class="input-group-btn">
                                 <button type="submit" class="btn btn-white" tabindex="-1">检索信息</button>
                                 <button type="button" class="btn btn-white x-ok-btn "
-                                        <%=StringUtils.isNotBlank(errMsg) ||
-                                                originalLogistic.getInt(OriginalLogistic.status) != OriginalLogisticStatusEnum.waitInWarehouse.getValue()
-                                                ?"disabled=\"disabled\"":""%> tabindex="-1"> 确认入库</button>
+                                        <%=(originalLogistic.getInt(OriginalLogistic.status) != null  && originalLogistic.getInt(OriginalLogistic.status) == OriginalLogisticStatusEnum.waitInWarehouse.getValue())
+                                                ?"":"disabled=\"disabled\""%> tabindex="-1"> 确认入库</button>
 
                             </div>
                         </div>
@@ -93,7 +92,7 @@ Order order = (Order) request.getAttribute("order");
                             <div class="col-sm-2 fj_sm_text_title">物流单号&nbsp;：</div>
                             <div class="col-sm-2"><%=com.meida.utils.StringUtils.getStr(originalLogistic.getStr(OriginalLogistic.number))%></div>
                             <div class="col-sm-2 fj_sm_text_title">邮件重量&nbsp;：</div>
-                            <div class="col-sm-2"><%=com.meida.utils.StringUtils.getStr(originalLogistic.getStr(OriginalLogistic.weight))%>KG</div>
+                            <div class="col-sm-2"><%=com.meida.utils.StringUtils.getStr(originalLogistic.getBigDecimal(OriginalLogistic.weight))%>KG</div>
                         </div><!-- row -->
                         <div class="row editable-list-item">
                             <div class="col-sm-3 fj_sm_text_title">客户预留信息&nbsp;：</div>

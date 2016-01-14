@@ -27,7 +27,7 @@ public class TransitController extends BaseController {
         String errMsg = null;
         OriginalLogistic originalLogistic = null;
         Order order = null;
-
+        long userId = getCurrentUserId();
         if (StringUtils.isNotBlank(searchValue)) {
             if (StringUtils.isNotBlank(confirm)) {
                 TransitLogisticService.scan(searchValue, getCurrentUserId());
@@ -38,7 +38,9 @@ public class TransitController extends BaseController {
                 if (originalLogistic == null) {
                     errMsg = "未找到物流订单";
                 } else {
-                    order = OrderService.get(originalLogistic.getLong(OriginalLogistic.orderId));
+                    order = originalLogistic.getOrder();
+                    if (order.getLong(Order.transitUser) != userId)
+                        throw new BusinessException(ExceptionEnum.NOT_ORDER_TRANSIT_USER);
                     OrderStatusEnum orderStatus = OrderStatusEnum.valueOf(order.getInt(Order.status));
                     if (orderStatus.equals(OrderStatusEnum.accepted) || orderStatus.equals(OrderStatusEnum.transit)){
                         setAttr("originalLogistic", originalLogistic);

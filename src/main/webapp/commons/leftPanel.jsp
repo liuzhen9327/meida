@@ -1,5 +1,6 @@
 <%@ page import="com.meida.model.Menu" %>
-<%@ page import="org.apache.commons.lang.*" %>
+<%@ page import="com.meida.model.User" %>
+<%@ page import="java.util.List" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!-- Preloader -->
 <div id="preloader">

@@ -36,10 +36,13 @@ public class TransitLogisticService {
     public static void scan(String number, long userId) {
         OriginalLogistic originalLogistic = OriginalLogisticService.findByNumber(number);
         if (originalLogistic == null) throw new BusinessException(ExceptionEnum.NO_MATCH_ORIGINAL_LOGISTIC);
+        long orderId = originalLogistic.getLong(OriginalLogistic.orderId);
+        Order order = originalLogistic.getOrder();
+        //检查订单中转受理人
+
         //原始物流状态变更为 已入库
         originalLogistic.set(OriginalLogistic.status, OriginalLogisticStatusEnum.alreadyInWarehouse.getValue()).update();
-        long orderId = originalLogistic.getLong(OriginalLogistic.orderId);
-        Order order = OrderService.get(orderId);
+
         int totalWarehouse = order.getInt(Order.totalWarehouse);
         int waitInWarehouse = order.getInt(Order.waitInWarehouse);
         int waitExWarehouse = order.getInt(Order.waitExWarehouse);

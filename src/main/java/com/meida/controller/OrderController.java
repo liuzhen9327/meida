@@ -40,6 +40,7 @@ public class OrderController extends BaseController {
                 }
                 toAccept();
                 return;
+            case accepted:
             case transit:
                 transitDetail(order);
                 return;
@@ -106,6 +107,7 @@ public class OrderController extends BaseController {
     }
 
     private void transitDetail(Order order) {
+        //TODO 受理成功后，还有直发中转的订单，判断是否本人，如果是 可点中转发货
         setAttr("order", order);
         long orderId = order.getLong(Order.id);
         List<OriginalLogistic> originalLogisticList = OriginalLogisticService.findByOrderId(orderId);

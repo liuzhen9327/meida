@@ -121,7 +121,7 @@ public class OrderService {
     }
 
     public static List<Order> getMyTransitOrders(long userId) {
-        return Order.dao.find(Order.sql_findMyTransitOrders, userId, userId, userId, OrderStatusEnum.accepted.getValue(), OrderTypeEnum.through.getValue(), false);
+        return Order.dao.find(Order.sql_findMyTransitOrders, userId, OrderStatusEnum.accepted.getValue(), OrderTypeEnum.through.getValue(), false);
     }
 
     /**

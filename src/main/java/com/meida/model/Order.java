@@ -56,7 +56,7 @@ public class Order extends BaseModel<Order> {
     static {
         sql_findNewOrder = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? and ").append(Order.deleteFlag).append("=? and ").append(Order.status).append("=?").toString();
         sql_findMyOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? or ").append(Order.acceptUser).append("=? or ").append(Order.transitUser).append("=? and ").append(Order.deleteFlag).append("=?").append(" ORDER BY ").append(Order.updateTime).append(" DESC").toString();
-        sql_findMyTransitOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? or ").append(Order.acceptUser).append("=? or ").append(Order.transitUser).append("=? and ").append("(").append(Order.status).append("=? or ").append(Order.type).append("=?").append(") and ").append(Order.deleteFlag).append("=?").append(" ORDER BY ").append(Order.updateTime).append(" DESC").toString();
+        sql_findMyTransitOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.transitUser).append("=? and ").append("(").append(Order.status).append("=? or ").append(Order.type).append("=?").append(") and ").append(Order.deleteFlag).append("=?").append(" ORDER BY ").append(Order.updateTime).append(" DESC").toString();
     }
 
     public String getAcceptTime() {

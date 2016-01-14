@@ -54,7 +54,7 @@ public class OriginalLogisticService {
     public static void delete(long id, long userId) {
         OriginalLogistic originalLogistic = OriginalLogistic.dao.findById(id);
         long orderId = originalLogistic.getLong(OriginalLogistic.orderId);
-        Order order = OrderService.get(orderId);
+        Order order = originalLogistic.getOrder();
         int totalWarehouse = order.getInt(Order.totalWarehouse);
         int waitInWarehouse = order.getInt(Order.waitInWarehouse);
         int waitExWarehouse = order.getInt(Order.waitExWarehouse);

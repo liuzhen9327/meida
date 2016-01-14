@@ -23,6 +23,7 @@ public class Menu extends BaseModel<Menu> {
     }
 
     public List<Menu> findSubMenu(long parentId) {
-        return dao.findByCache(CACHE_NAME, parentId, "select * from " + TABLE_NAME + " where parentId=?", parentId);
+//        return dao.findByCache(CACHE_NAME, parentId, "select * from " + TABLE_NAME + " where parentId=?", parentId);
+        return dao.find("select * from " + TABLE_NAME + " where parentId=?", parentId);
     }
 }
