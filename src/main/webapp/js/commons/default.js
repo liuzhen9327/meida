@@ -82,9 +82,10 @@ jQuery(document).ready(function() {
          adjustmainpanelheight();
       });
    } else {
-      leftPanel.find('a[href="'+prevMenu+'"]').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
-         adjustmainpanelheight();
-      });
+      if (prevMenu)
+         leftPanel.find('a[href="'+prevMenu+'"]').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
+            adjustmainpanelheight();
+         });
    }
 
 

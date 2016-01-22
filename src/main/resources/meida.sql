@@ -159,9 +159,26 @@ CREATE index transit_number_index on `transitLogistic`(`number`);
 CREATE index transit_order_index on `transitLogistic`(`orderId`);
 CREATE index transit_original_index on `transitLogistic`(`originalId`);
 
-/**
-原包拆包 是拆原始物流单还是整个订单?
-原包拆包 添加地址信息时, 总重量是什么
-原包拆包 添加地址信息时, 点击发货之后是什么处理逻辑
+DROP TABLE IF EXISTS `so`;
+CREATE TABLE `so` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `number` VARCHAR(50) NOT NULL COMMENT '订单号',
+  `originalName` VARCHAR(50) NOT NULL,
+  `originalNumber` VARCHAR(50) NOT NULL,
+  `weight` VARCHAR(50),
+  `transitLogisticInfo` TEXT,
+  `receiver` VARCHAR(50),
+  `mobile` VARCHAR(50),
+  `address` TEXT,
+  `transitName` VARCHAR(50),
+  `transitNumber` VARCHAR(50) NOT NULL,
+  `deleteFlag` BIT DEFAULT 0,
+  `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `creater` BIGINT(20) NOT NULL DEFAULT 0,
+  `updateTime` TIMESTAMP NOT NULL,
+  `updater` BIGINT(20) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
 
- */
+CREATE index so_original_number_index on `so`(`originalNumber`);
+CREATE index so_mobile_index on `so`(`mobile`);
