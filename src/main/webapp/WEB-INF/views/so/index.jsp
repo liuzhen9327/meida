@@ -1,6 +1,13 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.meida.model.So" %>
-<%@ page import="com.meida.utils.StringUtils" %><%--
+<%@ page import="com.meida.utils.StringUtils" %>
+<%@ page import="com.meida.model.OriginalLogistic" %>
+<%@ page import="org.apache.commons.lang.time.DateFormatUtils" %>
+<%@ page import="com.meida.utils.DateUtils" %>
+<%@ page import="com.meida.service.TransitLogisticService" %>
+<%@ page import="com.meida.model.TransitLogistic" %>
+<%@ page import="com.jfinal.plugin.ehcache.CacheKit" %>
+<%@ page import="com.meida.model.Express" %><%--
   Created by IntelliJ IDEA.
   User: admin
   Date: 16/1/22
@@ -30,6 +37,7 @@
 </head>
 
 <body>
+
 <section>
     <!--左侧广告+联系方式leftpanel-->
     <div class="leftpanel box_st"> <img src="/images/photos/1.jpg"/>
@@ -53,19 +61,13 @@
             <!--筛选条件-->
             <div class="col-md-12 ">
 
-                <form action="/so/index" method="post">
+                <form action="/so" method="get">
 
                     <div class="row row-pad-5">
+
                         <div class="col-lg-3">
                             <input placeholder="初始物流单号/收件联系号码" value="<%=StringUtils.getStr(request.getAttribute("value"))%>" name="value" class="form-control" required/>
                         </div>
-                        <%--<div id="data" class="col-lg-3 hide">--%>
-
-                            <%--<div class="input-group ">--%>
-                                <%--<input type="text" class="form-control" placeholder="订单提交日期" id="datepicker" required>--%>
-                                <%--<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>--%>
-                            <%--</div>--%>
-                        <%--</div>--%>
                         <div class="col-lg-4">
                             <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;&nbsp; 搜索  검색</button>
 
@@ -78,202 +80,86 @@
 
 
             </div>
+            <%List<OriginalLogistic> list = (List<OriginalLogistic>) request.getAttribute("list");
 
-<%List<So> list = (List<So>) request.getAttribute("list");
+            %>
 
-%>
             <!--筛选条件-->
             <!--结果-->
             <div class="col-md-10">
                 <%if (list.size() > 0){%>
-                    <div class="alert alert-success">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <i class="fa fa-info-circle"></i>&nbsp;&nbsp;
-                        <strong>查询结果：<%=list.size()%>条</strong>.
-                    </div>
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <i class="fa fa-info-circle"></i>&nbsp;&nbsp;
+                    <strong>查询结果：<%=list.size()%>条</strong>.
+                </div>
                 <%} else {
                     if (request.getAttribute("value") != null){%>
-                    <div class="alert alert-danger">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <i class="fa fa-info-circle"></i>&nbsp;&nbsp;<strong>暂无查询结果!</strong>.
-                    </div>
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <i class="fa fa-info-circle"></i>&nbsp;&nbsp;<strong>暂无查询结果!</strong>.
+                </div>
                 <%}}%>
 
-
-
                 <div class="panel-group" id="accordion">
-                    <%for (So so : list) {%>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#id<%=so.get(So.id)%>">
-                                        <%=so.toString()%>
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="id<%=so.get(So.id)%>" class="panel-collapse collapse">
-
-
-                                <div class="row editable-list-item">
-                                    邮件交于物流承运方：<%=so.get(So.originalName)%>-<a><%=so.get(So.originalNumber)%></a>
-                                </div>
-                                <div class="row editable-list-item">
-                                    物流信息
-                                </div>
-                                <div class="row editable-list-item">
-                                    邮件交于中转物流承运方：<%=so.get(So.transitName)%>-<a><%=so.get(So.transitNumber)%></a>
-                                </div>
-                                <div class="row editable-list-item">
-                                    物流信息
-                                </div>
-
-                            </div>
+                    <%for (OriginalLogistic originalLogistic : list) {%>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#id<%=originalLogistic.get(OriginalLogistic.id)%>">
+                                    <h5><i class="fa fa-angle-double-right"></i>
+                                        &nbsp;<%=originalLogistic.get(OriginalLogistic.name)%>
+                                        &nbsp; <%=originalLogistic.get(OriginalLogistic.number)%>
+                                        &nbsp; <%=originalLogistic.get(OriginalLogistic.weight)%>KG
+                                        &nbsp;</h5>
+                                    <%--<h6><i class="fa fa-clock-o"></i>--%>
+                                        <%--&nbsp;<%=DateFormatUtils.format(originalLogistic.getTimestamp(OriginalLogistic.updateTime).getTime(), DateUtils.yyMMddhhmm)%></h6>--%>
+                                </a>
+                            </h4>
                         </div>
-                    <%}%>
+                        <div id="id<%=originalLogistic.get(OriginalLogistic.id)%>" class="panel-collapse collapse">
 
 
+                            <div class="row editable-list-item">
+                                <i class="fa fa-cube"></i>&nbsp;服务商邮件交付物流承运方：
+                                <div class="alert alert-warning">
+                                    <%Object expressName = CacheKit.get(Express.CACHE_NAME, originalLogistic.get(OriginalLogistic.name));%>
+                                    <li><%=expressName != null ? expressName:originalLogistic.get(OriginalLogistic.name)%>-<a target="_blank" href="http://m.kuaidi100.com/index_all.html?type=<%=originalLogistic.get(OriginalLogistic.name)%>&postid=<%=originalLogistic.get(OriginalLogistic.number)%>&callbackurl=#"><%=originalLogistic.get(OriginalLogistic.number)%></a></li>
+                                </div>
+
+                            </div>
+
+                            <div class="row editable-list-item">
+                                <i class="fa fa-cubes"></i>&nbsp;中转仓邮件交付物流承运方：
+                                <%List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOriginalId(originalLogistic.getLong(OriginalLogistic.id));%>
+                                <div class="alert <%=transitLogisticList.size() < 2?"alert-info":"alert-warning"%>">
+                                    <%for (TransitLogistic transitLogistic : transitLogisticList) {%>
+                                    <%expressName = CacheKit.get(Express.CACHE_NAME, transitLogistic.get(TransitLogistic.name));%>
+                                    <li><%=expressName != null ? expressName:transitLogistic.get(TransitLogistic.name)%>-<a target="_blank" href="http://m.kuaidi100.com/index_all.html?type=<%=transitLogistic.get(TransitLogistic.name)%>&postid=<%=transitLogistic.get(TransitLogistic.number)%>&callbackurl=a-zhen.com/so?value=<%=StringUtils.getStr(request.getAttribute("value"))%>"><%=transitLogistic.get(TransitLogistic.number)%></a></li>
+                                    <%}%>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div><!--box-->
+
+<%}%>
 
                 </div>
 
-                <!--<div class="panel-group" id="accordion">
-
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                        <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#1">
-                        <label class="col-sm-4"> EMS&nbsp;&nbsp;em123456789kr&nbsp;&nbsp;19KG</label>
-                        <label class="col-sm-3"> <i class="fa  fa-history"></i> <strong>等待出仓中转</strong></label>
-                         <label class="col-sm-3"> 历时：1天9小时27分</label>&nbsp;&nbsp;
-                        </a>
-                      </h4>
-                    </div>
-                    <div id="1" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        邮件于2015/12/2/15:20:11受理,交于物流承运方：EMS-<a>em123456789kr</a>
-                        <div class="row editable-list-item">
-                         暂无中转信息
-                      </div>
-                      </div>
-                    </div>
-                  </div>
-
-
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                        <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#2">
-                        <label class="col-sm-4"> EMS&nbsp;&nbsp;em123456789kr&nbsp;&nbsp;19KG</label>
-                        <label class="col-sm-3"> <i class="fa fa-paper-plane"></i> <strong>发往中转仓</strong></label>
-                         <label class="col-sm-3"> 历时：1天9小时27分</label>&nbsp;&nbsp;
-                        </a>
-                      </h4>
-                    </div>
-                    <div id="2" class="panel-collapse collapse">
-                      <div class="panel-body">
-                          邮件于2015/12/2/15:20:11受理,交于物流承运方：EMS-<a>em123456789kr</a>
-                        <div class="row editable-list-item">
-                         暂无中转信息
-                      </div>
-                      </div>
-                    </div>
-                  </div>
-
-
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                        <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#3">
-                        <label class="col-sm-4"> EMS&nbsp;&nbsp;em123456789kr&nbsp;&nbsp;19KG</label>
-                        <label class="col-sm-3"> <i class="fa fa-pencil"></i> <strong>邮件等待审核</strong></label>
-                         <label class="col-sm-3"> 历时：1天9小时27分</label>&nbsp;&nbsp;
-                        </a>
-                      </h4>
-                    </div>
-                    <div id="3" class="panel-collapse collapse">
-                      <div class="panel-body">
-                          邮件于2015/12/2/15:20:11提交,等待服务方审核确认！
-
-                      </div>
-                    </div>
-                  </div>
-
-
-
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                      <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#4">
-                        <label class="col-sm-4"> EMS&nbsp;&nbsp;em123456789kr&nbsp;&nbsp;19KG</label>
-                        <label class="col-sm-3"> <i class="fa  fa-truck"></i> <strong>&nbsp;已出仓&nbsp;&nbsp;</strong></label>
-                        <label class="col-sm-3"> 历时：1天9小时27分</label>&nbsp;&nbsp;
-                        </a>
-
-                      </h4>
-                    </div>
-                    <div id="4" class="panel-collapse collapse">
-                      <div class="panel-body">
-                          邮件于2015/12/2/15:20:11受理,交于物流承运方：EMS-<a>em123456789kr</a>
-                        <div class="row editable-list-item">
-                          <div class="col-sm-1">圆通</div>
-                          <div class="col-sm-2"><a href="#">v290809809</a></div>
-                          <div class="col-sm-1">15.8KG</div>
-                          <div class="col-sm-2"><i class="fa fa-sitemap"></i> 拆包分发</div>
-                        </div>
-                          <div class="row editable-list-item">
-                          <div class="col-sm-1">圆通</div>
-                          <div class="col-sm-2"><a href="#">v290809809</a></div>
-                          <div class="col-sm-1">15.8KG</div>
-                          <div class="col-sm-2"><i class="fa fa-cube"></i> 原装转发</div>
-
-                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-
-
-
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
-                        <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#5">
-                        <label class="col-sm-4"> EMS&nbsp;&nbsp;em123456789kr&nbsp;&nbsp;19KG</label>
-                        <label class="col-sm-3"><i class="fa fa-plane"></i> <strong>&nbsp;直发&nbsp;&nbsp;</strong></label>
-                         <label class="col-sm-3"> 历时：1天9小时27分</label>&nbsp;&nbsp;
-                        </a>
-                      </h4>
-                    </div>
-                    <div id="5" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        邮件于2015/12/2/15:20:11受理,交于物流承运方：EMS-<a>em123456789kr</a>
-                      </div>
-                    </div>
-                  </div>
-
-
-
-                </div>-->
-
-
-
-
-
             </div>
-
             <!--结果-->
-
-
         </div>
-
-
     </div><!-- tab -->
-
-
     </div>
     <!--panel-body-->
     </div>
     <!--mainpanel-->
 </section>
+
+
 <%@include file="/commons/scripts.jsp" %>
 </body>
 </html>

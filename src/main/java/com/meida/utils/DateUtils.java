@@ -7,7 +7,8 @@ import java.util.Calendar;
  */
 public class DateUtils {
     public final static String yyMMddhhmmssSSS = "yyMMddhhmmssSSS",
-                                yyyy_MM_dd_hh_mm_ss = "yyyy-MM-dd hh:mm:ss";
+                                yyyy_MM_dd_hh_mm_ss = "yyyy-MM-dd hh:mm:ss",
+                                yyMMddhhmm = "yy/MM/dd/hh:mm";
 
     public static long getTimeInMillis() {
         return Calendar.getInstance().getTimeInMillis();

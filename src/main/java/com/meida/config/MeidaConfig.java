@@ -3,6 +3,8 @@ package com.meida.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import com.jfinal.aop.Before;
@@ -24,6 +26,7 @@ import com.meida.controller.*;
 import com.meida.interceptor.AuthInterceptor;
 import com.meida.interceptor.ExceptionInterceptor;
 import com.meida.model.*;
+import com.meida.service.ExpressService;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
@@ -98,36 +101,39 @@ public class MeidaConfig extends JFinalConfig {
         arpMysql.addMapping(User.TABLE_NAME, User.class);
         arpMysql.addMapping(UserFriend.TABLE_NAME, UserFriend.class);
         arpMysql.addMapping(Menu.TABLE_NAME, Menu.class);
-        arpMysql.addMapping(So.TABLE_NAME, So.class);
+//        arpMysql.addMapping(So.TABLE_NAME, So.class);
 
     }
 
-//    @Before(Tx.class)
-//    private void importExpress() {
-//        try {
-//            Document root = Jsoup.parse(FileUtils.readFileToString(new File("/Users/admin/Documents/ideaworkspace/bookstore/src/main/resources/allkuaidi.html")));
-//            Elements elements = root.select("dd");
-//            Date now = new Date();
-//            for (Element element : elements) {
-//                Elements kuaidi = element.select("a");
-//                for (Element k : kuaidi) {
-//                    String href = k.attr("href");
-//                    String text = k.text();
-//                    if (StringUtil.isBlank(text)) continue;
+    @Before(Tx.class)
+    private void importExpress() {
+        try {
+            Document root = Jsoup.parse(FileUtils.readFileToString(new File("C:\\Users\\liuzhen\\Desktop\\allkuaidi.html"), "UTF-8"));
+            Elements elements = root.select("dd");
+            Date now = new Date();
+            Map<String, String> map = new HashMap<>();
+            for (Element element : elements) {
+                Elements kuaidi = element.select("a");
+                for (Element k : kuaidi) {
+                    String code = k.attr("data-code");
+                    if (map.containsKey(code)) continue;
+                    String text = k.text();
+                    map.put(code, text);
+                    if (StringUtil.isBlank(text)) continue;
 //                    href = href.substring(href.lastIndexOf("/") + 1, href.indexOf("."));
-//                    new Express().set(Express.code, href)
-//                            .set(Express.name, text)
-//                            .set(Express.creater, 0)
-//                            .set(Express.updater, 0)
-//                            .set(Express.updateTime, now)
-//                            .save();
-//                    System.out.println(href + "->" + text);
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+                    new Express().set(Express.code, code)
+                            .set(Express.name, text)
+                            .set(Express.creater, 0)
+                            .set(Express.updater, 0)
+                            .set(Express.updateTime, now)
+                            .save();
+                    System.out.println(code + "->" + text);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void configInterceptor(Interceptors me) {
         me.addGlobalActionInterceptor(new AuthInterceptor());
@@ -136,6 +142,7 @@ public class MeidaConfig extends JFinalConfig {
 
     public void configHandler(Handlers me) {
 //        importExpress();
+        ExpressService.saveExpress2Cache();
     }
 
 

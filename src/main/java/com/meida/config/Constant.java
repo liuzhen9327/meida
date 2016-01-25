@@ -41,6 +41,8 @@ public class Constant {
 		URL_PREFIX = PropKit.get("url.prefix");
 
 		mysqlBatchSize = PropKit.getInt("mysqlBatchSize");
+
+
 	}
 
 	public final static String CUT_FILL_STR = "...";

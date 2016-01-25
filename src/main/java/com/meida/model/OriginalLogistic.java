@@ -1,6 +1,12 @@
 package com.meida.model;
 
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.ICallback;
 import com.meida.service.OrderService;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * 原始物流
@@ -44,5 +50,16 @@ public class OriginalLogistic extends BaseModel<OriginalLogistic> {
 
     public Order getOrder() {
         return OrderService.get(getLong(orderId));
+    }
+
+    public void deleteAll() {
+        Db.execute(new ICallback() {
+            @Override
+            public Object call(Connection conn) throws SQLException {
+                PreparedStatement st = null;
+                st = conn.prepareStatement("delete from originalLogistic");
+                return st.executeUpdate();
+            }
+        });
     }
 }

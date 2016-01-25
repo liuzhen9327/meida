@@ -1,5 +1,12 @@
 package com.meida.model;
 
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.ICallback;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /**
  * Created by liuzhen on 2015/12/25.
  * CREATE TABLE `transitLogistic` (
@@ -41,4 +48,14 @@ public class TransitLogistic extends BaseModel<TransitLogistic>{
     public final static String sql_findByOriginalId = sql_findAll + " where " + originalId + "=?";
     public final static String sql_findByOrderId = sql_findAll + " where " + orderId + "=?";
 
+    public void deleteAll() {
+        Db.execute(new ICallback() {
+            @Override
+            public Object call(Connection conn) throws SQLException {
+                PreparedStatement st = null;
+                st = conn.prepareStatement("delete from transitLogistic");
+                return st.executeUpdate();
+            }
+        });
+    }
 }
