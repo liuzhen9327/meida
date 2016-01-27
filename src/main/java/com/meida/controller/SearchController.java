@@ -35,7 +35,7 @@ public class SearchController extends BaseController {
         String value = getPara("value");
         if (StringUtils.isNotBlank(value)) {
             list = OriginalLogistic.dao.find("select * from " + OriginalLogistic.TABLE_NAME + " where " +
-                    OriginalLogistic.number + "=? or " + OriginalLogistic.mobile + "=?", value, value);
+                    OriginalLogistic.number + "=? or " + OriginalLogistic.mobile + "=? order by id desc", value, value);
 //            list = So.dao.find("select * from so where originalNumber=? or mobile=?", value, value);
         }
 
@@ -136,29 +136,47 @@ public class SearchController extends BaseController {
                 row = sheet.getRow(i);
                 if (null == row) continue;
 
+                Object originalName = getCellValue(row.getCell(1)),
+                        originalNumber = getCellValue(row.getCell(2)),
+                        weight = getCellValue(row.getCell(3)),
+                        transitLogisticInfo = getCellValue(row.getCell(4)),
+                        receiver = getCellValue(row.getCell(5)),
+                        mobile = getCellValue(row.getCell(6)),
+                        address = getCellValue(row.getCell(7)),
+                        transitName = getCellValue(row.getCell(8)),
+                        transitNumber = getCellValue(row.getCell(9));
+
+
+
                 OriginalLogistic originalLogistic = new OriginalLogistic();
-                originalLogistic.set(OriginalLogistic.name, getCellValue(row.getCell(1)))
-                        .set(OriginalLogistic.number, getCellValue(row.getCell(2)))
-                        .set(OriginalLogistic.weight, getCellValue(row.getCell(3)))
-                        .set(OriginalLogistic.receiver, getCellValue(row.getCell(5)))
-                        .set(OriginalLogistic.mobile, getCellValue(row.getCell(6)))
-                        .set(OriginalLogistic.address, getCellValue(row.getCell(7)))
+                originalLogistic.set(OriginalLogistic.name, originalName)
+                        .set(OriginalLogistic.number, originalNumber)
+                        .set(OriginalLogistic.weight, weight)
+                        .set(OriginalLogistic.receiver, receiver)
+                        .set(OriginalLogistic.mobile, mobile)
+                        .set(OriginalLogistic.address, address)
                         .set(OriginalLogistic.orderId, 0)
                         .set(OriginalLogistic.creater, 0)
                         .set(OriginalLogistic.updater, 0);
-                originalLogisticMap.put(row.getCell(2).toString(), originalLogistic);
+                originalLogisticMap.put(originalNumber + mobile.toString(), originalLogistic);
 
-                TransitLogistic transitLogistic = new TransitLogistic();
-                transitLogistic.set(TransitLogistic.name, getCellValue(row.getCell(8)))
-                        .set(TransitLogistic.number, getCellValue(row.getCell(9)))
-                        .set(TransitLogistic.type, 1)
-                        .set(TransitLogistic.contactInfo, getCellValue(row.getCell(4)))
-                        .set(TransitLogistic.weight, 0)
-                        .set(TransitLogistic.orderId, 0)
-                        .set(TransitLogistic.originalNumber, getCellValue(row.getCell(2)))
-                        .set(OriginalLogistic.creater, 0)
-                        .set(OriginalLogistic.updater, 0);
-                transitLogisticList.add(transitLogistic);
+                if (transitName != null && !transitName.toString().equals("")
+                        && transitNumber != null && !transitNumber.toString().equals("")
+                        && transitLogisticInfo != null && !transitLogisticInfo.toString().equals("")) {
+                    TransitLogistic transitLogistic = new TransitLogistic();
+                    transitLogistic.set(TransitLogistic.name, transitName)
+                            .set(TransitLogistic.number, transitNumber)
+                            .set(TransitLogistic.type, 1)
+                            .set(TransitLogistic.contactInfo, transitLogisticInfo)
+                            .set(TransitLogistic.weight, 0)
+                            .set(TransitLogistic.orderId, 0)
+                            .set(TransitLogistic.originalNumber, originalNumber)
+                            .set(TransitLogistic.originalMobile, mobile)
+                            .set(OriginalLogistic.creater, 0)
+                            .set(OriginalLogistic.updater, 0);
+                    transitLogisticList.add(transitLogistic);
+                }
+
 //                So model = new So();
 //                model.set(So.number, row.getCell(0).toString())
 //                        .set(So.originalName, row.getCell(1).toString())
@@ -182,7 +200,7 @@ public class SearchController extends BaseController {
             }
             for (TransitLogistic transitLogistic : transitLogisticList) {
                 transitLogistic.set(TransitLogistic.originalId, originalLogisticMap.get(
-                        transitLogistic.getStr(TransitLogistic.originalNumber)).get(OriginalLogistic.id));
+                        transitLogistic.getStr(TransitLogistic.originalNumber) + transitLogistic.get(TransitLogistic.originalMobile)).get(OriginalLogistic.id));
                 transitLogistic.save();
             }
 //            if (deleteId > 0) So.deleteData(deleteId);

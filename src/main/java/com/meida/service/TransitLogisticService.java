@@ -77,6 +77,10 @@ public class TransitLogisticService {
         return TransitLogistic.dao.find(TransitLogistic.sql_findByOriginalId, originalId);
     }
 
+    public static List<TransitLogistic> findByOriginalIdAndMobile(long originalId, String mobile) {
+        return TransitLogistic.dao.find(TransitLogistic.sql_findByOriginalIdAndMobile, originalId, mobile);
+    }
+
     public static List<TransitLogistic> findByOrderId(long orderId) {
         return TransitLogistic.dao.find(TransitLogistic.sql_findByOrderId, orderId);
     }

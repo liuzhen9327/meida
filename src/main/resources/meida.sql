@@ -147,6 +147,7 @@ CREATE TABLE `transitLogistic` (
   `orderId` BIGINT(20) NOT NULL,
   `originalId` BIGINT(20) NOT NULL DEFAULT 0,
   `originalNumber` VARCHAR(50) NOT NULL DEFAULT 0,
+  `originalMobile` VARCHAR(20) NOT NULL DEFAULT 0,
   `sendTime` BIGINT(13) DEFAULT NULL,
   `deleteFlag` BIT DEFAULT 0,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

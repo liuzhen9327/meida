@@ -128,18 +128,18 @@
                                 </div>
 
                             </div>
-
-                            <div class="row editable-list-item">
-                                <i class="fa fa-cubes"></i>&nbsp;中转仓邮件交付物流承运方：
-                                <%List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOriginalId(originalLogistic.getLong(OriginalLogistic.id));%>
-                                <div class="alert <%=transitLogisticList.size() < 2?"alert-info":"alert-warning"%>">
-                                    <%for (TransitLogistic transitLogistic : transitLogisticList) {%>
-                                    <%expressName = CacheKit.get(Express.CACHE_NAME, transitLogistic.get(TransitLogistic.name));%>
-                                    <li><%=expressName != null ? expressName:transitLogistic.get(TransitLogistic.name)%>-<a target="_blank" href="http://m.kuaidi100.com/index_all.html?type=<%=transitLogistic.get(TransitLogistic.name)%>&postid=<%=transitLogistic.get(TransitLogistic.number)%>&callbackurl=a-zhen.com/so?value=<%=StringUtils.getStr(request.getAttribute("value"))%>"><%=transitLogistic.get(TransitLogistic.number)%></a></li>
-                                    <%}%>
-                                </div>
-
-                            </div>
+                            <%List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOriginalIdAndMobile(originalLogistic.getLong(OriginalLogistic.id), originalLogistic.getStr(OriginalLogistic.mobile));
+                                if (transitLogisticList.size() > 0) {%>
+                                    <div class="row editable-list-item">
+                                        <i class="fa fa-cubes"></i>&nbsp;中转仓邮件交付物流承运方：
+                                        <div class="alert <%=transitLogisticList.size() < 2?"alert-info":"alert-warning"%>">
+                                            <%for (TransitLogistic transitLogistic : transitLogisticList) {%>
+                                            <%expressName = CacheKit.get(Express.CACHE_NAME, transitLogistic.get(TransitLogistic.name));%>
+                                            <li><%=expressName != null ? expressName:transitLogistic.get(TransitLogistic.name)%>-<a target="_blank" href="http://m.kuaidi100.com/index_all.html?type=<%=transitLogistic.get(TransitLogistic.name)%>&postid=<%=transitLogistic.get(TransitLogistic.number)%>&callbackurl=a-zhen.com/so?value=<%=StringUtils.getStr(request.getAttribute("value"))%>"><%=transitLogistic.get(TransitLogistic.number)%></a></li>
+                                            <%}%>
+                                        </div>
+                                    </div>
+                            <%}%>
 
 
                         </div>
