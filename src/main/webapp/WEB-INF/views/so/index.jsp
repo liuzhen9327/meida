@@ -7,7 +7,8 @@
 <%@ page import="com.meida.service.TransitLogisticService" %>
 <%@ page import="com.meida.model.TransitLogistic" %>
 <%@ page import="com.jfinal.plugin.ehcache.CacheKit" %>
-<%@ page import="com.meida.model.Express" %><%--
+<%@ page import="com.meida.model.Express" %>
+<%@ page import="org.apache.commons.lang.math.NumberUtils" %><%--
   Created by IntelliJ IDEA.
   User: admin
   Date: 16/1/22
@@ -37,7 +38,7 @@
 </head>
 
 <body>
-
+<%String value = StringUtils.getStr(request.getAttribute("value"));%>
 <section>
     <!--左侧广告+联系方式leftpanel-->
     <div class="leftpanel box_st"> <img src="/images/photos/1.jpg"/>
@@ -66,7 +67,7 @@
                     <div class="row row-pad-5">
 
                         <div class="col-lg-3">
-                            <input placeholder="初始物流单号/收件联系号码" value="<%=StringUtils.getStr(request.getAttribute("value"))%>" name="value" class="form-control" required/>
+                            <input placeholder="初始物流单号/收件联系号码" value="<%=value%>" name="value" class="form-control" required/>
                         </div>
                         <div class="col-lg-4">
                             <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;&nbsp; 搜索  검색</button>
@@ -112,8 +113,8 @@
                                         &nbsp; <%=originalLogistic.get(OriginalLogistic.number)%>
                                         &nbsp; <%=originalLogistic.get(OriginalLogistic.weight)%>KG
                                         &nbsp;</h5>
-                                    <%--<h6><i class="fa fa-clock-o"></i>--%>
-                                        <%--&nbsp;<%=DateFormatUtils.format(originalLogistic.getTimestamp(OriginalLogistic.updateTime).getTime(), DateUtils.yyMMddhhmm)%></h6>--%>
+                                    <h6><i class="fa fa-clock-o"></i>
+                                        &nbsp;<%=DateFormatUtils.format(originalLogistic.getTimestamp(OriginalLogistic.updateTime).getTime(), DateUtils.yyMMddhhmm)%></h6>
                                 </a>
                             </h4>
                         </div>
@@ -128,15 +129,25 @@
                                 </div>
 
                             </div>
-                            <%List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOriginalIdAndMobile(originalLogistic.getLong(OriginalLogistic.id), originalLogistic.getStr(OriginalLogistic.mobile));
-                                if (transitLogisticList.size() > 0) {%>
+                            <%List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOriginalId(originalLogistic.getLong(OriginalLogistic.id));
+                                if (transitLogisticList.size() > 0) {
+                            %>
                                     <div class="row editable-list-item">
                                         <i class="fa fa-cubes"></i>&nbsp;中转仓邮件交付物流承运方：
                                         <div class="alert <%=transitLogisticList.size() < 2?"alert-info":"alert-warning"%>">
-                                            <%for (TransitLogistic transitLogistic : transitLogisticList) {%>
-                                            <%expressName = CacheKit.get(Express.CACHE_NAME, transitLogistic.get(TransitLogistic.name));%>
-                                            <li><%=expressName != null ? expressName:transitLogistic.get(TransitLogistic.name)%>-<a target="_blank" href="http://m.kuaidi100.com/index_all.html?type=<%=transitLogistic.get(TransitLogistic.name)%>&postid=<%=transitLogistic.get(TransitLogistic.number)%>&callbackurl=a-zhen.com/so?value=<%=StringUtils.getStr(request.getAttribute("value"))%>"><%=transitLogistic.get(TransitLogistic.number)%></a></li>
-                                            <%}%>
+                                            <%for (TransitLogistic transitLogistic : transitLogisticList) {
+                                                boolean flag = true;
+                                                if (value.length() == 11 &&
+                                                    NumberUtils.isNumber(value) &&
+                                                    !transitLogistic.get(TransitLogistic.originalMobile).equals(value)) {
+                                                    flag = false;
+                                            %>
+                                                <%}
+                                                if (flag){%>
+                                                    <%expressName = CacheKit.get(Express.CACHE_NAME, transitLogistic.get(TransitLogistic.name));%>
+                                                    <li><%=expressName != null ? expressName:transitLogistic.get(TransitLogistic.name)%>-<a target="_blank" href="http://m.kuaidi100.com/index_all.html?type=<%=transitLogistic.get(TransitLogistic.name)%>&postid=<%=transitLogistic.get(TransitLogistic.number)%>&callbackurl=a-zhen.com/so?value=<%=value%>"><%=transitLogistic.get(TransitLogistic.number)%></a></li>
+                                                <%}
+                                            }%>
                                         </div>
                                     </div>
                             <%}%>

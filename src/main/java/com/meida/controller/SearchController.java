@@ -7,9 +7,11 @@ import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.upload.UploadFile;
 import com.meida.interceptor.AuthInterceptor;
 import com.meida.model.OriginalLogistic;
+import com.meida.model.Receiver;
 import com.meida.model.So;
 import com.meida.model.TransitLogistic;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -35,8 +37,8 @@ public class SearchController extends BaseController {
         String value = getPara("value");
         if (StringUtils.isNotBlank(value)) {
             list = OriginalLogistic.dao.find("select * from " + OriginalLogistic.TABLE_NAME + " where " +
-                    OriginalLogistic.number + "=? or " + OriginalLogistic.mobile + "=? order by id desc", value, value);
-//            list = So.dao.find("select * from so where originalNumber=? or mobile=?", value, value);
+                    OriginalLogistic.id + " in(select DISTINCT "+Receiver.originalId+" from "+Receiver.TABLE_NAME+
+                    " where "+Receiver.originalNumber+"=? or "+Receiver.mobile+"=?) order by id desc", value, value);
         }
 
         setAttr("list", list);
@@ -120,6 +122,8 @@ public class SearchController extends BaseController {
     @Before(Tx.class)
     private boolean saveExcel(String filePath) {
         try {
+            OriginalLogistic.dao.deleteAll();
+            TransitLogistic.dao.deleteAll();
             XSSFWorkbook xwb = new XSSFWorkbook(filePath);
             XSSFSheet sheet = xwb.getSheetAt(0);
             XSSFRow row;
@@ -127,8 +131,9 @@ public class SearchController extends BaseController {
             List<So> result = new ArrayList<>();
             int begin = sheet.getFirstRowNum();
 
-            Map<String, OriginalLogistic> originalLogisticMap = new HashMap<>();
+            Map<Object, OriginalLogistic> originalLogisticMap = new LinkedHashMap<>();
             List<TransitLogistic> transitLogisticList = new ArrayList<>();
+            List<Receiver> receiverList = new ArrayList<>();
 
             int end = sheet.getLastRowNum();
             for (int i = begin; i < end; i++) {
@@ -144,7 +149,8 @@ public class SearchController extends BaseController {
                         mobile = getCellValue(row.getCell(6)),
                         address = getCellValue(row.getCell(7)),
                         transitName = getCellValue(row.getCell(8)),
-                        transitNumber = getCellValue(row.getCell(9));
+                        transitNumber = getCellValue(row.getCell(9)),
+                        date = getCellValue(row.getCell(10));
 
 
 
@@ -152,13 +158,18 @@ public class SearchController extends BaseController {
                 originalLogistic.set(OriginalLogistic.name, originalName)
                         .set(OriginalLogistic.number, originalNumber)
                         .set(OriginalLogistic.weight, weight)
-                        .set(OriginalLogistic.receiver, receiver)
-                        .set(OriginalLogistic.mobile, mobile)
-                        .set(OriginalLogistic.address, address)
+//                        .set(OriginalLogistic.receiver, receiver)
+//                        .set(OriginalLogistic.mobile, mobile)
+//                        .set(OriginalLogistic.address, address)
                         .set(OriginalLogistic.orderId, 0)
                         .set(OriginalLogistic.creater, 0)
                         .set(OriginalLogistic.updater, 0);
-                originalLogisticMap.put(originalNumber + mobile.toString(), originalLogistic);
+                if (date != null) originalLogistic.set(OriginalLogistic.updateTime, date);
+
+                originalLogisticMap.put(originalNumber, originalLogistic);
+
+                receiverList.add(new Receiver(receiver, mobile, address, null, originalNumber));
+
 
                 if (transitName != null && !transitName.toString().equals("")
                         && transitNumber != null && !transitNumber.toString().equals("")
@@ -172,38 +183,30 @@ public class SearchController extends BaseController {
                             .set(TransitLogistic.orderId, 0)
                             .set(TransitLogistic.originalNumber, originalNumber)
                             .set(TransitLogistic.originalMobile, mobile)
-                            .set(OriginalLogistic.creater, 0)
-                            .set(OriginalLogistic.updater, 0);
+                            .set(TransitLogistic.creater, 0)
+                            .set(TransitLogistic.updater, 0);
+                    if (date != null) transitLogistic.set(TransitLogistic.updateTime, date);
                     transitLogisticList.add(transitLogistic);
                 }
 
-//                So model = new So();
-//                model.set(So.number, row.getCell(0).toString())
-//                        .set(So.originalName, row.getCell(1).toString())
-//                        .set(So.originalNumber, row.getCell(2).toString())
-//                        .set(So.weight, row.getCell(3).toString())
-//                        .set(So.transitLogisticInfo, row.getCell(4).toString())
-//                        .set(So.receiver, row.getCell(5).toString())
-//                        .set(So.mobile, row.getCell(6).toString())
-//                        .set(So.address, row.getCell(7).toString())
-//                        .set(So.transitName, row.getCell(8).toString())
-//                        .set(So.transitNumber, row.getCell(9).toString())
-//                        .save();
-//                if (i == begin+1) deleteId = model.getLong(So.id);
             }
 
-            OriginalLogistic.dao.deleteAll();
-            TransitLogistic.dao.deleteAll();
 
-            for (Map.Entry<String, OriginalLogistic> entry : originalLogisticMap.entrySet()) {
+
+            for (Map.Entry<Object, OriginalLogistic> entry : originalLogisticMap.entrySet()) {
                 entry.getValue().save();
             }
             for (TransitLogistic transitLogistic : transitLogisticList) {
                 transitLogistic.set(TransitLogistic.originalId, originalLogisticMap.get(
-                        transitLogistic.getStr(TransitLogistic.originalNumber) + transitLogistic.get(TransitLogistic.originalMobile)).get(OriginalLogistic.id));
+                        transitLogistic.getStr(TransitLogistic.originalNumber)).get(OriginalLogistic.id));
                 transitLogistic.save();
             }
-//            if (deleteId > 0) So.deleteData(deleteId);
+
+            for (Receiver receiver : receiverList) {
+                receiver.set(Receiver.originalId, originalLogisticMap.get(
+                        receiver.getStr(Receiver.originalNumber)).get(OriginalLogistic.id));
+                receiver.save();
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,18 +215,26 @@ public class SearchController extends BaseController {
     }
 
     private Object getCellValue(XSSFCell cell) {
+        Object object = null;
+        if (cell == null) return object;
         switch (cell.getCellType()) {
             case XSSFCell.CELL_TYPE_NUMERIC: // 数字
-                return (cell.getNumericCellValue());
+                if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
+                    object = cell.getDateCellValue();
+                } else {
+                    object = (cell.getNumericCellValue());
+                }
+                break;
             case XSSFCell.CELL_TYPE_STRING: // 字符串
-                return (cell.getStringCellValue());
+                object = (cell.getStringCellValue());
+                break;
             case XSSFCell.CELL_TYPE_BOOLEAN: // Boolean
-                return (cell.getBooleanCellValue());
+                object = (cell.getBooleanCellValue());
+                break;
             case XSSFCell.CELL_TYPE_FORMULA: // 公式
-                return (cell.getCellFormula());
-            default:
-                return "";
+                object = (cell.getCellFormula());
+                break;
         }
-
+        return object;
     }
 }

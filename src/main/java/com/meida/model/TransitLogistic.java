@@ -46,8 +46,8 @@ public class TransitLogistic extends BaseModel<TransitLogistic>{
                                sendTime = "sendTime";
 
     public final static String sql_findAll = "select * from " + TABLE_NAME;
-    public final static String sql_findByOriginalId = sql_findAll + " where " + originalId + "=?";
-    public final static String sql_findByOriginalIdAndMobile = sql_findByOriginalId + " and " + originalMobile + "=?";
+    public final static String sql_findByOriginalId = sql_findAll + " where " + originalId + "=? order by id desc";
+    public final static String sql_findByOriginalIdAndMobile = sql_findByOriginalId + " and " + originalMobile + "=? order by id desc";
     public final static String sql_findByOrderId = sql_findAll + " where " + orderId + "=?";
 
     public void deleteAll() {

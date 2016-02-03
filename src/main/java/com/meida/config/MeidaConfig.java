@@ -101,6 +101,7 @@ public class MeidaConfig extends JFinalConfig {
         arpMysql.addMapping(User.TABLE_NAME, User.class);
         arpMysql.addMapping(UserFriend.TABLE_NAME, UserFriend.class);
         arpMysql.addMapping(Menu.TABLE_NAME, Menu.class);
+        arpMysql.addMapping(Receiver.TABLE_NAME, Receiver.class);
 //        arpMysql.addMapping(So.TABLE_NAME, So.class);
 
     }

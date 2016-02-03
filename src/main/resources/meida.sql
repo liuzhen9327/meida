@@ -120,9 +120,6 @@ CREATE TABLE `originalLogistic` (
   `number` VARCHAR(50) NOT NULL COMMENT '物流号',
   `weight` decimal(6,2) NOT NULL,
   `status` INT DEFAULT 0 COMMENT '处理状态 0待入库 1已入库 2已出仓',
-  `receiver` VARCHAR(20) NOT NULL,
-  `mobile` VARCHAR(20) NOT NULL,
-  `address` VARCHAR(100) NOT NULL,
   `remark` TEXT,
   `orderId` BIGINT(20) NOT NULL,
   `deleteFlag` BIT DEFAULT 0,
@@ -160,19 +157,14 @@ CREATE index transit_number_index on `transitLogistic`(`number`);
 CREATE index transit_order_index on `transitLogistic`(`orderId`);
 CREATE index transit_original_index on `transitLogistic`(`originalId`);
 
-DROP TABLE IF EXISTS `so`;
-CREATE TABLE `so` (
+DROP TABLE IF EXISTS `receiver`;
+CREATE TABLE `receiver` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `number` VARCHAR(50) NOT NULL COMMENT '订单号',
-  `originalName` VARCHAR(50) NOT NULL,
-  `originalNumber` VARCHAR(50) NOT NULL,
-  `weight` VARCHAR(50),
-  `transitLogisticInfo` TEXT,
-  `receiver` VARCHAR(50),
+  `name` VARCHAR(50) NOT NULL COMMENT '',
   `mobile` VARCHAR(50),
   `address` TEXT,
-  `transitName` VARCHAR(50),
-  `transitNumber` VARCHAR(50) NOT NULL,
+  `originalId` BIGINT(20) NOT NULL DEFAULT 0,
+  `originalNumber` VARCHAR(50) NOT NULL DEFAULT 0,
   `deleteFlag` BIT DEFAULT 0,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `creater` BIGINT(20) NOT NULL DEFAULT 0,
@@ -181,5 +173,5 @@ CREATE TABLE `so` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
 
-CREATE index so_original_number_index on `so`(`originalNumber`);
-CREATE index so_mobile_index on `so`(`mobile`);
+CREATE index receiver_original_number_index on `receiver`(`originalNumber`);
+CREATE index receiver_mobile_index on `receiver`(`mobile`);
