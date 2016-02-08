@@ -27,7 +27,10 @@
             .ggbx {
                 height:65px;
                 width:100%;
-                background-image:url(/images/meida.jpg);
+                background-color:#2f7bad;
+                background-image:url(/images/so_logo.jpg);
+                background-repeat:no-repeat;
+                background-position:center;
                 display:block;
             }
         }
