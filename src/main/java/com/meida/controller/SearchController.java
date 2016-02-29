@@ -47,23 +47,30 @@ public class SearchController extends BaseController {
     }
 
     public void importExcel() {
-        String filePath = upload2();
-        String msg = null;
-        if (filePath != null) {
-            boolean flag = saveExcel(filePath);
-            if (flag) msg = "导入excel成功";
-            else msg = "导入excel失败";
-        } else {
-            msg = "上传文件失败";
+        try {
+            String filePath = upload2();
+            String msg = null;
+            log.debug("importExcel..");
+            if (filePath != null) {
+                log.debug("filepath:"+filePath);
+                boolean flag = saveExcel(filePath);
+                log.debug("save excel: "+flag);
+                if (flag) msg = "导入excel成功";
+                else msg = "导入excel失败";
+            } else {
+                msg = "上传文件失败";
+            }
+            setAttr("msg", msg);
+            renderJsp("upload.jsp");
+        } catch (Exception e) {
+            log.error("", e);
         }
-        setAttr("msg", msg);
-        renderJsp("upload.jsp");
     }
 
     public void upload() {
     }
 
-    private String upload2() {
+    private String upload2() throws Exception{
         String path = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
         UploadFile file = getFile("file", PathKit.getWebRootPath() + "/temp");
         File source = file.getFile();
@@ -76,32 +83,25 @@ public class SearchController extends BaseController {
         }else{
             prefix = "file";
         }
-        try {
-            FileInputStream fis = new FileInputStream(source);
-            File targetDir = new File(PathKit.getWebRootPath() + "/" + prefix + "/u/"
-                    + path);
-            if (!targetDir.exists()) {
-                targetDir.mkdirs();
-            }
-            File target = new File(targetDir, fileName);
-            if (!target.exists()) {
-                target.createNewFile();
-            }
-            FileOutputStream fos = new FileOutputStream(target);
-            byte[] bts = new byte[300];
-            while (fis.read(bts, 0, 300) != -1) {
-                fos.write(bts, 0, 300);
-            }
-            fos.close();
-            fis.close();
-            source.delete();
-            return target.getAbsolutePath();
-        } catch (FileNotFoundException e) {
-            log.error("", e);
-        } catch (IOException e) {
-            log.error("", e);
+        FileInputStream fis = new FileInputStream(source);
+        File targetDir = new File(PathKit.getWebRootPath() + "/" + prefix + "/u/"
+                + path);
+        if (!targetDir.exists()) {
+            targetDir.mkdirs();
         }
-        return null;
+        File target = new File(targetDir, fileName);
+        if (!target.exists()) {
+            target.createNewFile();
+        }
+        FileOutputStream fos = new FileOutputStream(target);
+        byte[] bts = new byte[300];
+        while (fis.read(bts, 0, 300) != -1) {
+            fos.write(bts, 0, 300);
+        }
+        fos.close();
+        fis.close();
+        source.delete();
+        return target.getAbsolutePath();
     }
 
     private String generateWord() {
@@ -209,7 +209,7 @@ public class SearchController extends BaseController {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("", e);
         }
         return false;
     }
