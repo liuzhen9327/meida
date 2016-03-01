@@ -52,12 +52,13 @@ public class OriginalLogistic extends BaseModel<OriginalLogistic> {
         return OrderService.get(getLong(orderId));
     }
 
-    public void deleteAll() {
+    public void deleteAll(final long userId) {
         Db.execute(new ICallback() {
             @Override
             public Object call(Connection conn) throws SQLException {
                 PreparedStatement st = null;
-                st = conn.prepareStatement("delete from originalLogistic");
+                st = conn.prepareStatement("delete from originalLogistic where creater=?");
+                st.setObject(1, userId);
                 return st.executeUpdate();
             }
         });

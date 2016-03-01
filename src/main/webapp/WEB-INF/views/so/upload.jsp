@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<form action="/so/importExcel" method="post" enctype="multipart/form-data">
+<form action="/so/upload" method="post" enctype="multipart/form-data">
 <input type="file" name="file"/><button type="submit" value="">确定上传</button>
 </form>
 <%=StringUtils.getStr(request.getAttribute("msg"))%>

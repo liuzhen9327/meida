@@ -50,12 +50,13 @@ public class TransitLogistic extends BaseModel<TransitLogistic>{
     public final static String sql_findByOriginalIdAndMobile = sql_findByOriginalId + " and " + originalMobile + "=? order by id desc";
     public final static String sql_findByOrderId = sql_findAll + " where " + orderId + "=?";
 
-    public void deleteAll() {
+    public void deleteAll(final long userId) {
         Db.execute(new ICallback() {
             @Override
             public Object call(Connection conn) throws SQLException {
                 PreparedStatement st = null;
-                st = conn.prepareStatement("delete from transitLogistic");
+                st = conn.prepareStatement("delete from transitLogistic where creater=?");
+                st.setObject(1, userId);
                 return st.executeUpdate();
             }
         });

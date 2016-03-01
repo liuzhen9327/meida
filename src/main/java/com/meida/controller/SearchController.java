@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -46,26 +47,26 @@ public class SearchController extends BaseController {
         renderJsp("index.jsp");
     }
 
-    public void importExcel() {
-        String filePath = upload2();
-        String msg = null;
-        if (filePath != null) {
-            boolean flag = saveExcel(filePath);
-            if (flag) msg = "导入excel成功";
-            else msg = "导入excel失败";
-        } else {
-            msg = "上传文件失败";
+
+    public void upload() {
+        if (getRequest().getMethod().equalsIgnoreCase("post")) {
+            String filePath = upload2();
+            String msg = null;
+            if (filePath != null) {
+                boolean flag = saveExcel(filePath);
+                if (flag) msg = "导入excel成功";
+                else msg = "导入excel失败";
+            } else {
+                msg = "上传文件失败";
+            }
+            setAttr("msg", msg);
         }
-        setAttr("msg", msg);
         renderJsp("upload.jsp");
     }
 
-    public void upload() {
-    }
-
     private String upload2() {
-        String path = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
         UploadFile file = getFile("file", PathKit.getWebRootPath() + "/temp");
+        String path = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
         File source = file.getFile();
         String fileName = file.getFileName();
         String extension = fileName.substring(fileName.lastIndexOf("."));
@@ -122,8 +123,10 @@ public class SearchController extends BaseController {
     @Before(Tx.class)
     private boolean saveExcel(String filePath) {
         try {
-            OriginalLogistic.dao.deleteAll();
-            TransitLogistic.dao.deleteAll();
+            long userId = getCurrentUserId();
+            OriginalLogistic.dao.deleteAll(userId);
+            TransitLogistic.dao.deleteAll(userId);
+            Receiver.dao.deleteAll(userId);
             XSSFWorkbook xwb = new XSSFWorkbook(filePath);
             XSSFSheet sheet = xwb.getSheetAt(0);
             XSSFRow row;
@@ -135,7 +138,7 @@ public class SearchController extends BaseController {
             List<TransitLogistic> transitLogisticList = new ArrayList<>();
             List<Receiver> receiverList = new ArrayList<>();
 
-            int end = sheet.getLastRowNum();
+            int end = sheet.getPhysicalNumberOfRows();
             for (int i = begin; i < end; i++) {
                 if (i == begin) continue;
                 row = sheet.getRow(i);
@@ -151,8 +154,9 @@ public class SearchController extends BaseController {
                         transitName = getCellValue(row.getCell(8)),
                         transitNumber = getCellValue(row.getCell(9)),
                         date = getCellValue(row.getCell(10));
-
-
+                if (originalNumber == null || StringUtils.isBlank(originalNumber.toString())) continue;
+//                originalNumber = originalNumber.toString();
+//                if (transitNumber != null) transitNumber = transitNumber.toString();
 
                 OriginalLogistic originalLogistic = new OriginalLogistic();
                 originalLogistic.set(OriginalLogistic.name, originalName)
@@ -162,13 +166,13 @@ public class SearchController extends BaseController {
 //                        .set(OriginalLogistic.mobile, mobile)
 //                        .set(OriginalLogistic.address, address)
                         .set(OriginalLogistic.orderId, 0)
-                        .set(OriginalLogistic.creater, 0)
-                        .set(OriginalLogistic.updater, 0);
+                        .set(OriginalLogistic.creater, userId)
+                        .set(OriginalLogistic.updater, userId);
                 if (date != null) originalLogistic.set(OriginalLogistic.updateTime, date);
 
                 originalLogisticMap.put(originalNumber, originalLogistic);
 
-                receiverList.add(new Receiver(receiver, mobile, address, null, originalNumber));
+                receiverList.add(new Receiver(receiver, mobile, address, null, originalNumber, userId));
 
 
                 if (transitName != null && !transitName.toString().equals("")
@@ -183,8 +187,8 @@ public class SearchController extends BaseController {
                             .set(TransitLogistic.orderId, 0)
                             .set(TransitLogistic.originalNumber, originalNumber)
                             .set(TransitLogistic.originalMobile, mobile)
-                            .set(TransitLogistic.creater, 0)
-                            .set(TransitLogistic.updater, 0);
+                            .set(TransitLogistic.creater, userId)
+                            .set(TransitLogistic.updater, userId);
                     if (date != null) transitLogistic.set(TransitLogistic.updateTime, date);
                     transitLogisticList.add(transitLogistic);
                 }
@@ -205,6 +209,7 @@ public class SearchController extends BaseController {
             for (Receiver receiver : receiverList) {
                 receiver.set(Receiver.originalId, originalLogisticMap.get(
                         receiver.getStr(Receiver.originalNumber)).get(OriginalLogistic.id));
+                receiver.set(Receiver.creater, userId);
                 receiver.save();
             }
             return true;
@@ -222,7 +227,7 @@ public class SearchController extends BaseController {
                 if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
                     object = cell.getDateCellValue();
                 } else {
-                    object = (cell.getNumericCellValue());
+                    object = new BigDecimal(cell.getNumericCellValue()).toString();
                 }
                 break;
             case XSSFCell.CELL_TYPE_STRING: // 字符串

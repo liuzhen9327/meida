@@ -15,7 +15,10 @@ public class AuthInterceptor implements Interceptor{
 	@Override
 	public void intercept(Invocation inv) {
 		BaseController controller = (BaseController) inv.getController();
-
+		if (controller.getRequest().getRequestURI().equals("/")) {
+			inv.invoke();
+			return;
+		}
 		String authId = controller.getCookie(Constant.COOKIE_AUTH_KEY);
 		if (StringUtils.isBlank(authId)) {
 			controller.redirect("/login.jsp");
