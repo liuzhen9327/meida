@@ -122,8 +122,10 @@ public class SearchController extends BaseController {
     @Before(Tx.class)
     private boolean saveExcel(String filePath) {
         try {
-            OriginalLogistic.dao.deleteAll();
-            TransitLogistic.dao.deleteAll();
+            long userId = getCurrentUserId();
+            OriginalLogistic.dao.deleteAll(userId);
+            TransitLogistic.dao.deleteAll(userId);
+            Receiver.dao.deleteAll(userId);
             XSSFWorkbook xwb = new XSSFWorkbook(filePath);
             XSSFSheet sheet = xwb.getSheetAt(0);
             XSSFRow row;
@@ -168,7 +170,7 @@ public class SearchController extends BaseController {
 
                 originalLogisticMap.put(originalNumber, originalLogistic);
 
-                receiverList.add(new Receiver(receiver, mobile, address, null, originalNumber));
+                receiverList.add(new Receiver(receiver, mobile, address, null, originalNumber, userId));
 
 
                 if (transitName != null && !transitName.toString().equals("")
