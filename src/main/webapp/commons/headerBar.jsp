@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <div class="headerbar">
 	<a class="menutoggle"><i class="fa fa-bars"></i></a>
-	<form class="searchform" action="index.html" method="post">
-		<input type="text" class="form-control" name="keyword" placeholder="Search here..."/>
-	</form>
+	<%--<form class="searchform" action="index.html" method="post">--%>
+		<%--<input type="text" class="form-control" name="keyword" placeholder="Search here..."/>--%>
+	<%--</form>--%>
 	<div class="header-right">
 		<ul class="headermenu">
 			<li>
