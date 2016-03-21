@@ -79,6 +79,7 @@ public class MeidaConfig extends JFinalConfig {
         me.add("/transit", TransitController.class);
 
         me.add("/so", SearchController.class);
+        me.add("/download", DownloadController.class);
 //        me.add("/express", ExpressController.class);
     }
 
@@ -102,7 +103,6 @@ public class MeidaConfig extends JFinalConfig {
         arpMysql.addMapping(UserFriend.TABLE_NAME, UserFriend.class);
         arpMysql.addMapping(Menu.TABLE_NAME, Menu.class);
         arpMysql.addMapping(Receiver.TABLE_NAME, Receiver.class);
-//        arpMysql.addMapping(So.TABLE_NAME, So.class);
 
     }
 
@@ -124,9 +124,9 @@ public class MeidaConfig extends JFinalConfig {
 //                    href = href.substring(href.lastIndexOf("/") + 1, href.indexOf("."));
                     new Express().set(Express.code, code)
                             .set(Express.name, text)
-                            .set(Express.creater, 0)
-                            .set(Express.updater, 0)
-                            .set(Express.updateTime, now)
+                            .set("creater", 0)
+                            .set("updater", 0)
+                            .set("updateTime", now)
                             .save();
                     System.out.println(code + "->" + text);
                 }

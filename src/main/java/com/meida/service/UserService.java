@@ -37,7 +37,7 @@ public class UserService {
 		User user = getUserByEmail(email);
 		if(user == null) throw new BusinessException(ExceptionEnum.ACCOUNT_NOT_EXISTS);
 		if (user.getInt(User.status) == 0) throw new BusinessException(ExceptionEnum.WAITING_ACTIVE);
-		Long id = user.getLong(User.id);
+		Long id = user.getId();
 		if(!encryptPassword(password, id).equals(user.getStr(User.password)))
 			throw new BusinessException(ExceptionEnum.PASSWORD_ERROR);
 		return saveUser2Cache(user);
@@ -47,8 +47,13 @@ public class UserService {
         return User.dao.findById(id);
     }
 
+	public static void main(String[] args) {
+		System.out.println(System.getProperty("user.home"));
+		System.out.println(System.getProperty("user.dir"));
+		System.out.println(System.getProperty("java.io.tmpdir"));
+	}
 
-    /**
+	/**
 	 * @param user
 	 * @return authId
      */
@@ -70,42 +75,42 @@ public class UserService {
 //		System.out.println(new String(Base64.decodeBase64("MV8zNTA5OTU5MzFAcXEuY29t")));
 //	}
 	
-	public static void register(String name, String email, String password, String openId) {
-		if(emailExists(email)) throw new BusinessException(ExceptionEnum.EMAIL_EXISTS);
+	public static void register(User user) {
+		if(emailExists(user.getEmail())) throw new BusinessException(ExceptionEnum.EMAIL_EXISTS);
 		boolean flag = false,
 				isModify = false;
 		Long id = null;
-		if(StringUtils.isNotEmpty(openId)){
+		if(StringUtils.isNotEmpty(user.getOpenId())){
 			// openIdexists && status == 0 
-			User user = getUserByOpenId(openId);
-			if(user.getInt(User.status) == 0) {
+			User temp = getUserByOpenId(user.getOpenId());
+			if(temp.getInt(User.status) == 0) {
 				//绑定了邮箱但是没激活时，重新绑定
 				flag = true;
-				id = user.getLong(User.id);
-				isModify = user.keep(User.id).set(User.email, email).set(User.password, encryptPassword(password, id)).update();
+				id = temp.getId();
+				isModify = temp.keep("id").set(User.email, user.getEmail()).set(User.password, encryptPassword(user.getPassword(), id)).update();
 			}
 		}
-		User user = new User();
+		User temp = new User();
 		if(!flag) {
-			user.set(User.name, name)
-				.set(User.email, email)
+			temp.set(User.name, user.getName())
+				.set(User.email, user.getEmail())
 				.set(User.status, 0)
-				.set(User.openId, openId)
-				.set(User.creater, 0)
-				.set(User.updater, 0)
-				.set(User.updateTime, new Date());
-			if(user.save()) {
+				.set(User.openId, user.getOpenId() == ""?null:user.getOpenId())
+				.setCreater(0l);
+			temp.setUpdater(0l);
+			temp.setUpdateTime(new Date());
+			if(temp.save()) {
 				isModify = true;
-				id = user.getLong(User.id);
-				user.keep(User.id)
-					.set(User.creater, id)
-					.set(User.updater, id)
-					.set(User.password, encryptPassword(password, id))
-					.update();
+				id = temp.getId();
+				temp.keep("id")
+					.setCreater(id);
+				temp.setUpdater(id);
+				temp.set(User.password, encryptPassword(user.getPassword(), id));
+				temp.update();
 			}
 		}
 		if(isModify)
-			EmailUtils.sendMail(email, Constant.URL_PREFIX + "/user/activeAccount/" + new String(Base64.encodeBase64((id+"_"+user.getStr(User.password)).getBytes())));
+			EmailUtils.sendMail(user.getEmail(), Constant.URL_PREFIX + "/user/activeAccount/" + new String(Base64.encodeBase64((id+"_"+temp.getStr(User.password)).getBytes())));
 	}
 	
 	public static String activeAccount(String base64Str) {
@@ -148,6 +153,7 @@ public class UserService {
 //	}
 	
 	public static User getUserByEmail(final String email) {
+		if (StringUtils.isBlank(email)) return null;
 		return User.dao.findFirst(User.sql_findByEmail, email);
 	}
 

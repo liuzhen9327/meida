@@ -1,5 +1,6 @@
 package com.meida.config;
 
+import com.jfinal.kit.Prop;
 import com.jfinal.kit.PropKit;
 import com.jfinal.weixin.sdk.api.ApiConfig;
 
@@ -26,21 +27,22 @@ public class Constant {
 
 	public static void init() {
 		apiConfig = new ApiConfig();
-		apiConfig.setToken(PropKit.get("token"));
-		apiConfig.setAppId(PropKit.get("appId"));
-		apiConfig.setAppSecret(PropKit.get("appSecret"));
-		apiConfig.setEncryptMessage(PropKit.getBoolean("encryptMessage", false));
-		apiConfig.setEncodingAesKey(PropKit.get("encodingAesKey", "setting it in config file"));
+		Prop prop = PropKit.use("config.properties");
+		apiConfig.setToken(prop.get("token"));
+		apiConfig.setAppId(prop.get("appId"));
+		apiConfig.setAppSecret(prop.get("appSecret"));
+		apiConfig.setEncryptMessage(prop.getBoolean("encryptMessage", false));
+		apiConfig.setEncodingAesKey(prop.get("encodingAesKey", "setting it in config file"));
 		
-		EMAIL_SUBJECT = PropKit.get("activate.account.subject");
-		EMAIL_CONTENT = PropKit.get("activate.account.content");
-		EMAIL_USERNAME = PropKit.get("activate.account.username");
-		EMAIL_PASSWORD = PropKit.get("activate.account.password");
-		EMAIL_FORM = PropKit.get("activate.account.from");
+		EMAIL_SUBJECT = prop.get("activate.account.subject");
+		EMAIL_CONTENT = prop.get("activate.account.content");
+		EMAIL_USERNAME = prop.get("activate.account.username");
+		EMAIL_PASSWORD = prop.get("activate.account.password");
+		EMAIL_FORM = prop.get("activate.account.from");
 		
-		URL_PREFIX = PropKit.get("url.prefix");
+		URL_PREFIX = prop.get("url.prefix");
 
-		mysqlBatchSize = PropKit.getInt("mysqlBatchSize");
+		mysqlBatchSize = prop.getInt("mysqlBatchSize");
 
 
 	}

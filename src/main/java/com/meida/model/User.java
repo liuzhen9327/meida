@@ -1,5 +1,7 @@
 package com.meida.model;
 
+import com.meida.model.base.BaseUser;
+
 /**
  *
  * @author liuzhen
@@ -26,7 +28,7 @@ ALTER TABLE `user` ADD UNIQUE (`email`);
 ALTER TABLE `user` ADD UNIQUE (`openId`);
  */
 @SuppressWarnings("serial")
-public class User extends BaseModel<User>{
+public class User extends BaseUser<User> {
 
 	public final static User dao = new User();
 

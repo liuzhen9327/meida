@@ -1,5 +1,6 @@
 package com.meida.model;
 
+import com.meida.model.base.BaseTbOrder;
 import com.meida.service.UserService;
 import com.meida.utils.DateUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -27,7 +28,7 @@ import org.apache.commons.lang.time.DateFormatUtils;
  PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
-public class Order extends BaseModel<Order> {
+public class Order extends BaseTbOrder<Order> {
     public final static String TABLE_NAME = "tb_order";
 
     /**dao只能用作find delete*/
@@ -54,22 +55,22 @@ public class Order extends BaseModel<Order> {
                          sql_findMyTransitOrders;
 
     static {
-        sql_findNewOrder = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? and ").append(Order.deleteFlag).append("=? and ").append(Order.status).append("=?").toString();
-        sql_findMyOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? or ").append(Order.acceptUser).append("=? or ").append(Order.transitUser).append("=? and ").append(Order.deleteFlag).append("=?").append(" ORDER BY ").append(Order.updateTime).append(" DESC").toString();
-        sql_findMyTransitOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.transitUser).append("=? and ").append("(").append(Order.status).append("=? or ").append(Order.type).append("=?").append(") and ").append(Order.deleteFlag).append("=?").append(" ORDER BY ").append(Order.updateTime).append(" DESC").toString();
+        sql_findNewOrder = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? and ").append("deleteFlag=? and ").append(Order.status).append("=?").toString();
+        sql_findMyOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.ownerId).append("=? or ").append(Order.acceptUser).append("=? or ").append(Order.transitUser).append("=? and ").append("deleteFlag=?").append(" ORDER BY ").append("updateTime DESC").toString();
+        sql_findMyTransitOrders = new StringBuilder(sql_findAll).append(" where ").append(Order.transitUser).append("=? and ").append("(").append(Order.status).append("=? or ").append(Order.type).append("=?").append(") and ").append("deleteFlag=?").append(" ORDER BY ").append("updateTime DESC").toString();
     }
 
-    public String getAcceptTime() {
+    public String getAcceptTimeStr() {
         return getLong(Order.acceptTime) == null ? "":DateFormatUtils.format(getLong(Order.acceptTime), DateUtils.yyyy_MM_dd_hh_mm_ss);
     }
 
-    public User getAcceptUser() {
+    public User getAcceptUserModel() {
         Long acceptUser = getLong(Order.acceptUser);
         if (acceptUser == null || acceptUser == 0) return new User();
         return UserService.get(acceptUser);
     }
 
-    public User getTransitUser() {
+    public User getTransitUserModel() {
         Long transitUser = getLong(Order.transitUser);
         if (transitUser == null || transitUser == 0) return new User();
         return UserService.get(transitUser);

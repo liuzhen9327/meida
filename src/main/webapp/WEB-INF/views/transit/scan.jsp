@@ -37,7 +37,7 @@
 <%String errMsg = (String) request.getAttribute("errMsg");
 OriginalLogistic originalLogistic = (OriginalLogistic) request.getAttribute("originalLogistic");
 Order order = (Order) request.getAttribute("order");
-User customer = order.getAcceptUser();
+User customer = order.getAcceptUserModel();
 %>
         <div class="contentpanel">
 

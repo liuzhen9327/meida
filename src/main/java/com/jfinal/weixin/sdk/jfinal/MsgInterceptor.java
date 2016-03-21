@@ -10,8 +10,9 @@ import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
-import com.jfinal.log.Logger;
 import com.jfinal.weixin.sdk.kit.SignatureCheckKit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Msg 拦截器
@@ -22,9 +23,9 @@ import com.jfinal.weixin.sdk.kit.SignatureCheckKit;
  * 		因为子类覆盖父类方法会使父类方法配置的拦截器失效，从而失去本拦截器的功能
  */
 public class MsgInterceptor implements Interceptor {
-	
-	private static final Logger log =  Logger.getLogger(MsgInterceptor.class);
-	
+
+	private static Logger log = LoggerFactory.getLogger(MsgInterceptor.class);
+
 	public void intercept(Invocation inv) {
 		Controller controller = inv.getController();
 		if (controller instanceof MsgController == false)

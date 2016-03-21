@@ -5,11 +5,15 @@ import com.jfinal.aop.Clear;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.upload.UploadFile;
+import com.meida.enumerate.ExceptionEnum;
+import com.meida.exception.BusinessException;
 import com.meida.interceptor.AuthInterceptor;
 import com.meida.model.OriginalLogistic;
 import com.meida.model.Receiver;
-import com.meida.model.So;
 import com.meida.model.TransitLogistic;
+import com.meida.utils.UrlUtils;
+import com.meida.vo.JSONResult;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -20,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,7 +42,7 @@ public class SearchController extends BaseController {
         String value = getPara("value");
         if (StringUtils.isNotBlank(value)) {
             list = OriginalLogistic.dao.find("select * from " + OriginalLogistic.TABLE_NAME + " where " +
-                    OriginalLogistic.id + " in(select DISTINCT "+Receiver.originalId+" from "+Receiver.TABLE_NAME+
+                    "id in(select DISTINCT "+Receiver.originalId+" from "+Receiver.TABLE_NAME+
                     " where "+Receiver.originalNumber+"=? or "+Receiver.mobile+"=?) order by id desc", value, value);
         }
 
@@ -49,18 +54,181 @@ public class SearchController extends BaseController {
 
     public void upload() {
         if (getRequest().getMethod().equalsIgnoreCase("post")) {
-            String filePath = upload2();
-            String msg = null;
-            if (filePath != null) {
-                boolean flag = saveExcel(filePath);
-                if (flag) msg = "导入excel成功";
-                else msg = "导入excel失败";
+//            String filePath = upload2();
+            UploadFile file = getFile("file");
+
+            String msg = null, errCode = null;
+            if (file != null && file.getFile() != null) {
+                try {
+                    saveExcel(file.getFile());
+                    msg = "数据上传成功！";
+                } catch (Exception e) {
+                    if (e instanceof BusinessException) {
+                        BusinessException ex = (BusinessException) e;
+                        msg = ex.getErrMsg();
+                        errCode = ex.getErrCode();
+                    }
+                }finally {
+                    FileUtils.deleteQuietly(file.getFile());
+                }
             } else {
-                msg = "上传文件失败";
+                errCode = "no data file";
+                msg = "未解析到数据文件, 请选择数据文件再上传";
             }
-            setAttr("msg", msg);
+//            setAttr("errCode", errCode);
+//            setAttr("msg", msg);
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("errCode", errCode);
+            params.put("msg", msg);
+//            redirect(UrlUtils.buildParams("/so/upload", params));
+            if (errCode == null) {
+                renderJson(JSONResult.succ(msg));
+            } else {
+                renderJson(JSONResult.error(errCode, msg));
+            }
+            return;
         }
         renderJsp("upload.jsp");
+    }
+
+
+
+    @Before(Tx.class)
+    private void saveExcel(File file) {
+        int errorLine = 0;
+        try {
+            long userId = getCurrentUserId();
+            OriginalLogistic.dao.deleteAll(userId);
+            TransitLogistic.dao.deleteAll(userId);
+            Receiver.dao.deleteAll(userId);
+            XSSFWorkbook xwb = new XSSFWorkbook(file);
+            XSSFSheet sheet = xwb.getSheetAt(0);
+            XSSFRow row;
+//            long deleteId = 0l;
+            int begin = sheet.getFirstRowNum();
+
+            Map<Object, OriginalLogistic> originalLogisticMap = new LinkedHashMap<>();
+            List<TransitLogistic> transitLogisticList = new ArrayList<>();
+            List<Receiver> receiverList = new ArrayList<>();
+            Date now = new Date();
+            int end = sheet.getLastRowNum();
+            for (int i = begin; i < end; i++) {
+                if (i == begin) continue;
+                row = sheet.getRow(i);
+                if (null == row) continue;
+
+                Object orderNumber = getCellValue(row.getCell(0));
+                Object originalName = getCellValue(row.getCell(1)),
+                        originalNumber = getCellValue(row.getCell(2)),
+                        weight = getCellValue(row.getCell(3)),
+                        transitLogisticInfo = getCellValue(row.getCell(4)),
+                        receiver = getCellValue(row.getCell(5)),
+                        mobile = getCellValue(row.getCell(6)),
+                        address = getCellValue(row.getCell(7)),
+                        transitName = getCellValue(row.getCell(8)),
+                        transitNumber = getCellValue(row.getCell(9)),
+                        date = getCellValue(row.getCell(10));
+
+                Object senderInfo = getCellValue(row.getCell(11)),
+                        remark = getCellValue(row.getCell(12));
+
+
+
+                OriginalLogistic originalLogistic = new OriginalLogistic();
+                originalLogistic.set(OriginalLogistic.name, originalName)
+                        .set(OriginalLogistic.number, originalNumber)
+                        .set(OriginalLogistic.weight, weight)
+//                        .set(OriginalLogistic.receiver, receiver)
+//                        .set(OriginalLogistic.mobile, mobile)
+//                        .set(OriginalLogistic.address, address)
+                        .set(OriginalLogistic.orderId, 0)
+                        .setCreater(userId);
+                originalLogistic.setUpdater(userId);
+
+
+                originalLogistic.set(OriginalLogistic.orderNumber, orderNumber)
+                        .set(OriginalLogistic.senderInfo, senderInfo)
+                        .set(OriginalLogistic.remark, remark);
+                if (date != null) originalLogistic.set("updateTime", date);
+
+                originalLogistic.setLine(i);
+                originalLogisticMap.put(originalNumber, originalLogistic);
+
+                Receiver r = new Receiver(receiver, mobile, address, null, originalNumber, userId);
+                r.setLine(i);
+                receiverList.add(r);
+
+
+                if (transitName != null && !transitName.toString().equals("")
+                        && transitNumber != null && !transitNumber.toString().equals("")
+                        && transitLogisticInfo != null && !transitLogisticInfo.toString().equals("")) {
+                    TransitLogistic transitLogistic = new TransitLogistic();
+                    transitLogistic.set(TransitLogistic.name, transitName)
+                            .set(TransitLogistic.number, transitNumber)
+                            .set(TransitLogistic.type, 1)
+                            .set(TransitLogistic.contactInfo, transitLogisticInfo)
+                            .set(TransitLogistic.weight, 0)
+                            .set(TransitLogistic.orderId, 0)
+                            .set(TransitLogistic.originalNumber, originalNumber)
+                            .set(TransitLogistic.originalMobile, mobile)
+                            .setCreater(userId);
+                    transitLogistic.setUpdater(userId);
+                    if (date != null) transitLogistic.set("updateTime", date);
+                    transitLogistic.setLine(i);
+                    transitLogisticList.add(transitLogistic);
+                }
+
+            }
+
+            for (Map.Entry<Object, OriginalLogistic> entry : originalLogisticMap.entrySet()) {
+                OriginalLogistic originalLogistic = entry.getValue();
+                errorLine = originalLogistic.getLine();
+                originalLogistic.save();
+            }
+            for (TransitLogistic transitLogistic : transitLogisticList) {
+                transitLogistic.set(TransitLogistic.originalId, originalLogisticMap.get(
+                        transitLogistic.getStr(TransitLogistic.originalNumber)).getId());
+                errorLine = transitLogistic.getLine();
+                transitLogistic.save();
+            }
+
+            for (Receiver receiver : receiverList) {
+                receiver.set(Receiver.originalId, originalLogisticMap.get(
+                        receiver.get(Receiver.originalNumber)).getId());
+                receiver.setCreater(userId);
+                errorLine = receiver.getLine();
+                receiver.save();
+            }
+        } catch (Exception e) {
+            if (e instanceof SQLException) {
+                throw new BusinessException(ExceptionEnum.EXCEL_RESOLVE_ERROR, errorLine);
+            }
+            throw new BusinessException(ExceptionEnum.READ_EXCEL_ERROR);
+        }
+    }
+
+    private Object getCellValue(XSSFCell cell) {
+        Object object = null;
+        if (cell == null) return object;
+        switch (cell.getCellType()) {
+            case XSSFCell.CELL_TYPE_NUMERIC: // 数字
+                if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
+                    object = cell.getDateCellValue();
+                } else {
+                    object = (cell.getNumericCellValue());
+                }
+                break;
+            case XSSFCell.CELL_TYPE_STRING: // 字符串
+                object = (cell.getStringCellValue());
+                break;
+            case XSSFCell.CELL_TYPE_BOOLEAN: // Boolean
+                object = (cell.getBooleanCellValue());
+                break;
+            case XSSFCell.CELL_TYPE_FORMULA: // 公式
+                object = (cell.getCellFormula());
+                break;
+        }
+        return object;
     }
 
     private String upload2() {
@@ -117,127 +285,5 @@ public class SearchController extends BaseController {
         }
         String afterShuffle = sb.toString();
         return afterShuffle.substring(5, 9);
-    }
-
-    @Before(Tx.class)
-    private boolean saveExcel(String filePath) {
-        try {
-            long userId = getCurrentUserId();
-            OriginalLogistic.dao.deleteAll(userId);
-            TransitLogistic.dao.deleteAll(userId);
-            Receiver.dao.deleteAll(userId);
-            XSSFWorkbook xwb = new XSSFWorkbook(filePath);
-            XSSFSheet sheet = xwb.getSheetAt(0);
-            XSSFRow row;
-//            long deleteId = 0l;
-            List<So> result = new ArrayList<>();
-            int begin = sheet.getFirstRowNum();
-
-            Map<Object, OriginalLogistic> originalLogisticMap = new LinkedHashMap<>();
-            List<TransitLogistic> transitLogisticList = new ArrayList<>();
-            List<Receiver> receiverList = new ArrayList<>();
-
-            int end = sheet.getLastRowNum();
-            for (int i = begin; i < end; i++) {
-                if (i == begin) continue;
-                row = sheet.getRow(i);
-                if (null == row) continue;
-
-                Object originalName = getCellValue(row.getCell(1)),
-                        originalNumber = getCellValue(row.getCell(2)),
-                        weight = getCellValue(row.getCell(3)),
-                        transitLogisticInfo = getCellValue(row.getCell(4)),
-                        receiver = getCellValue(row.getCell(5)),
-                        mobile = getCellValue(row.getCell(6)),
-                        address = getCellValue(row.getCell(7)),
-                        transitName = getCellValue(row.getCell(8)),
-                        transitNumber = getCellValue(row.getCell(9)),
-                        date = getCellValue(row.getCell(10));
-
-
-
-                OriginalLogistic originalLogistic = new OriginalLogistic();
-                originalLogistic.set(OriginalLogistic.name, originalName)
-                        .set(OriginalLogistic.number, originalNumber)
-                        .set(OriginalLogistic.weight, weight)
-//                        .set(OriginalLogistic.receiver, receiver)
-//                        .set(OriginalLogistic.mobile, mobile)
-//                        .set(OriginalLogistic.address, address)
-                        .set(OriginalLogistic.orderId, 0)
-                        .set(OriginalLogistic.creater, 0)
-                        .set(OriginalLogistic.updater, 0);
-                if (date != null) originalLogistic.set(OriginalLogistic.updateTime, date);
-
-                originalLogisticMap.put(originalNumber, originalLogistic);
-
-                receiverList.add(new Receiver(receiver, mobile, address, null, originalNumber, userId));
-
-
-                if (transitName != null && !transitName.toString().equals("")
-                        && transitNumber != null && !transitNumber.toString().equals("")
-                        && transitLogisticInfo != null && !transitLogisticInfo.toString().equals("")) {
-                    TransitLogistic transitLogistic = new TransitLogistic();
-                    transitLogistic.set(TransitLogistic.name, transitName)
-                            .set(TransitLogistic.number, transitNumber)
-                            .set(TransitLogistic.type, 1)
-                            .set(TransitLogistic.contactInfo, transitLogisticInfo)
-                            .set(TransitLogistic.weight, 0)
-                            .set(TransitLogistic.orderId, 0)
-                            .set(TransitLogistic.originalNumber, originalNumber)
-                            .set(TransitLogistic.originalMobile, mobile)
-                            .set(TransitLogistic.creater, 0)
-                            .set(TransitLogistic.updater, 0);
-                    if (date != null) transitLogistic.set(TransitLogistic.updateTime, date);
-                    transitLogisticList.add(transitLogistic);
-                }
-
-            }
-
-
-
-            for (Map.Entry<Object, OriginalLogistic> entry : originalLogisticMap.entrySet()) {
-                entry.getValue().save();
-            }
-            for (TransitLogistic transitLogistic : transitLogisticList) {
-                transitLogistic.set(TransitLogistic.originalId, originalLogisticMap.get(
-                        transitLogistic.getStr(TransitLogistic.originalNumber)).get(OriginalLogistic.id));
-                transitLogistic.save();
-            }
-
-            for (Receiver receiver : receiverList) {
-                receiver.set(Receiver.originalId, originalLogisticMap.get(
-                        receiver.getStr(Receiver.originalNumber)).get(OriginalLogistic.id));
-                receiver.set(Receiver.creater, userId);
-                receiver.save();
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private Object getCellValue(XSSFCell cell) {
-        Object object = null;
-        if (cell == null) return object;
-        switch (cell.getCellType()) {
-            case XSSFCell.CELL_TYPE_NUMERIC: // 数字
-                if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
-                    object = cell.getDateCellValue();
-                } else {
-                    object = (cell.getNumericCellValue());
-                }
-                break;
-            case XSSFCell.CELL_TYPE_STRING: // 字符串
-                object = (cell.getStringCellValue());
-                break;
-            case XSSFCell.CELL_TYPE_BOOLEAN: // Boolean
-                object = (cell.getBooleanCellValue());
-                break;
-            case XSSFCell.CELL_TYPE_FORMULA: // 公式
-                object = (cell.getCellFormula());
-                break;
-        }
-        return object;
     }
 }

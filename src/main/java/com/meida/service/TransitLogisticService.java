@@ -56,17 +56,18 @@ public class TransitLogisticService {
     public static void save(long originalId, String originalNumber, long orderId, long userId,
                 TransitLogisticTypeEnum type, String contactInfo, String name,
                 String number, BigDecimal weight, String remark) {
-        new TransitLogistic().set(TransitLogistic.originalId, originalId)
+        TransitLogistic transitLogistic = new TransitLogistic().set(TransitLogistic.originalId, originalId)
                 .set(TransitLogistic.originalNumber, originalNumber)
                 .set(TransitLogistic.type, type.getValue())
                 .set(TransitLogistic.contactInfo, contactInfo)
                 .set(TransitLogistic.name, name)
                 .set(TransitLogistic.number, number)
                 .set(TransitLogistic.weight, weight)
-                .set(TransitLogistic.remark, remark)
-                .set(TransitLogistic.creater, userId)
-                .set(TransitLogistic.updater, userId)
-                .save();
+                .set(TransitLogistic.remark, remark);
+        transitLogistic.setCreater(userId);
+        transitLogistic.setUpdater(userId);
+        transitLogistic.save();
+
     }
 
     public static void delete(long id) {
@@ -129,9 +130,9 @@ public class TransitLogisticService {
             List<TransitLogistic> transitLogisticList = findByOriginalId(originalIds[0]);
             for (TransitLogistic transitLogistic : transitLogisticList) {
                 transitLogistic.set(TransitLogistic.sendTime, sendTime)
-                            .set(TransitLogistic.updater, userId)
-                            .set(TransitLogistic.updateTime, now)
-                            .update();
+                            .setUpdater(userId);
+                transitLogistic.setUpdateTime(now);
+                transitLogistic.update();
             }
 //            Db.batch(TransitLogistic.sql_updateSendTime, TransitLogistic.columns_updateSendTime, transitLogisticList, Constant.mysqlBatchSize);
             //改原始物流状态为出仓
@@ -140,7 +141,7 @@ public class TransitLogisticService {
             exWarehouse ++;
         } else if (type == TransitLogisticTypeEnum.forward) {
             StringBuilder sql = new StringBuilder(OriginalLogistic.sql_findAll);
-            sql.append(" where ").append(OriginalLogistic.id).append(" in(");
+            sql.append(" where ").append("id").append(" in(");
             int len = originalIds.length;
             for (int i=0; i<len; i++)
                 if (i == len-1) sql.append("?)");
@@ -150,18 +151,18 @@ public class TransitLogisticService {
                 new TransitLogistic().set(TransitLogistic.contactInfo,
                         originalLogistic.get(OriginalLogistic.receiver) + "," + originalLogistic.get(OriginalLogistic.mobile) + "," + originalLogistic.get(OriginalLogistic.address))
                         .set(TransitLogistic.sendTime, sendTime)
-                        .set(TransitLogistic.updater, userId)
+                        .set("updater", userId)
                         .set(TransitLogistic.name, originalLogistic.get(OriginalLogistic.name))
                         .set(TransitLogistic.remark, originalLogistic.get(OriginalLogistic.remark))
                         .set(TransitLogistic.weight, originalLogistic.get(OriginalLogistic.weight))
                         .set(TransitLogistic.number, originalLogistic.get(OriginalLogistic.number))
                         .set(TransitLogistic.orderId, originalLogistic.get(OriginalLogistic.orderId))
-                        .set(TransitLogistic.originalId, originalLogistic.get(OriginalLogistic.id))
+                        .set(TransitLogistic.originalId, originalLogistic.getId())
                         .set(TransitLogistic.originalNumber, originalLogistic.get(OriginalLogistic.number))
                         .set(TransitLogistic.type, TransitLogisticTypeEnum.forward.getValue())
                         .save();
                 //改原始物流状态为出仓
-                OriginalLogisticService.exWarehouse(originalLogistic.getLong(OriginalLogistic.id), userId);
+                OriginalLogisticService.exWarehouse(originalLogistic.getId(), userId);
                 waitExWarehouse --;
                 exWarehouse ++;
             }

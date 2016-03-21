@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,28 +49,30 @@ public class ExceptionInterceptor implements Interceptor {
                 controller.renderJson(JSONResult.error(errCode, errMsg));
             } else {
                 String actionKey = inv.getActionKey();
-                try {
-                    Map<String, String> params = new HashMap<String, String>();
-                    if (actionKey.contains("login")) {
-                        params.put("errMsg", errMsg);
-                        params.put(User.email, controller.getPara(User.email));
-                        params.put(User.password, controller.getPara(User.password));
-                        controller.redirect(UrlUtils.builder("/login.jsp", params));
-                        return;
-                    } else if (actionKey.contains("register")) {
-                        params.put("errMsg", errMsg);
-                        params.put(User.email, controller.getPara(User.email));
-                        params.put(User.name, controller.getPara(User.name));
-                        controller.redirect(UrlUtils.builder("/register.jsp", params));
-                        return;
-                    }
-                    String redirctUrl = request.getHeader("referer");
-                    if (StringUtils.isBlank(redirctUrl)) redirctUrl = request.getRequestURI();
-                    params.put("redirctUrl", redirctUrl);
+                Map<String, String> params = new HashMap<String, String>();
+                if (actionKey.contains("login")) {
                     params.put("errMsg", errMsg);
-                    controller.redirect(UrlUtils.builder("/500.jsp", params));
-                } catch (UnsupportedEncodingException e1) {
+                    params.put(User.email, controller.getPara(User.email));
+                    params.put(User.password, controller.getPara(User.password));
+                    controller.redirect(UrlUtils.buildParams("/login.jsp", params));
+                    return;
+                } else if (actionKey.contains("register")) {
+                    params.put("errMsg", errMsg);
+                    params.put("user.email", controller.getPara("user.email"));
+                    params.put("user.name", controller.getPara("user.name"));
+                    params.put("user.nick", controller.getPara("user.nick"));
+                    params.put("user.phone", controller.getPara("user.phone"));
+                    params.put("user.wechat", controller.getPara("user.wechat"));
+                    params.put("user.work_address", controller.getPara("user.work_address"));
+                    params.put("user.password", controller.getPara("user.password"));
+                    controller.redirect(UrlUtils.buildParams("/register.jsp", params));
+                    return;
                 }
+                String redirctUrl = request.getHeader("referer");
+                if (StringUtils.isBlank(redirctUrl)) redirctUrl = request.getRequestURI();
+                params.put("redirctUrl", redirctUrl);
+                params.put("errMsg", errMsg);
+                controller.redirect(UrlUtils.buildParams("/500.jsp", params));
 
             }
         }

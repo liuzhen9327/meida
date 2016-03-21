@@ -6,7 +6,6 @@
 
 package com.meida.controller;
 
-import com.jfinal.log.Logger;
 import com.jfinal.weixin.sdk.jfinal.MsgController;
 import com.jfinal.weixin.sdk.msg.in.InImageMsg;
 import com.jfinal.weixin.sdk.msg.in.InLinkMsg;
@@ -25,6 +24,8 @@ import com.jfinal.weixin.sdk.msg.in.event.InTemplateMsgEvent;
 import com.jfinal.weixin.sdk.msg.in.speech_recognition.InSpeechRecognitionResults;
 import com.jfinal.weixin.sdk.msg.out.OutCustomMsg;
 import com.jfinal.weixin.sdk.msg.out.OutTextMsg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 将此 DemoController 在YourJFinalConfig 中注册路由，
@@ -33,8 +34,7 @@ import com.jfinal.weixin.sdk.msg.out.OutTextMsg;
  * 方法即可直接运行看效果，在此基础之上修改相关的方法即可进行实际项目开发
  */
 public class WechatMsgController extends MsgController {
-	
-	private static Logger logger = Logger.getLogger(WechatMsgController.class);
+	private static Logger logger = LoggerFactory.getLogger(WechatMsgController.class);
 //	private static final String helpStr = "\t发送 help 可获得帮助，发送\"视频\" 可获取视频教程，发送 \"美女\" 可看美女，发送 music 可听音乐 ，发送新闻可看JFinal新版本消息。公众号功能持续完善中";
 	
 	/**

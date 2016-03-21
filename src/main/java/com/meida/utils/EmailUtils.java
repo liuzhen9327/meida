@@ -91,7 +91,8 @@ public class EmailUtils {
 //		String format = "aaa{0}aaa";
 //		System.out.println(MessageFormat.format(format, 1));
 //		System.out.println(IpKit.getHostName());
-        sendMail("350995931@qq.com", "aaaa");
+        Constant.init();
+        sendMail("350995931@qq.com", "ssss");
     }
 
 }

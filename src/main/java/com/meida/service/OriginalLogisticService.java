@@ -30,9 +30,9 @@ public class OriginalLogisticService {
                 .set(OriginalLogistic.address, address)
                 .set(OriginalLogistic.remark, remark)
                 .set(OriginalLogistic.orderId, orderId)
-                .set(OriginalLogistic.updater, userId);
+                .set("updater", userId);
         if (id == 0) {
-            originalLogistic.set(OriginalLogistic.creater, userId)
+            originalLogistic.set("creater", userId)
                     .set(OriginalLogistic.status, OriginalLogisticStatusEnum.waitInWarehouse.getValue())
                     .save();
             Order order = OrderService.get(orderId);
@@ -44,7 +44,7 @@ public class OriginalLogisticService {
             waitInWarehouse ++;
             OrderService.updateWarehouse(orderId, totalWarehouse, waitInWarehouse, waitExWarehouse, exWarehouse);
         } else {
-            originalLogistic.set(OriginalLogistic.id, id);
+            originalLogistic.setId(id);
             originalLogistic.update();
         }
         return originalLogistic;
@@ -90,9 +90,9 @@ public class OriginalLogisticService {
 
     public static void exWarehouse(long id, long userId) {
         new OriginalLogistic().set(OriginalLogistic.status, OriginalLogisticStatusEnum.exWarehouse)
-                .set(OriginalLogistic.updater, userId)
-                .set(OriginalLogistic.updateTime, new Date())
-                .set(OriginalLogistic.id, id)
+                .set("updater", userId)
+                .set("updateTime", new Date())
+                .set("id", id)
                 .update();
     }
 }

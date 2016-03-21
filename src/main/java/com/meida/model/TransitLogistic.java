@@ -2,6 +2,7 @@ package com.meida.model;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
+import com.meida.model.base.BaseTransitLogistic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +29,7 @@ import java.sql.SQLException;
  PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
  */
-public class TransitLogistic extends BaseModel<TransitLogistic>{
+public class TransitLogistic extends BaseTransitLogistic<TransitLogistic> {
     public final static String TABLE_NAME = "transitLogistic";
 
     public final static TransitLogistic dao = new TransitLogistic();
@@ -60,5 +61,14 @@ public class TransitLogistic extends BaseModel<TransitLogistic>{
                 return st.executeUpdate();
             }
         });
+    }
+    private int line;
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 }

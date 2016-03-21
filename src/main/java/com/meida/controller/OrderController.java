@@ -62,12 +62,12 @@ public class OrderController extends BaseController {
         Order order = OrderService.newOrder(userId);
         setAttr("order", order);
 
-        loadBaseOrderData(order.getLong(Order.id), userId);
+        loadBaseOrderData(order.getId(), userId);
         renderJsp("newOrder.jsp");
     }
 
     public void save() {
-        long id = getParaToLong(Order.id);
+        long id = getParaToLong("id");
         int orderType = getParaToInt(Order.type);
 
         String remark = getPara(Order.remark);
@@ -82,7 +82,7 @@ public class OrderController extends BaseController {
     private void edit(Order order) {
         setAttr("order", order);
 
-        loadBaseOrderData(order.getLong(Order.id), getCurrentUserId());
+        loadBaseOrderData(order.getId(), getCurrentUserId());
         renderJsp("edit.jsp");
     }
 
@@ -102,27 +102,27 @@ public class OrderController extends BaseController {
 //        User customer = UserService.getCustomerByOrder(order);
 //        setAttr("customer", customer);
 
-        loadBaseOrderData(order.getLong(Order.id), userId);
+        loadBaseOrderData(order.getId(), userId);
         renderJsp("accept.jsp");
     }
 
     private void transitDetail(Order order) {
         //TODO 受理成功后，还有直发中转的订单，判断是否本人，如果是 可点中转发货
         setAttr("order", order);
-        long orderId = order.getLong(Order.id);
+        long orderId = order.getId();
         List<OriginalLogistic> originalLogisticList = OriginalLogisticService.findByOrderId(orderId);
         List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOrderId(orderId);
         renderJsp("../transit/detail.jsp");
     }
 
     public void cancel() {
-        long id = getParaToLong(Order.id, 0l);
+        long id = getParaToLong("id", 0l);
         OrderService.delete(id, getCurrentUserId());
         renderJson(JSONResult.succ());
     }
 
     public void accept() {
-        long id = getParaToLong(Order.id, 0l);
+        long id = getParaToLong("id", 0l);
         String remark = getPara(Order.remark);
         Long transitUserId = getParaToLong(Order.transitUser, 0l);
         OrderService.accept(id, transitUserId, getCurrentUserId(), remark);

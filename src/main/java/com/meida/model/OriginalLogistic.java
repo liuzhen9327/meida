@@ -2,6 +2,7 @@ package com.meida.model;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
+import com.meida.model.base.BaseOriginalLogistic;
 import com.meida.service.OrderService;
 
 import java.sql.Connection;
@@ -27,7 +28,7 @@ import java.sql.SQLException;
  `updateTime` TIMESTAMP NOT NULL,
  `updater` bigint(20) NOT NULL ,
  */
-public class OriginalLogistic extends BaseModel<OriginalLogistic> {
+public class OriginalLogistic extends BaseOriginalLogistic<OriginalLogistic> {
 
     public final static String TABLE_NAME = "originalLogistic";
 
@@ -41,12 +42,14 @@ public class OriginalLogistic extends BaseModel<OriginalLogistic> {
                                mobile = "mobile",
                                address = "address",
                                remark = "remark",
+                                orderNumber = "orderNumber",
+                                senderInfo = "senderInfo",
                                orderId = "orderId";
 
     public final static String sql_findAll = "select * from " + TABLE_NAME;
     public final static String sql_findByNumber = sql_findAll + " where " + number + "=?",
                                sql_findByOrderId = sql_findAll + " where " + orderId + "=?",
-                               sql_findUnSendOriginalLogistic = new StringBuilder(sql_findAll).append(" where ").append(orderId).append("=? and ").append(id).append(" not in(select ").append(TransitLogistic.originalId).append(" from ").append(TransitLogistic.TABLE_NAME).append(" where ").append(orderId).append("=?)").toString();
+                               sql_findUnSendOriginalLogistic = new StringBuilder(sql_findAll).append(" where ").append(orderId).append("=? and id").append(" not in(select ").append(TransitLogistic.originalId).append(" from ").append(TransitLogistic.TABLE_NAME).append(" where ").append(orderId).append("=?)").toString();
 
     public Order getOrder() {
         return OrderService.get(getLong(orderId));
@@ -62,5 +65,14 @@ public class OriginalLogistic extends BaseModel<OriginalLogistic> {
                 return st.executeUpdate();
             }
         });
+    }
+    private int line;
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 }

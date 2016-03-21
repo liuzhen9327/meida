@@ -46,12 +46,12 @@ public class OrderService {
                     .set(Order.totalWarehouse, 0)
                     .set(Order.waitInWarehouse, 0)
                     .set(Order.waitExWarehouse, 0)
-                    .set(Order.exWarehouse, 0)
-                    .set(Order.deleteFlag, false)
-                    .set(Order.ownerId, ownerId)
-                    .set(Order.creater, ownerId)
-                    .set(Order.updater, ownerId)
-                    .save();
+                    .set(Order.exWarehouse, 0);
+            order.setDeleteFlag(false);
+            order.set(Order.ownerId, ownerId)
+                    .setCreater(ownerId);
+            order.setUpdater(ownerId);
+            order.save();
         } catch (Exception e) {
             if (e instanceof SQLIntegrityConstraintViolationException) {
                 log.error("user[{}] repeat orders, create order again", ownerId);
@@ -87,9 +87,9 @@ public class OrderService {
 //                        !isCommit? "保存" : "提交", orderType.getName());
         }
 
-        order.set(Order.updater, userId)
-             .set(Order.remark, remark)
-             .set(Order.id, id);
+        order.setUpdater(userId);
+        order.set(Order.remark, remark)
+             .setId(id);
         return order.update();
     }
 
@@ -99,7 +99,7 @@ public class OrderService {
                 .set(Order.waitInWarehouse, waitInWarehouse)
                 .set(Order.waitExWarehouse, waitExWarehouse)
                 .set(Order.exWarehouse, exWarehouse)
-                .set(Order.id, orderId)
+                .set("id", orderId)
                 .update();
     }
 
@@ -109,8 +109,8 @@ public class OrderService {
             throw new BusinessException(ExceptionEnum.ORDER_NOT_EXIST, id);
         }
 
-        if(order.getBoolean(Order.deleteFlag)) {
-            User user = UserService.get(order.getLong(Order.updater));
+        if(order.getDeleteFlag()) {
+            User user = UserService.get(order.getUpdater());
             throw new BusinessException(ExceptionEnum.ORDER_WAS_CANCELED, user != null ? user.getStr(User.name):"");
         }
         return order;
@@ -137,9 +137,9 @@ public class OrderService {
             throw new BusinessException(ExceptionEnum.NOT_ORDER_CREATER);
         if(order.getInt(Order.status) != OrderStatusEnum.reserve.getValue())
             throw new BusinessException(ExceptionEnum.ORDER_CANCEL_ERROR, OrderStatusEnum.valueOf(order.getInt(Order.status)).getName());
-        order.set(Order.deleteFlag, true)
-                .set(Order.updater, userId)
-                .update();
+        order.setDeleteFlag(true);
+        order.setUpdater(userId);
+        order.update();
     }
 
     /**
@@ -152,7 +152,7 @@ public class OrderService {
         Order order = toAccept(id, userId);
         order.set(Order.transitUser, transitUserId)
                 .set(Order.acceptTime, DateUtils.getTimeInMillis())
-                .set(Order.updater, userId)
+                .set("updater", userId)
                 .set(Order.status, OrderStatusEnum.accepted.getValue())
                 .set(Order.remark, remark)
                 .update();

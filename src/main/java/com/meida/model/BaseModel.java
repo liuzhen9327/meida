@@ -10,7 +10,7 @@ import java.util.Date;
 public class BaseModel<M extends Model> extends Model<M>{
 
     public BaseModel() {
-        set(Order.updateTime, new Date());
+//        set(Order.updateTime, new Date());
     }
     public final static String id = "id",
                                deleteFlag = "deleteFlag",

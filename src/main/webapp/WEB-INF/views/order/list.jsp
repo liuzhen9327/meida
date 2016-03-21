@@ -103,7 +103,7 @@
                                     <th ><%=order.getInt(Order.waitInWarehouse) == 0 ? "-":order.getInt(Order.waitInWarehouse)%></th>
                                     <th ><%=order.getInt(Order.waitExWarehouse) == 0 ? "-":order.getInt(Order.waitExWarehouse)%></th>
                                     <th ><%=order.getInt(Order.exWarehouse) == 0 ? "-":order.getInt(Order.exWarehouse)%></th>
-                                    <th ><%=order.getAcceptTime()%></th>
+                                    <th ><%=order.getAcceptTimeStr()%></th>
                                     <th ><%=orderStatus == OrderStatusEnum.reserve
                                             && order.getLong(Order.ownerId).equals(((User) request.getAttribute("user")).getLong(User.id))?
                                             "<button class='btn btn-primary x-cancel-btn btn-xs'>取消订单</button>":""%></th>

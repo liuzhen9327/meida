@@ -30,7 +30,7 @@
 <%Order order = (Order) request.getAttribute("order");
 List<OriginalLogistic> originalLogisticList = (List<OriginalLogistic>) request.getAttribute("originalLogisticList");
 List<TransitLogistic> transitLogisticList = (List<TransitLogistic>) request.getAttribute("transitLogisticList");
-    User customer = order.getAcceptUser();
+    User customer = order.getAcceptUserModel();
 %>
         <div class="pageheader">
             <h2><i class="fa fa-pencil"></i>订单信息 <span>Meida</span></h2>

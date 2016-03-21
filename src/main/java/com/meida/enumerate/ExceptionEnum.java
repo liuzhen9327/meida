@@ -8,7 +8,7 @@ public enum ExceptionEnum {
     ACCOUNT_NOT_EXISTS ("账号不存在"),
     PASSWORD_ERROR ("密码错误"),
     EMAIL_EXISTS ("邮件已存在"),
-    SEND_EMAIL_ERROR ("邮件发送失败"),
+    SEND_EMAIL_ERROR ("邮件发送失败, 请稍后重试!"),
     WAITING_ACTIVE ("用户还未激活，不能登录!"),
     ACTIVE_ERROR ("激活失败，{0}"),
     SAVE_ORDER_ERROR ("订单{0}失败，物流属性是:{1}"),
@@ -28,6 +28,10 @@ public enum ExceptionEnum {
     NOT_ORDER_TRANSIT_USER("您不是订单中转受理方"),
 
     PARAMS_ERROR("参数错误"),
+
+    EXCEL_RESOLVE_ERROR("数据上传失败！第[{0}]行数据解析异常，请检查后再上传！"),
+
+    READ_EXCEL_ERROR("读取文件失败"),
     ;
 
     private String message;

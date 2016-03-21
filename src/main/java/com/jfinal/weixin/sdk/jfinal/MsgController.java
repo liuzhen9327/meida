@@ -10,7 +10,6 @@ import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.ext.interceptor.NotAction;
 import com.jfinal.kit.HttpKit;
-import com.jfinal.log.Logger;
 import com.jfinal.weixin.sdk.api.ApiConfigKit;
 import com.jfinal.weixin.sdk.kit.MsgEncryptKit;
 import com.jfinal.weixin.sdk.msg.InMsgParser;
@@ -33,13 +32,15 @@ import com.jfinal.weixin.sdk.msg.in.event.InTemplateMsgEvent;
 import com.jfinal.weixin.sdk.msg.in.speech_recognition.InSpeechRecognitionResults;
 import com.jfinal.weixin.sdk.msg.out.OutMsg;
 import com.jfinal.weixin.sdk.msg.out.OutTextMsg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 接收微信服务器消息，自动解析成 InMsg 并分发到相应的处理方法
  */
 public abstract class MsgController extends Controller {
-	
-	private static final Logger log =  Logger.getLogger(MsgController.class);
+
+	private static Logger log = LoggerFactory.getLogger(MsgController.class);
 	private String inMsgXml = null;		// 本次请求 xml数据
 	private InMsg inMsg = null;			// 本次请求 xml 解析后的 InMsg 对象
 	

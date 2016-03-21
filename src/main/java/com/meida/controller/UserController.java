@@ -20,17 +20,14 @@ public class UserController extends BaseController {
         String password = getPara(User.password);
         String authId = UserService.login(email, password);
         setCookie(Constant.COOKIE_AUTH_KEY, authId, 3600, Constant.COOKIE_PATH);
-        renderJsp("/index.jsp");
+        redirect("/so/upload");
     }
 
     @Clear(AuthInterceptor.class)
     public void register() {
-		String  email = getPara(User.email),
-                name = getPara(User.name),
-				password = getPara(User.password),
-				openId = getPara(User.openId);
-		UserService.register(name, email, password, openId);
-        redirect("/toActive.jsp?" + new String(Base64.encodeBase64(email.getBytes())));
+        User user = getModel(User.class);
+        UserService.register(user);
+        redirect("/toActive.jsp?" + new String(Base64.encodeBase64(user.getEmail().getBytes())));
     }
 
     @Clear(AuthInterceptor.class)

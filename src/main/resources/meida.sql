@@ -122,6 +122,8 @@ CREATE TABLE `originalLogistic` (
   `status` INT DEFAULT 0 COMMENT '处理状态 0待入库 1已入库 2已出仓',
   `remark` TEXT,
   `orderId` BIGINT(20) NOT NULL,
+  `orderNumber` VARCHAR(50) DEFAULT NULL,
+  `senderInfo` VARCHAR(500) DEFAULT NULL,
   `deleteFlag` BIT DEFAULT 0,
   `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `creater` BIGINT(20) NOT NULL ,
@@ -175,3 +177,9 @@ CREATE TABLE `receiver` (
 
 CREATE index receiver_original_number_index on `receiver`(`originalNumber`);
 CREATE index receiver_mobile_index on `receiver`(`mobile`);
+
+
+alter table user add `phone` varchar(200) AFTER password;
+alter table user add `nick` varchar(200) AFTER phone;
+alter table user add `wechat` varchar(200) AFTER nick;
+alter table user add `work_address` varchar(200) AFTER wechat;

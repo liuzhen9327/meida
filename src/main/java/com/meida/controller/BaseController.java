@@ -15,6 +15,6 @@ public class BaseController extends Controller {
     }
 
     public long getCurrentUserId() {
-        return getCurrentUser().getLong(User.id);
+        return getCurrentUser().getId();
     }
 }

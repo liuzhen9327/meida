@@ -1,5 +1,4 @@
 <%@ page import="java.util.List" %>
-<%@ page import="com.meida.model.So" %>
 <%@ page import="com.meida.utils.StringUtils" %>
 <%@ page import="com.meida.model.OriginalLogistic" %>
 <%@ page import="org.apache.commons.lang.time.DateFormatUtils" %>
@@ -110,18 +109,18 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#id<%=originalLogistic.get(OriginalLogistic.id)%>">
+                                <a data-toggle="collapse" class="collapsed" data-parent="#accordion" href="#id<%=originalLogistic.getId()%>">
                                     <h5><i class="fa fa-angle-double-right"></i>
                                         &nbsp;<%=originalLogistic.get(OriginalLogistic.name)%>
                                         &nbsp; <%=originalLogistic.get(OriginalLogistic.number)%>
                                         &nbsp; <%=originalLogistic.get(OriginalLogistic.weight)%>KG
                                         &nbsp;</h5>
                                     <h6><i class="fa fa-clock-o"></i>
-                                        &nbsp;<%=DateFormatUtils.format(originalLogistic.getTimestamp(OriginalLogistic.updateTime).getTime(), DateUtils.yyMMddhhmm)%></h6>
+                                        &nbsp;<%=DateFormatUtils.format(originalLogistic.getTimestamp("updateTime").getTime(), DateUtils.yyMMddhhmm)%></h6>
                                 </a>
                             </h4>
                         </div>
-                        <div id="id<%=originalLogistic.get(OriginalLogistic.id)%>" class="panel-collapse collapse">
+                        <div id="id<%=originalLogistic.getId()%>" class="panel-collapse collapse">
 
 
                             <div class="row editable-list-item">
@@ -132,7 +131,7 @@
                                 </div>
 
                             </div>
-                            <%List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOriginalId(originalLogistic.getLong(OriginalLogistic.id));
+                            <%List<TransitLogistic> transitLogisticList = TransitLogisticService.findByOriginalId(originalLogistic.getId());
                                 if (transitLogisticList.size() > 0) {
                             %>
                                     <div class="row editable-list-item">

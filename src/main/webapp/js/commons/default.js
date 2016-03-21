@@ -73,20 +73,18 @@ jQuery(document).ready(function() {
             }
         }
         return false;
-    //}).find('li.active').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
-    //    adjustmainpanelheight();
     });
-   var activeMenu = leftPanel.find('li.active');
-   if (activeMenu.length) {
-      activeMenu.closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
-         adjustmainpanelheight();
-      });
-   } else {
-      if (prevMenu)
-         leftPanel.find('a[href="'+prevMenu+'"]').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
-            adjustmainpanelheight();
-         });
-   }
+   //var activeMenu = leftPanel.find('li.active');
+   //if (activeMenu.length) {
+   //   activeMenu.closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
+   //      adjustmainpanelheight();
+   //   });
+   //} else {
+   //   if (prevMenu)
+   //      leftPanel.find('a[href="'+prevMenu+'"]').closest('li.nav-parent').addClass('nav-active').addClass('active').find('ul:first').slideDown(200, function(){
+   //         adjustmainpanelheight();
+   //      });
+   //}
 
 
    function closeVisibleSubMenu() {

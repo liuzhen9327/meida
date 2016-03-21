@@ -36,7 +36,7 @@ public class AuthInterceptor implements Interceptor{
 	    	String code = controller.getPara("code");
 	    	if(StringUtils.isBlank(code)) {
 	    		//网页端
-	    		controller.redirect("/login.jsp");
+				controller.redirect("/login.jsp");
 	    		return;
 	    	}
 	    	String openId = OpenIdApi.getOpenId(code);

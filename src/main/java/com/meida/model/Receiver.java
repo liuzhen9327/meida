@@ -2,6 +2,7 @@ package com.meida.model;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.ICallback;
+import com.meida.model.base.BaseReceiver;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,7 @@ import java.sql.SQLException;
 /**
  * Created by admin on 16/2/3.
  */
-public class Receiver extends BaseModel<Receiver> {
+public class Receiver extends BaseReceiver<Receiver> {
 
     public final static Receiver dao = new Receiver();
 
@@ -28,7 +29,7 @@ public class Receiver extends BaseModel<Receiver> {
         set(Receiver.address, address);
         set(Receiver.originalId, originalId);
         set(Receiver.originalNumber, originalNumber);
-        set(Receiver.creater, creater);
+        setCreater(creater == null ? 0l:Long.valueOf(creater.toString()));
     }
 
     public void deleteAll(final long userId) {
@@ -41,5 +42,14 @@ public class Receiver extends BaseModel<Receiver> {
                 return st.executeUpdate();
             }
         });
+    }
+    private int line;
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
     }
 }
