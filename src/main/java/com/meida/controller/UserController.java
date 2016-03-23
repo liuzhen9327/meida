@@ -35,6 +35,6 @@ public class UserController extends BaseController {
 		String base64Str = getPara();
         String authId = UserService.activeAccount(base64Str);
         setCookie(Constant.COOKIE_AUTH_KEY, authId, 3600, Constant.COOKIE_PATH);
-        renderJsp("/index.jsp");
+        redirect("/so/upload");
     }
 }

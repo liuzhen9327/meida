@@ -31,7 +31,7 @@ public enum ExceptionEnum {
 
     EXCEL_RESOLVE_ERROR("数据上传失败！第[{0}]行数据解析异常，请检查后再上传！"),
 
-    READ_EXCEL_ERROR("读取文件失败"),
+    READ_EXCEL_ERROR("读取文件失败{0}"),
     ;
 
     private String message;

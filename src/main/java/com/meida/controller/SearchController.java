@@ -14,6 +14,7 @@ import com.meida.model.TransitLogistic;
 import com.meida.utils.UrlUtils;
 import com.meida.vo.JSONResult;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -128,7 +129,7 @@ public class SearchController extends BaseController {
                         transitName = getCellValue(row.getCell(8)),
                         transitNumber = getCellValue(row.getCell(9)),
                         date = getCellValue(row.getCell(10));
-
+                if (StringUtils.isBlank(ObjectUtils.toString(originalNumber))) continue;
                 Object senderInfo = getCellValue(row.getCell(11)),
                         remark = getCellValue(row.getCell(12));
 
@@ -203,7 +204,7 @@ public class SearchController extends BaseController {
             if (e instanceof SQLException) {
                 throw new BusinessException(ExceptionEnum.EXCEL_RESOLVE_ERROR, errorLine);
             }
-            throw new BusinessException(ExceptionEnum.READ_EXCEL_ERROR);
+            throw new BusinessException(ExceptionEnum.READ_EXCEL_ERROR, e.getMessage());
         }
     }
 

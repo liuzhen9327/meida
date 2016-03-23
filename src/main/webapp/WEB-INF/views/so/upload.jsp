@@ -81,7 +81,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label" for="readonlyinput">查询页面链接</label>
                         <div class="col-sm-6">
-                            <input type="text" value="<%=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()%>/so" id="readonlyinput" class="form-control" readonly="readonly" />
+                            <input type="text" value="<%=request.getScheme()+"://"+request.getServerName()+request.getContextPath()%>/so" id="readonlyinput" class="form-control" readonly="readonly" />
                         </div>
                     </div>
 
@@ -106,7 +106,8 @@
     Dropzone.autoDiscover = false;
     var myDropzone = new Dropzone(document.getElementById('excelForm'), { // Make the whole body a dropzone
         url: "/so/upload", // Set the url
-        acceptedFiles: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+//        acceptedFiles: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        acceptedFiles: ".xlsx",
     });
     myDropzone.on("addedfile", function(file) {
         if (this.files[1]!=null){
@@ -123,6 +124,9 @@
             tipsdiv.find('strong').text(resp.errMsg);
         }
         tipsdiv.removeClass('hide')
+        setTimeout(function() {
+            tipsdiv.addClass('hide');
+        }, 4000)
     });
 //    $("#excelForm").dropzone({
 //        maxFiles: 2000,

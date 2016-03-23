@@ -47,6 +47,7 @@
         <div class="so_tex">
             <p><i class="fa  fa-phone"></i>&nbsp;咨询电话：18588879488</p>
             <p>Email: postmaster@vipmeida.com</p>
+            <p>友情链接: <a href="http://www.kuaidi.com" target="_blank">快递查询</a></p>
         </div>
     </div>
     <!--左侧广告+联系方式leftpanel-->

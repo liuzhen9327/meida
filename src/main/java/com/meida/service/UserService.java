@@ -76,18 +76,26 @@ public class UserService {
 //	}
 	
 	public static void register(User user) {
-		if(emailExists(user.getEmail())) throw new BusinessException(ExceptionEnum.EMAIL_EXISTS);
+//		User u = getUserByEmail(user.getEmail());
+
+
 		boolean flag = false,
 				isModify = false;
 		Long id = null;
-		if(StringUtils.isNotEmpty(user.getOpenId())){
+//		if(StringUtils.isNotEmpty(user.getOpenId())){
+		if(StringUtils.isNotEmpty(user.getEmail())){
 			// openIdexists && status == 0 
-			User temp = getUserByOpenId(user.getOpenId());
-			if(temp.getInt(User.status) == 0) {
-				//绑定了邮箱但是没激活时，重新绑定
-				flag = true;
-				id = temp.getId();
-				isModify = temp.keep("id").set(User.email, user.getEmail()).set(User.password, encryptPassword(user.getPassword(), id)).update();
+//			User temp = getUserByOpenId(user.getOpenId());
+			User temp = getUserByEmail(user.getEmail());
+			if (temp != null) {
+				if (temp.getStatus() == 1) {
+					throw new BusinessException(ExceptionEnum.EMAIL_EXISTS);
+				} else {
+					//绑定了邮箱但是没激活时，重新绑定
+					flag = true;
+					id = temp.getId();
+					isModify = temp.keep("id")._setAttrs(user).set(User.password, encryptPassword(user.getPassword(), id)).update();
+				}
 			}
 		}
 		User temp = new User();
