@@ -79,18 +79,18 @@ public class ExceptionInterceptor implements Interceptor {
     }
 
     private void doLog(Invocation ai, Exception e) {
-        //开发模式
-        if (JFinal.me().getConstants().getDevMode()) {
-            e.printStackTrace();
-        }
-        //业务异常不记录 ？？
-        if (e instanceof BusinessException) return;
-        StringBuilder sb = new StringBuilder("\n---Exception Log Begin---\n");
-        sb.append("Controller:").append(ai.getController().getClass().getName()).append("\n");
-        sb.append("Method:").append(ai.getMethodName()).append("\n");
-        sb.append("Exception Type:").append(e.getClass().getName()).append("\n");
-        sb.append("Exception Details:");
-        log.error(sb.toString(), e);
+//        //开发模式
+//        if (JFinal.me().getConstants().getDevMode()) {
+//            e.printStackTrace();
+//        }
+//        //业务异常不记录 ？？
+//        if (e instanceof BusinessException) return;
+//        StringBuilder sb = new StringBuilder("\n---Exception Log Begin---\n");
+//        sb.append("Controller:").append(ai.getController().getClass().getName()).append("\n");
+//        sb.append("Method:").append(ai.getMethodName()).append("\n");
+//        sb.append("Exception Type:").append(e.getClass().getName()).append("\n");
+//        sb.append("Exception Details:");
+        log.error("", e);
     }
 
 }
