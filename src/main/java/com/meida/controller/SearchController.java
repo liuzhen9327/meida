@@ -36,15 +36,14 @@ public class SearchController extends BaseController {
 
     private static Logger log = LoggerFactory.getLogger(SearchController.class);
 
+    private static String selectsql = "select * from originalLogistic where id in(select max(id) from originalLogistic where id in(select distinct originalId from receiver where originalNumber=? or mobile=?) group by number) order by id desc";
     @Clear(AuthInterceptor.class)
     public void index() {
         List<OriginalLogistic> list = new ArrayList<>();
 
         String value = getPara("value");
         if (StringUtils.isNotBlank(value)) {
-            list = OriginalLogistic.dao.find("select * from " + OriginalLogistic.TABLE_NAME + " where " +
-                    "id in(select DISTINCT "+Receiver.originalId+" from "+Receiver.TABLE_NAME+
-                    " where "+Receiver.originalNumber+"=? or "+Receiver.mobile+"=?) order by id desc", value, value);
+            list = OriginalLogistic.dao.find(selectsql, value, value);
         }
 
         setAttr("list", list);
@@ -145,6 +144,7 @@ public class SearchController extends BaseController {
                         .set(OriginalLogistic.orderId, 0)
                         .setCreater(userId);
                 originalLogistic.setUpdater(userId);
+                originalLogistic.setUpdateTime(now);
 
 
                 originalLogistic.set(OriginalLogistic.orderNumber, orderNumber)
